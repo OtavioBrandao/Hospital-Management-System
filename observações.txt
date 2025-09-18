@@ -16,3 +16,24 @@ No Software Projects, temos:
 • Emergency Services Management: Handling and prioritizing emergency cases.
 
 Vamos verificar as 10, entender como cada uma funciona e começar os refatoramentos.
+
+
+Comentários antigos:
+
+Main:
+    - Lembrar de inserir a lógica de caso não seja encontrado um paciente e ele queira ser cadastrado, voltar para a própria função para que o processo não seja interrompido
+    principalmente nas funções de :
+        1. CadastroPaciente
+        2. ProntuarioMedico
+        3. SolicitarExame
+    Colocar lower para as opções de escolha e tirar o espaçamento
+
+    Fazer encapsulamento no cpf e sus para definir o tamnho padrao de caracter (setter) e se o cpf e o sus estiver repetido
+
+    Modificar a funcao do escalonamento do horario para que um mesmo funcionario tenha turnos diferentes
+
+    Fazer um dicionario para os funcionarios e ir adicionando eles ( pode ser nativo mesmo)
+
+    "Exame" pode ser alguma estrutura que tenha a maioria dos exames que médicos, enfermeiros e dentistas requesitam
+
+    Lembrar de criar um ambiente virtual e instalar "pip install fpdf2" para poder gerar o arquivo em pdf
