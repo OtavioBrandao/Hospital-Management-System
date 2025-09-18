@@ -21,7 +21,8 @@
     def __str__(self):
         return f"Paciente: {self.nome}"
 
-'''class funcionarioSaude:
+'''
+class funcionarioSaude:
     def __init__(self,nome,profissao, registroProfissional):
         self.nome = nome
         self.funcionario = []
@@ -36,6 +37,7 @@
     
     def atualizarFuncionario(self):
         #irei implementar, pois estou em duvida se faço funcionario ser uma lista ou um dicionari
+
 
 '''
         

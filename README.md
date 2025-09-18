@@ -1,4 +1,10 @@
-Hospital Management Software
+Hospital Management Software (Etapa de Refatoramento)
+Vamos refatorar esse projeto utilizando Design Patterns do Python.
+
+
+
+
+READ ME ANTIGO (Ver o que modificar ou não):
 Sistema de gestão hospitalar desenvolvido em Python com Programação Orientada a Objetos (POO), permitindo o gerenciamento completo de pacientes, consultas, receitas, exames, leitos, estoque, equipe médica e emergências.
 
     Projetando o software

@@ -1,6 +1,10 @@
 from hospital import Hospital
 from entidades.exame import EXAMES_DISPONIVEIS
 hospital = Hospital()
+import os
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def menu():
     print("\n--- SISTEMA DE GESTÃO HOSPITALAR ---")
@@ -73,8 +77,8 @@ def escalonamento_menu(hospital):
         op = input("Escolha: ")
 
 
-
 #funcao para cadastro
+# Talvez usar o Builder aqui ou algo relacionado
 
 def cadastroPaciente(nome):
     # Primeiro, cadastra o paciente apenas com o nome. 

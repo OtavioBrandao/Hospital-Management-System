@@ -1,17 +1,18 @@
-Main:
-    - Lembrar de inserir a lógica de caso não seja encontrado um paciente e ele queira ser cadastrado, voltar para a própria função para que o processo não seja interrompido
-    principalmente nas funções de :
-        1. CadastroPaciente
-        2. ProntuarioMedico
-        3. SolicitarExame
-    Colocar lower para as opções de escolha e tirar o espaçamento
+Etapa Inicial:
+Ver quais são as 10 funcionalidades e ver como cada uma delas funciona. Se tiver alguma coisa que eu ache incompleta, implementar.
+Depois, pensar em como refatorar cada uma dessas funcionalidades, focando no uso de Design Patterns.
 
-    Fazer encapsulamento no cpf e sus para definir o tamnho padrao de caracter (setter) e se o cpf e o sus estiver repetido
+No Software Projects, temos:
 
-    Modificar a funcao do escalonamento do horario para que um mesmo funcionario tenha turnos diferentes
+• Patient Registration: Patients can register and maintain their profiles;
+• Appointment Scheduling: Patients can book, cancel, and reschedule appointments with doctors;
+• Medical Record Management: Secure storage and access to patient medical records;
+• Billing and Invoicing: Automated billing for medical services rendered;
+• Prescription Management: Doctors can create and manage prescriptions;
+• Lab Test Ordering and Reporting: Ordering lab tests and accessing results;
+• Ward and Bed Management: Management of hospital wards and bed allocations;
+• Inventory Management: Management of medical supplies and inventory;
+• Staff Scheduling: Scheduling shifts and duties for hospital staff;
+• Emergency Services Management: Handling and prioritizing emergency cases.
 
-    Fazer um dicionario para os funcionarios e ir adicionando eles ( pode ser nativo mesmo)
-
-    "Exame" pode ser alguma estrutura que tenha a maioria dos exames que médicos, enfermeiros e dentistas requesitam
-
-    Lembrar de criar um ambiente virtual e instalar "pip install fpdf2" para poder gerar o arquivo em pdf
+Vamos verificar as 10, entender como cada uma funciona e começar os refatoramentos.
