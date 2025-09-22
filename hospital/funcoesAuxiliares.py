@@ -17,6 +17,7 @@ def menu():
     print("7  - Solicitar exame")
     print("8  - Alocar leito")
     print("9  - Funcionários")
+    print("10 - Receituário")
     print("0  - Sair")
 
 ''' --- Funções para facilitar na main --- '''
@@ -52,7 +53,27 @@ def funcionarios(hospital):
         elif op == '2':
             escalonamento_menu(hospital)
             break
-
+def receituario_menu(hospital):
+    print("\n--- RECEITUÁRIO ---")
+    print("1 - Gerar receituário")
+    print("2 - Ver receituários")
+    print("0 - Voltar")
+    op = input("Escolha: ")
+    while op != '0':
+        if op == '1':
+            nome = input("Nome do paciente: ")
+            medicamento = input("Medicamento: ")
+            descricao = input("Descrição: ")
+            profissional = input("Profissional: ") # Depois pegar o nome do profissional logado futuramente
+            dosagem = input("Dosagem: ")
+            hospital.registrar_receita(nome, profissional, medicamento, descricao, dosagem)
+        elif op == '2':
+            nome = input("Nome do paciente: ") # Depois pegar os dados do paciente logado já
+            hospital.listar_receitas(nome)
+        else:
+            print("Opção inválida.")
+        print()
+        op = input("Escolha: ")
 
 def emergencias_menu(hospital):
     print("\n--- EMERGÊNCIAS ---")

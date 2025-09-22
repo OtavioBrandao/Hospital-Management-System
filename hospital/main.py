@@ -44,6 +44,9 @@ if __name__ == "__main__":
         elif op == '9':
             funcoesAuxiliares.funcionarios(hospital)
         elif op == '10':
+            funcoesAuxiliares.receituario_menu(hospital)
+            pass
+        elif op == '11':
             #funcoesAuxiliares.relatorios_menu(hospital)
             pass
         else:

@@ -57,8 +57,9 @@ class Paciente:
         prontuario = Prontuario(profissional, descricao)
         self.prontuarios.append(prontuario)
 
-    def adicionar_receita(self, receita):
-        self.receitas.append(receita)
+    def adicionar_receita(self, profissional, medicamento, descricao, dosagem):
+        self.receitas.append(f"Receita por {profissional}:\n Medicamento: {medicamento}\n Descrição: {descricao}\n Dosagem: {dosagem}\n")
+        print("Receita adicionada.")
 
     def solicitar_exame(self, exame):
         self.exames.append(exame)

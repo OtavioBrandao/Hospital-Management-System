@@ -62,12 +62,7 @@ class Hospital:
             else:
                 print("Nenhum prontuário registrado.")
 
-            print("\n--- Receitas ---")
-            if paciente.receitas:
-                for i, receita in enumerate(paciente.receitas, 1):
-                    print(f"{i}: {receita}")
-            else:
-                print("Nenhuma receita registrada.")
+            self.listar_receitas(paciente.nome) #Ver pq n ta printando
 
             print("\n--- Exames Solicitados ---")
             if paciente.exames:
@@ -123,6 +118,26 @@ class Hospital:
         if paciente:
             paciente.adicionar_prontuario(profissional, descricao)
             print("Prontuário registrado.")
+        else:
+            print("Paciente não encontrado.")
+
+    def registrar_receita(self, nome, profissional, medicamento, descricao, dosagem):
+        paciente = self.encontrar_paciente(nome)
+        if paciente:
+            paciente.adicionar_receita(profissional, medicamento, descricao, dosagem)
+        else:
+            print("Paciente não encontrado.")
+    
+    def listar_receitas(self, nome):
+        paciente = self.encontrar_paciente(nome)
+        if paciente:
+            if paciente.receitas:
+                print(f"\n--- Receitas de {paciente.nome} ---")
+                for i, receita in enumerate(paciente.receitas, 1):
+                    print(f"{i}: {receita}")
+            else:
+                print(f"\n--- Receitas de {paciente.nome} ---")
+                print("Nenhuma receita registrada.")
         else:
             print("Paciente não encontrado.")
 
