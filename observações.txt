@@ -4,18 +4,27 @@ Depois, pensar em como refatorar cada uma dessas funcionalidades, focando no uso
 
 No Software Projects, temos:
 
-• Patient Registration: Patients can register and maintain their profiles;
-• Appointment Scheduling: Patients can book, cancel, and reschedule appointments with doctors;
-• Medical Record Management: Secure storage and access to patient medical records;
-• Billing and Invoicing: Automated billing for medical services rendered;
-• Prescription Management: Doctors can create and manage prescriptions;
-• Lab Test Ordering and Reporting: Ordering lab tests and accessing results;
-• Ward and Bed Management: Management of hospital wards and bed allocations;
-• Inventory Management: Management of medical supplies and inventory;
-• Staff Scheduling: Scheduling shifts and duties for hospital staff;
-• Emergency Services Management: Handling and prioritizing emergency cases.
+• Patient Registration: Patients can register and maintain their profiles; OK
+• Appointment Scheduling: Patients can book, cancel, and reschedule appointments with doctors; OK (Só tá marcando consulta, adicionar cancelamento e remarcação)
+• Medical Record Management: Secure storage and access to patient medical records; (???)
+• Billing and Invoicing: Automated billing for medical services rendered; OK
+• Prescription Management: Doctors can create and manage prescriptions; (Faltando função de receita)
+• Lab Test Ordering and Reporting: Ordering lab tests and accessing results; (Falta ver a questão )
+• Ward and Bed Management: Management of hospital wards and bed allocations; OK (Alocação de leito, melhorar para eu poder ver os pacientes alocados e a situação do hospital)
+• Inventory Management: Management of medical supplies and inventory; OK (Parte do estoque)
+• Staff Scheduling: Scheduling shifts and duties for hospital staff; (Escalonamento de funcionarios) OK
+• Emergency Services Management: Handling and prioritizing emergency cases. OK (Acho que não precisa mudar)
 
 Vamos verificar as 10, entender como cada uma funciona e começar os refatoramentos.
+
+Obs: Se possível, usar o design patterns para alguma dessas modificações que vão ser feitas
+- No alocar leito, adicionar a opção de ver os pacientes alocados
+- Na parte funcionários, ver a possibilidade de ver os dados de cada tipo de funcionário do hospital (funcionario.py)
+- Tá faltando uma função para fazer as receitas dos medicamentos para cada tipo de funcionário se ele poder fazer (PRIORIDADE)
+- Adicionar mais funcionários
+- Enquanto ao sistema de login, ver as diferenças para cada funcionário ao acessar o sistema se eu ver q é necessário fazer
+- Ver como fazer a parte do relatório em PDF funcionar (PRIORIDADE)
+- Tratar CPF e Cartão SUS repetidos, caso tenhamos pacientes com mesmo nome para consultar o paciente correto
 
 
 Comentários antigos:

@@ -8,17 +8,15 @@ def clear_screen():
 
 def menu():
     print("\n--- SISTEMA DE GESTÃO HOSPITALAR ---")
-    print("1  - Cadastrar paciente")
+    print("1  - Central de Pacientes")
     print("2  - Agendar consulta")
     print("3  - Registrar prontuário")
     print("4  - Gerar fatura")
     print("5  - Gerenciar estoque")
-    print("6  - Registrar emergência")
-    print("7  - Emergências")
-    print("8  - Solicitar exame")
-    print("9  - Alocar leito")
-    print("10 - Escalonamento de funcionários")
-    print("11 - Queixas")
+    print("6  - Emergências")
+    print("7  - Solicitar exame")
+    print("8  - Alocar leito")
+    print("9  - Funcionários")
     print("0  - Sair")
 
 ''' --- Funções para facilitar na main --- '''
@@ -40,6 +38,21 @@ def estoque_menu(hospital):
             print("Opção inválida.")
         print()
         op = input("Escolha: ")
+
+def funcionarios(hospital):
+    print("Deseja realizar uma queixa ou escalonar um funcionário?")
+    print("1 - Queixa")
+    print("2 - Escalonar funcionário")
+    print("0 - Voltar")
+    op = input("Escolha: ")
+    while op != '0':
+        if op == '1':
+            queixa()
+            break
+        elif op == '2':
+            escalonamento_menu(hospital)
+            break
+
 
 def emergencias_menu(hospital):
     print("\n--- EMERGÊNCIAS ---")
@@ -125,7 +138,7 @@ def cadastroPaciente(nome):
 
 #Função mais robusta para cadastrar e ver os pacientes
 def cadastro():
-    print("\n--- Cadastro ---")
+    print("\n--- Central de Pacientes ---")
     print("1 - Cadastrar paciente")
     print("2 - Ver pacientes cadastrados")
     print("3 - Dados de um paciente")
@@ -162,7 +175,7 @@ def agendarConsulta():
         hospital.agendar_consulta(nome, dia, tipo_profissional)
     else:
         print("Paciente não encontrado.")
-        resposta = input("Deseja cadastra-lo? ")
+        resposta = input("Deseja cadastrá-lo? ")
         if resposta.lower() == "sim":
             cadastroPaciente(nome)
             dia = input("Data da consulta (dd/mm): ")
@@ -261,7 +274,7 @@ def queixa():
         elif op == '2':
             hospital.administrativo.exibir_queixas()
         else: 
-            print("Opcao inválida!")
+            print("Opção inválida!")
         print()
         op = input("Escolha: ")
 

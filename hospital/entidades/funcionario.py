@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from .paciente import Paciente
 from .exame import EXAMES_DISPONIVEIS 
 
+# Ver se é necessário fazer mais coisa aqui
 class FuncionarioSaude(ABC):
     def __init__(self, nome, registro):
         self.nome = nome

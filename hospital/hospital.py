@@ -8,7 +8,11 @@ from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo
 PRECO = 10.5 #Valor estipulado de maneira avulsa
 class Hospital:
     def __init__(self):
-        self.pacientes = []
+        self.pacientes = [
+            Paciente("Vitor Gabriel", "12345", "67890"),
+            Paciente("Otávio", "54321", "09876")
+            ] #Pacientes pre-estabelecidos
+        
         self.funcionarios = [
             Medico("Saulo de Tarso", "CRM-123", "Cardiologista"),
             Enfermeiro("Agostinho de Hipona", "COREN-456"),
@@ -86,6 +90,7 @@ class Hospital:
         - Então usamos o polimorfismo para que o profissional desejado atenda o paciente
     '''
     #Contem polimorfismo
+    # Adicionar aqui a possibilidade de cancelar consulta e remarcar consulta
     def agendar_consulta(self, nome_paciente, dia, tipo_profissional):
         paciente = self.encontrar_paciente(nome_paciente)
         if not paciente:
@@ -112,8 +117,6 @@ class Hospital:
             profissional_encontrado.atenderPaciente(paciente)
         else:
             print(f"Não foi encontrado um profissional do tipo '{tipo_profissional}' disponível.")
-
-
 
     def registrar_prontuario(self, nome, profissional, descricao):
         paciente = self.encontrar_paciente(nome)
@@ -151,7 +154,8 @@ class Hospital:
         # Polimorfismo: O hospital não sabe os detalhes, apenas
         # manda o objeto profissional requisitar o exame.
         profissional.requisitarExame(paciente, nomeExame)
-
+        
+    # Adicionar opção de ver leitos alocados e situação do hospital
     def alocar_leito(self, nome):
         paciente = self.encontrar_paciente(nome)
         if paciente:
