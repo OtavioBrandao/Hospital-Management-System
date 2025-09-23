@@ -12,6 +12,10 @@ EXAMES_DISPONIVEIS = {
     "raio-x": Exame("Raio-X de Tórax"),
     "urina": Exame("Exame de Urina"),
     "tomografia":Exame("Tomografia computadorizada"),
+    "ecocardiograma": Exame("EcoCardiograma"),
+    "eletrocardiograma": Exame("Eletrocardiograma"),
+    "ultrassom": Exame("Ultrassonografia"),
+    
     # Dentista
     "radiografia_dentaria": Exame("Radiografia Dentária"),
     "limpeza": Exame("Limpeza e Profilaxia"),
@@ -19,6 +23,8 @@ EXAMES_DISPONIVEIS = {
     # Enfermeiro
     "glicemia": Exame("Teste de Glicemia Capilar"),
     "pressao": Exame("Aferição de Pressão Arterial"),
+    "pulso": Exame("Aferição de Pulso"),
+    "temperatura": Exame("Aferição de Temperatura"),
     # Psicólogo (não solicita exames, mas encaminha)
     "encaminhamento": Exame("Encaminhamento para Psiquiatra")
 }

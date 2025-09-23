@@ -33,6 +33,20 @@ def gerar_relatorio_paciente(paciente):
     )
     pdf.chapter_body(info)
 
+    if paciente.prontuarios:
+        pdf.chapter_title('Prontuários Médicos')
+        prontuarios_str = ""
+        for prontuario in paciente.prontuarios:
+            prontuarios_str += f"- {prontuario}\n"
+        pdf.chapter_body(prontuarios_str)
+
+    if paciente.receitas:
+        pdf.chapter_title('Receitas Médicas')
+        receitas_str = ""
+        for receita in paciente.receitas:
+            receitas_str += f"- {receita}\n"
+        pdf.chapter_body(receitas_str)
+
     if paciente.consultas:
         pdf.chapter_title('Consultas Agendadas')
         consultas_str = ""
@@ -108,6 +122,56 @@ def gerar_relatorio_hospital(hospital):
         pdf.chapter_body(funcionarios_str)
     else:
         pdf.chapter_body("Nenhum funcionário cadastrado.")
+    
+    # Estoque do Hospital
+    pdf.chapter_title('Estoque do Hospital')
+    if hospital.estoque.itens:
+        estoque_str = ""
+        for item, qtd in hospital.estoque.itens.items():
+            estoque_str += f"- {item}: {qtd} unidades\n"
+        pdf.chapter_body(estoque_str)
+    else:
+        pdf.chapter_body("Estoque vazio.")
+
+    # Alocação de Leitos
+    pdf.chapter_title('Leitos Alocados')
+    if hospital.leitos:
+        leitos_str = ""
+        for leito, paciente_nome in hospital.leitos:
+            leitos_str += f"- {leito}: {paciente_nome}\n"
+        pdf.chapter_body(leitos_str)
+    else:
+        pdf.chapter_body("Nenhum leito alocado.")
+
+    # Escalonamento de turnos
+    pdf.chapter_title('Escalonamento de Turnos')
+    if hospital.escalonamento:
+        escalonamento_str = ""
+        for nome, turno in hospital.escalonamento.items():
+            escalonamento_str += f"- {nome}: {turno}\n"
+        pdf.chapter_body(escalonamento_str)
+    else:
+        pdf.chapter_body("Nenhum escalonamento disponível.")
+    
+    # Queixas
+    pdf.chapter_title('Queixas Registradas')
+    if hospital.administrativo.queixas:
+        queixas_str = ""
+        for funcionario, descricao in hospital.administrativo.queixas:
+            queixas_str += f"Funcionário: {funcionario}\nOcorrido: {descricao}\n\n"
+        pdf.chapter_body(queixas_str)
+    else:
+        pdf.chapter_body("Nenhuma queixa registrada.")
+
+    # Emergências
+    pdf.chapter_title('Casos de Emergência')
+    if hospital.emergencias.emergencias:
+        emergencias_str = ""
+        for paciente, prioridade in hospital.emergencias.emergencias:
+            emergencias_str += f"Paciente: {paciente}\nPrioridade: {prioridade.capitalize()}\n\n"
+        pdf.chapter_body(emergencias_str)
+    else:
+        pdf.chapter_body("Nenhuma emergência registrada.")
 
     nome_arquivo = "relatorio_geral_hospital.pdf"
     pdf.output(nome_arquivo)

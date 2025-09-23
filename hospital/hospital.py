@@ -17,17 +17,43 @@ class Hospital:
     def __init__(self):
         self.pacientes = [
             Paciente("Vitor Gabriel", "12345", "67890"),
-            Paciente("Otávio", "54321", "09876")
+            Paciente("Otávio", "54321", "09876"),
+            Paciente("Kaique Silva", "11223", "44556"),
+            Paciente("Ygor", "33445", "66778"),
+            Paciente("Marco Gomes", "55667", "77889")
             ] #Pacientes pre-estabelecidos
         
         self.funcionarios = [
             Medico("Saulo de Tarso", "CRM-123", "Cardiologista"),
-            Enfermeiro("Agostinho de Hipona", "COREN-456"),
+            Medico("Maria", "CRM-456", "Ortopedista"),
+            Medico("Joana D'Arc", "CRM-789", "Pediatra"),
+            Medico("Cláudio", "CRM-101", "Neurologista"),
+            Medico("Augusto", "CRM-202", "Clínico Geral"),
+            Medico("César", "CRM-303", "Dermatologista"),
+            Medico("Caio Calheiros", "CRM-404", "Oftalmologista"),
+            Enfermeiro("Pedro", "COREN-101"),
+            Enfermeiro("Josemir", "COREN-102"),
+            Enfermeiro("Karina", "COREN-202"),
+            Enfermeiro("João", "COREN-123"),
+            Enfermeiro("Ana", "COREN-456"),
+            Enfermeiro("Agostinho de Hipona", "COREN-789"),
             Dentista("Aurora Vieira", "CRO-789"),
-            Psicologo("Madalena", "CRP-101")
-        ] #Funcionarios pre-estabelecidos
+            Dentista("Beatriz Silva", "CRO-456"),
+            Dentista("Carlos Eduardo", "CRO-123"),
+            Dentista("Daniela Costa", "CRO-321"),
+            Psicologo("Madalena", "CRP-101"),
+            Psicologo("Mariana", "CRP-202"),
+            Psicologo("Marcos", "CRP-303"),
+            Psicologo("Suzana", "CRP-404")] #Funcionarios pre-estabelecidos
         self.leitos = []
-        self.escalonamento = {}
+        self.escalonamento = {
+            "Saulo de Tarso": "Manhã",
+            "Caio Calheiros": "Manhã",
+            "Pedro": "Tarde",
+            "Josemir": "Noite",
+            "Karina": "Manhã",
+            "Suzana": "Noite"
+        }
         self.estoque = Estoque()
         self.administrativo = SetorAdministrativo()
         self.emergencias = EmergenciaManager()

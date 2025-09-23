@@ -1,6 +1,11 @@
 class Estoque:
     def __init__(self):
-        self.itens = {}
+        self.itens = {
+            "máscaras": 100,
+            "luvas": 200,
+            "álcool em gel": 150,
+            "medicamentos": 300  
+        }
 
     def adicionar_item(self, item, quantidade):
         self.itens[item] = self.itens.get(item, 0) + quantidade

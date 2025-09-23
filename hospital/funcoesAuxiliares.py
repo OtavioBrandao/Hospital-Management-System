@@ -19,7 +19,7 @@ def menu():
     print("8  - Alocar leito")
     print("9  - Funcionários")
     print("10 - Receituário")
-    print("11 - Relatórios PDF")
+    print("11 - Relatórios")
     print("0  - Sair")
 
 ''' --- Funções para facilitar na main --- '''
@@ -57,8 +57,8 @@ def funcionarios(hospital):
             break
 def receituario_menu(hospital):
     print("\n--- RECEITUÁRIO ---")
-    print("1 - Gerar receituário")
-    print("2 - Ver receituários")
+    print("1 - Gerar receita")
+    print("2 - Ver receitas")
     print("0 - Voltar")
     op = input("Escolha: ")
     while op != '0':
@@ -161,7 +161,7 @@ def cadastroPaciente(nome):
 
 #Função mais robusta para cadastrar e ver os pacientes
 def cadastro():
-    print("\n--- Central de Pacientes ---")
+    print("\n--- CENTRAL DE PACIENTES ---")
     print("1 - Cadastrar paciente")
     print("2 - Ver pacientes cadastrados")
     print("3 - Dados de um paciente")
@@ -329,7 +329,7 @@ def solicitarExame():
     hospital.solicitar_exame(nome_paciente, nome_profissional, codigo_selecionado)
 
 def queixa():
-    print("\n--- Registro de queixas ---")
+    print("\n--- REGISTRO DE QUEIXAS ---")
     print("1 - Registrar queixa")
     print("2 - Ver queixa")
     print("0 - Voltar")
@@ -338,7 +338,7 @@ def queixa():
         if op == '1':
             print("Registre uma queixa: ")
             funcionario = input("Digite o nome do funcionário: ")
-            descricao = input("Descreva o ocorrido")
+            descricao = input("Descreva o ocorrido: ")
             hospital.administrativo.registrar_queixa(funcionario,descricao)
         elif op == '2':
             hospital.administrativo.exibir_queixas()
