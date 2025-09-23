@@ -3,10 +3,17 @@ from entidades.estoque import Estoque
 from entidades.administrativo import SetorAdministrativo
 from entidades.emergencia import EmergenciaManager
 from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo
-#from .gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
+from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
 
 PRECO = 10.5 #Valor estipulado de maneira avulsa
 class Hospital:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Hospital, cls).__new__(cls)
+        return cls._instance
+        
     def __init__(self):
         self.pacientes = [
             Paciente("Vitor Gabriel", "12345", "67890"),
@@ -62,7 +69,7 @@ class Hospital:
             else:
                 print("Nenhum prontuário registrado.")
 
-            self.listar_receitas(paciente.nome) #Ver pq n ta printando
+            self.listar_receitas(nome)
 
             print("\n--- Exames Solicitados ---")
             if paciente.exames:
@@ -112,6 +119,31 @@ class Hospital:
             profissional_encontrado.atenderPaciente(paciente)
         else:
             print(f"Não foi encontrado um profissional do tipo '{tipo_profissional}' disponível.")
+    
+    def remarcar_consulta(self, nome_paciente, indice_consulta, novo_dia):
+        paciente = self.encontrar_paciente(nome_paciente)
+        if not paciente:
+            print("Paciente não encontrado.")
+            return
+        if 0 <= indice_consulta < len(paciente.consultas):
+            consulta = list(paciente.consultas[indice_consulta])
+            consulta[0] = novo_dia
+            paciente.consultas[indice_consulta] = tuple(consulta)
+            print(f"Consulta remarcada para o dia {novo_dia}.")
+        else:
+            print("Índice de consulta inválido.")
+   
+    def cancelar_consulta(self, nome_paciente, indice_consulta):
+        paciente = self.encontrar_paciente(nome_paciente)
+        if not paciente:
+            print("Paciente não encontrado.")
+            return
+        if 0 <= indice_consulta < len(paciente.consultas):
+            consulta = paciente.consultas.pop(indice_consulta)
+            print(f"Consulta removida: {consulta[0]} com {consulta[1]}.")
+        else:
+            print("Índice de consulta inválido.")
+  
 
     def registrar_prontuario(self, nome, profissional, descricao):
         paciente = self.encontrar_paciente(nome)
@@ -123,6 +155,7 @@ class Hospital:
 
     def registrar_receita(self, nome, profissional, medicamento, descricao, dosagem):
         paciente = self.encontrar_paciente(nome)
+        
         if paciente:
             paciente.adicionar_receita(profissional, medicamento, descricao, dosagem)
         else:
@@ -191,7 +224,7 @@ class Hospital:
             for nome, turno in self.escalonamento.items():
                 print(f"{nome}: {turno}")
 
-    '''#PDF
+    #PDF
     def gerar_pdf_paciente(self, nome_paciente):
         paciente = self.encontrar_paciente(nome_paciente)
         if paciente:
@@ -204,4 +237,3 @@ class Hospital:
     
     def gerar_pdf_hospital(self):
         gerar_relatorio_hospital(self)
-'''

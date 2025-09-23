@@ -18,7 +18,8 @@ class Paciente:
         if cpf:
             self.cpf = cpf
         if cartao_sus:
-            self._cartao_sus = cartao_sus
+            self.cartao_sus = cartao_sus
+        
         self.prontuarios = []
         self.receitas = []
         self.exames = []
@@ -58,7 +59,8 @@ class Paciente:
         self.prontuarios.append(prontuario)
 
     def adicionar_receita(self, profissional, medicamento, descricao, dosagem):
-        self.receitas.append(f"Receita por {profissional}:\n Medicamento: {medicamento}\n Descrição: {descricao}\n Dosagem: {dosagem}\n")
+        receita_completa = f"Receita por {profissional}:\n Medicamento: {medicamento}\n Descrição: {descricao}\n Dosagem: {dosagem}\n"
+        self.receitas.append(receita_completa)
         print("Receita adicionada.")
 
     def solicitar_exame(self, exame):

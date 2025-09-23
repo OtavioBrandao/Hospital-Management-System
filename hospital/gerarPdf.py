@@ -1,4 +1,4 @@
-'''from fpdf import FPDF
+from fpdf import FPDF
 
 class PDF(FPDF):
     def header(self):
@@ -44,7 +44,7 @@ def gerar_relatorio_paciente(paciente):
         pdf.chapter_title('Exames Solicitados')
         exames_str = ""
         for exame in paciente.exames:
-            exames_str += f"- {exame.nome}\n" # Usamos .nome por ser um objeto
+            exames_str += f"- {exame}\n"
         pdf.chapter_body(exames_str)
 
     # Salva o PDF
@@ -60,7 +60,7 @@ def gerar_relatorio_equipe(funcionarios):
     pdf.chapter_title('Relatório da Equipe de Saúde')
 
     if not funcionarios:
-        pdf.chapter_body("Nenhum funcionário cadastrado.")
+        pdf.chapter_body("Nenhum funcionário cadastrado.") 
     else:
         for funcionario in funcionarios:
             # Adiciona um subtítulo para cada funcionário
@@ -111,4 +111,4 @@ def gerar_relatorio_hospital(hospital):
 
     nome_arquivo = "relatorio_geral_hospital.pdf"
     pdf.output(nome_arquivo)
-    print(f"Relatório geral do hospital salvo em: {nome_arquivo}")'''
+    print(f"Relatório geral do hospital salvo em: {nome_arquivo}")

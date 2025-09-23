@@ -4,6 +4,9 @@ import funcoesAuxiliares
 #import apresentacao
 hospital = Hospital()
 
+# Definir a instância global do hospital para funcoesAuxiliares
+funcoesAuxiliares.hospital = hospital
+
 
 # --- Execução principal ---
 if __name__ == "__main__":
@@ -20,14 +23,14 @@ if __name__ == "__main__":
             funcoesAuxiliares.cadastro()
 
         elif op == '2':
-            funcoesAuxiliares.agendarConsulta()
+            funcoesAuxiliares.menu_agendamento()
 
         elif op == '3':
             funcoesAuxiliares.prontuarioMedico()
 
         elif op == '4':
             nome = input("Nome do paciente: ")
-            funcoesAuxiliares.hospital.faturar_paciente(nome)
+            hospital.faturar_paciente(nome)
 
         elif op == '5':
             funcoesAuxiliares.estoque_menu(hospital)
@@ -39,7 +42,7 @@ if __name__ == "__main__":
 
         elif op == '8':
             nome = input("Nome do paciente: ")
-            funcoesAuxiliares.hospital.alocar_leito(nome)
+            hospital.alocar_leito(nome)
 
         elif op == '9':
             funcoesAuxiliares.funcionarios(hospital)
@@ -47,8 +50,7 @@ if __name__ == "__main__":
             funcoesAuxiliares.receituario_menu(hospital)
             pass
         elif op == '11':
-            #funcoesAuxiliares.relatorios_menu(hospital)
-            pass
+            funcoesAuxiliares.relatorios_menu(hospital)
         else:
             print("Opção inválida.")
            

@@ -1,7 +1,8 @@
-from hospital import Hospital
 from entidades.exame import EXAMES_DISPONIVEIS
-hospital = Hospital()
 import os
+
+# Variável global que será definida no main.py
+hospital = None
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -18,6 +19,7 @@ def menu():
     print("8  - Alocar leito")
     print("9  - Funcionários")
     print("10 - Receituário")
+    print("11 - Relatórios PDF")
     print("0  - Sair")
 
 ''' --- Funções para facilitar na main --- '''
@@ -183,8 +185,7 @@ def cadastro():
         op = input("Escolha: ")
 
 
-#Funcao para agendamento
-
+#Funções para agendamento
 def agendarConsulta():
     nome = input("Nome do paciente: ")
     #nome = "Vitor Gabriel"
@@ -202,7 +203,54 @@ def agendarConsulta():
             dia = input("Data da consulta (dd/mm): ")
             tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
             hospital.agendar_consulta(nome, dia, tipo_profissional)
-        
+
+def remarcarConsulta():
+    nome = input("Nome do paciente: ")
+    paciente = hospital.encontrar_paciente(nome)
+    if paciente:
+       if paciente.consultas:
+           for i, (dia, medico) in enumerate(paciente.consultas, 1):
+               print(f"{i}: Dia {dia} com Dr(a). {medico}")
+           escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
+           novo_dia = input("Novo dia da consulta: ")
+           hospital.remarcar_consulta(nome, escolha, novo_dia)
+       else:
+           print("Nenhuma consulta agendada.")
+    else:
+       print("Paciente não encontrado.")
+
+def cancelarConsulta():
+    nome = input("Nome do paciente: ")
+    paciente = hospital.encontrar_paciente(nome)
+    if paciente:
+        if paciente.consultas:
+            for i, (dia, medico) in enumerate(paciente.consultas, 1):
+                print(f"{i}: Dia {dia} com Dr(a). {medico}")
+            escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
+            hospital.cancelar_consulta(nome, escolha)
+        else:
+            print("Nenhuma consulta agendada.")
+    else:
+        print("Paciente não encontrado.")
+
+def menu_agendamento():
+    print("\n--- AGENDAMENTO ---")
+    print("1 - Agendar consulta")
+    print("2 - Remarcar consulta")
+    print("3 - Cancelar consulta")
+    print("0 - Voltar")
+    op = input("Escolha: ")
+    while op != '0':
+        if op == '1':
+            agendarConsulta()
+        elif op == '2':
+            remarcarConsulta()
+        elif op == '3':
+            cancelarConsulta()
+        else:
+            print("Opção inválida.")
+        op = input("Escolha: ")
+
 #Função para prontuario
 def prontuarioMedico():
     nome = input("Digite o nome do paciente: ")
@@ -299,10 +347,10 @@ def queixa():
         print()
         op = input("Escolha: ")
 
-'''def relatorios_menu(hospital):
+def relatorios_menu(hospital):
     print("\n--- GERAÇÃO DE RELATÓRIOS ---")
     print("1 - Relatório de Paciente")
-    print("2 - Relatório da Equipe de Saúde") # Texto da opção alterado
+    print("2 - Relatório da Equipe de Saúde")
     print("3 - Relatório Geral do Hospital")
     print("0 - Voltar")
     op = input("Escolha: ")
@@ -310,9 +358,7 @@ def queixa():
         if op == '1':
             nome = input("Nome do paciente: ")
             hospital.gerar_pdf_paciente(nome)
-        # --- CHAMADA MODIFICADA ---
         elif op == '2':
-            # Não precisa mais pedir o nome, chama a função da equipe diretamente
             hospital.gerar_pdf_equipe()
         elif op == '3':
             hospital.gerar_pdf_hospital()
@@ -320,4 +366,4 @@ def queixa():
             print("Opção inválida.")
         
         print()
-        op = input("Escolha: ")'''
+        op = input("Escolha: ")

@@ -43,8 +43,9 @@ class Medico(FuncionarioSaude):
         else:
             print(f"Exame '{nome_exame}' não pode ser solicitado por um Médico.")
 
-    def receitar_medicamento(self, paciente, receita):
-        paciente.adicionar_receita(receita)
+    def receitar_medicamento(self, paciente, medicamento, descricao, dosagem):
+        paciente.adicionar_receita(self.nome, medicamento, descricao, dosagem)
+        print(f"Dr(a). {self.nome} receitou {medicamento} para {paciente.nome}.")
 
 class Enfermeiro(FuncionarioSaude):
     def __init__(self, nome, registro):
