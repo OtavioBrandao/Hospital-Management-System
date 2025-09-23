@@ -29,6 +29,10 @@ Obs: Se possível, usar o design patterns para alguma dessas modificações que 
 - Ver pq as consultas medicas vao sempre pro saulo de tarso (o msm problema deve ocorrer pra dentista e etc)
 
 Resumo das alterações até agora:
+- Consertei a geração de PDF
+- Juntei a parte de funcionários pra queixa e escalonamento
+- Implementei a parte de gerar receitas e ver elas para cada paciente
+- Adicionei a possibilidade de remarcar e cancelar consultas que antes não tinha
 
 
 Comentários antigos:
