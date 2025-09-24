@@ -5,9 +5,12 @@ from entidades.emergencia import EmergenciaManager
 from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo
 from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
 
-PRECO = 10.5 #Valor estipulado de maneira avulsa
+PRECO = 10.5 
+
+# Implementação do padrão Singleton para a classe Hospital
 class Hospital:
     _instance = None
+    _initialized = False
     
     def __new__(cls):
         if cls._instance is None:
@@ -15,6 +18,10 @@ class Hospital:
         return cls._instance
         
     def __init__(self):
+        if Hospital._initialized:
+            return
+        Hospital._initialized = True
+
         self.pacientes = [
             Paciente("Vitor Gabriel", "12345", "67890"),
             Paciente("Otávio", "54321", "09876"),

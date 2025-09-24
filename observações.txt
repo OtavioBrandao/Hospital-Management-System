@@ -9,7 +9,7 @@ No Software Projects, temos:
 • Medical Record Management: Secure storage and access to patient medical records; (???)
 • Billing and Invoicing: Automated billing for medical services rendered; OK
 • Prescription Management: Doctors can create and manage prescriptions; (Faltando função de receita)
-• Lab Test Ordering and Reporting: Ordering lab tests and accessing results; (Falta ver a questão )
+• Lab Test Ordering and Reporting: Ordering lab tests and accessing results; (Falta ver a questão de acessar resultado, so tem como solicitar o exame)
 • Ward and Bed Management: Management of hospital wards and bed allocations; OK (Alocação de leito, melhorar para eu poder ver os pacientes alocados e a situação do hospital)
 • Inventory Management: Management of medical supplies and inventory; OK (Parte do estoque)
 • Staff Scheduling: Scheduling shifts and duties for hospital staff; (Escalonamento de funcionarios) OK
@@ -34,6 +34,12 @@ Resumo das alterações até agora:
 - Implementei a parte de gerar receitas e ver elas para cada paciente
 - Adicionei a possibilidade de remarcar e cancelar consultas que antes não tinha
 
+
+Design patters: Estou pensando em implementar os seguintes:
+- Builder (Para os pacientes)
+- Singleton (Implementado)
+- Factory Methods para criar funcionários
+- Abstract Factory para criar Documentos/Relatórios
 
 Comentários antigos:
 
