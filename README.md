@@ -37,9 +37,8 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
 1.  **Pré-requisitos:** Certifique-se de ter o Python 3 instalado.
 2.  **Instale as dependências:**
     ```bash
-    pip install fpdf2
+    pip install fpdf
     ```
-    Por enquanto a função de gerar pdf não vai ser implementada por motivos técnicos de erro constante
 3.  **Execute o programa:**
     ```bash
     python hospital/main.py
