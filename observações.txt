@@ -33,12 +33,23 @@ Resumo das alterações até agora:
 - Juntei a parte de funcionários pra queixa e escalonamento
 - Implementei a parte de gerar receitas e ver elas para cada paciente
 - Adicionei a possibilidade de remarcar e cancelar consultas que antes não tinha
+- Adicionado um cadastro mais completo para pacientes com Builder
 
+Bugs para ajeitar:
+- Ver pq sempre seleciona o mesmo dentista e medico.. etc
+- Ver pq o tipo sanguineo da problema na função de atualizar
+- Ver como fazer esse preenchimento do historico medico no cadastro e fazer ele ser opicional que nem os outros (PRIORIDADE MÁXIMA ANTES DE IR PRO PROX PATTERN)
 
 Design patters: Estou pensando em implementar os seguintes:
-- Builder (Para os pacientes)
-- Singleton (Implementado)
-- Factory Methods para criar funcionários
+
+Implementados
+- Builder (Para os pacientes) OK
+- Singleton OK
+
+
+
+Estudando implementação:
+- Factory Methods para criar funcionários 
 - Abstract Factory para criar Documentos/Relatórios
 
 Comentários antigos:
