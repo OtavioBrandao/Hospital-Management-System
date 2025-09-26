@@ -92,9 +92,37 @@ class Hospital:
         paciente = self.encontrar_paciente(nome)
         if paciente:
             print(f"\n--- Detalhes do Paciente: {paciente.nome} ---")
+            
+            # Dados básicos
             print(f"CPF: {paciente.cpf if paciente.cpf else 'Não informado'}")
             print(f"Cartão SUS: {paciente.cartao_sus if paciente.cartao_sus else 'Não informado'}")
             
+            print(f"Idade: {paciente.idade if paciente.idade else 'Não informado'}")
+            print(f"Altura: {paciente.altura}cm" if paciente.altura else "Altura: Não informado")
+            print(f"Peso: {paciente.peso}kg" if paciente.peso else "Peso: Não informado")
+            
+            # IMC calculado automaticamente
+            if paciente.imc:
+                print(f"IMC: {paciente.imc:.2f}")
+            else:
+                print("IMC: Não calculável")
+            
+            # Enums
+            print(f"Tipo Sanguíneo: {paciente.tipo_sanguineo.value if paciente.tipo_sanguineo else 'Não informado'}")
+            print(f"Gênero: {paciente.genero.value if paciente.genero else 'Não informado'}")
+            print(f"Tipo de Plano: {paciente.tipo_plano.value if paciente.tipo_plano else 'Não informado'}")
+            
+            # Contato
+            print(f"Telefone: {paciente.telefone if paciente.telefone else 'Não informado'}")
+            print(f"Contato de Emergência: {paciente.contato_emergencia if paciente.contato_emergencia else 'Não informado'}")
+            
+            # Histórico médico
+            print(f"\n--- Histórico Médico ---")
+            if paciente.historico_medico:
+                resumo = paciente.historico_medico.resumo()
+                print(resumo if resumo != "Nenhum histórico registrado" else "Nenhum histórico registrado.")
+            else:
+                print("Nenhum histórico registrado.")
             print("\n--- Prontuários ---")
             if paciente.prontuarios:
                 for prontuario in paciente.prontuarios:

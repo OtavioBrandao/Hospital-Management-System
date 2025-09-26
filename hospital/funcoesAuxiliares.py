@@ -1,7 +1,9 @@
 from entidades.exame import EXAMES_DISPONIVEIS
+from entidades.paciente import PacienteBuilder, DiretorPaciente
 import os
+import random
 
-# Variável global que será definida no main.py
+
 hospital = None
 
 def clear_screen():
@@ -113,51 +115,185 @@ def escalonamento_menu(hospital):
         op = input("Escolha: ")
 
 
-#funcao para cadastro
-# Talvez usar o Builder aqui ou algo relacionado
+paciente_builder = PacienteBuilder()
+diretor_paciente = DiretorPaciente(paciente_builder)
 
-def cadastroPaciente(nome):
-    # Primeiro, cadastra o paciente apenas com o nome. 
-    hospital.cadastrar_paciente(nome)
+def cadastro_simples():
+    input_nome = input("Nome do paciente: ")
+    input_cpf = input("CPF: ")
+    input_cartao_sus = input("Cartão SUS(Se houver): ")
+
+    try:
+        paciente = diretor_paciente.construir_paciente_simples(input_nome, input_cpf, input_cartao_sus)
+        hospital.pacientes.append(paciente)
+        print(f"Paciente {input_nome} cadastrado com sucesso!")
+        return paciente
+    except ValueError as ve:
+        print(f"Erro no cadastro: {ve}")
+        return None
     
-    # Agora, encontramos o paciente que acabamos de criar para adicionar os outros dados
+def cadastro_completo():
+    dados = {}
+
+    dados['nome'] = input("Nome do paciente: ") 
+    dados['cpf'] = input("CPF: ") or None
+    dados['cartao_sus'] = input("Cartão SUS(Se houver): ") or None
+    
+    idade_input = input("Idade: ").strip()
+    if idade_input:
+        try:
+            dados['idade'] = int(idade_input)
+        except ValueError:
+            print("Idade inválida, será definida como None")
+            dados['idade'] = None
+    else:
+        dados['idade'] = None
+    
+
+    altura_input = input("Altura (em cm): ").strip()
+    if altura_input:
+        try:
+            dados['altura'] = float(altura_input)
+        except ValueError:
+            print("Altura inválida, será definida como None")
+            dados['altura'] = None
+    else:
+        dados['altura'] = None
+    
+    peso_input = input("Peso (em kg): ").strip()
+    if peso_input:
+        try:
+            dados['peso'] = float(peso_input)
+        except ValueError:
+            print("Peso inválido, será definido como None")
+            dados['peso'] = None
+    else:
+        dados['peso'] = None
+    
+    dados['tipo_sanguineo'] = input("Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip() or None
+    dados['genero'] = input("Gênero (Masculino, Feminino, Outro): ").strip() or None
+    dados['tipo_plano'] = input("Tipo de Plano (Particular, SUS, Convênio): ").strip() or None
+    dados['telefone'] = input("Telefone (apenas números): ").strip() or None
+    
+
+    nome_emergencia = input("Nome do contato de emergência: ").strip()
+    tel_emergencia = input("Telefone do contato de emergência (apenas números): ").strip()
+    
+    if nome_emergencia and tel_emergencia:
+        dados['contato_emergencia'] = (nome_emergencia, tel_emergencia)
+    else:
+        dados['contato_emergencia'] = None
+    
+    dados['historico_medico'] = None # Para implementar dps pois estou em duvida
+
+    try:
+        paciente = diretor_paciente.construir_paciente_completo(dados)
+        hospital.pacientes.append(paciente)
+        print(f"Paciente {dados['nome']} cadastrado com sucesso!")
+        return paciente
+    except ValueError as ve:
+        print(f"Erro no cadastro: {ve}")
+        return None
+    except Exception as e:
+        print(f"Erro inesperado no cadastro: {e}")
+        return None
+    
+def atualizar_dados_paciente():
+    nome = input("Nome do paciente a atualizar: ").strip()
     paciente = hospital.encontrar_paciente(nome)
-
+    
     if not paciente:
-        print("Erro: Paciente recém-criado não encontrado.")
-        return
-
-    # Loop para solicitar e validar o CPF
-    while True:
-        cpf_input = input("CPF (5 dígitos, ou Enter para pular): ").strip()
-        if not cpf_input:
-            break  # Sai do loop se o usuário não digitar nada
-
-        # Atribui o valor ao atributo. O setter da classe Paciente fará a validação.
-        paciente.cpf = cpf_input
+        print("Paciente não encontrado.")
+        return None
+    
+    print(f"Atualizando dados de: {paciente.nome}")
+    print("Deixe em branco os campos que não deseja alterar.")
+    
+    try:
+        # Novos dados - aplicar diretamente no paciente
+        novo_nome = input(f"Nome atual: {paciente.nome} | Novo nome: ").strip()
+        if novo_nome:
+            paciente.nome = novo_nome
         
-        # Se o CPF não for None, significa que a validação no setter foi bem-sucedida
-        if paciente.cpf is not None:
-            print("CPF válido e registrado.")
-            break # Sai do loop
-        # Caso contrário, o setter já exibiu a mensagem de erro, e o loop continua
+        novo_cpf = input(f"CPF atual: {paciente.cpf} | Novo CPF: ").strip()
+        if novo_cpf:
+            paciente.cpf = novo_cpf
 
-    # Loop para solicitar e validar o Cartão SUS
-    while True:
-        sus_input = input("Cartão SUS (5 dígitos, ou Enter para pular): ").strip()
-        if not sus_input:
-            break # Sai do loop se o usuário não digitar nada
-
-        # Atribui o valor para que o setter faça a validação
-        paciente.cartao_sus = sus_input
+        novo_cartao_sus = input(f"Cartão SUS atual: {paciente.cartao_sus} | Novo Cartão SUS: ").strip()
+        if novo_cartao_sus:
+            paciente.cartao_sus = novo_cartao_sus
         
-        # Se o Cartão SUS não for None, a validação foi um sucesso
-        if paciente.cartao_sus is not None:
-            print("Cartão SUS válido e registrado.")
-            break # Sai do loop
-        # Caso contrário, a mensagem de erro já foi exibida, e o loop pedirá o dado novamente
+        nova_idade = input(f"Idade atual: {paciente.idade} | Nova idade: ").strip()
+        if nova_idade:
+            try:
+                paciente.idade = int(nova_idade)
+            except ValueError:
+                print("Idade inválida, mantendo valor atual")
 
+        nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
+        if nova_altura:
+            try:
+                paciente.altura = float(nova_altura)
+            except ValueError:
+                print("Altura inválida, mantendo valor atual")
 
+        novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
+        if novo_peso:
+            try:
+                paciente.peso = float(novo_peso)
+            except ValueError:
+                print("Peso inválido, mantendo valor atual")
+
+        novo_tipo_sanguineo = input(f"Tipo Sanguíneo atual: {paciente.tipo_sanguineo} | Novo Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip()
+        if novo_tipo_sanguineo:
+            paciente.tipo_sanguineo = novo_tipo_sanguineo
+
+        novo_genero = input(f"Gênero atual: {paciente.genero} | Novo Gênero (Masculino, Feminino, Outro): ").strip()
+        if novo_genero:
+            paciente.genero = novo_genero
+            
+        novo_tipo_plano = input(f"Tipo de Plano atual: {paciente.tipo_plano} | Novo Tipo de Plano (Particular, SUS, Convênio): ").strip()
+        if novo_tipo_plano:
+            paciente.tipo_plano = novo_tipo_plano
+            
+        novo_telefone = input(f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): ").strip()
+        if novo_telefone:
+            paciente.telefone = novo_telefone
+            
+        print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
+        novo_nome_emergencia = input("Novo nome do contato de emergência: ").strip()
+        novo_tel_emergencia = input("Novo telefone do contato de emergência (apenas números): ").strip()
+        
+        if novo_nome_emergencia and novo_tel_emergencia:
+            paciente.contato_emergencia = (novo_nome_emergencia, novo_tel_emergencia)
+        elif novo_nome_emergencia or novo_tel_emergencia:
+            print("Para atualizar contato de emergência, forneça tanto nome quanto telefone")
+
+        # Ver como faria a atualização do histórico médico 
+
+        print(f"Paciente {paciente.nome} atualizado com sucesso!")
+        return paciente
+        
+    except Exception as e:
+        print(f"Erro ao atualizar paciente: {e}")
+        return None
+
+# Função de cadastro modificada para funcionar com Builder
+def cadastroPaciente():
+    print("--- CADASTRO DE PACIENTE ---")
+    print("1 - Cadastro simples")
+    print("2 - Cadastro completo")
+    print("0 - Voltar")
+    op = input("Escolha: ")
+    while op != '0':
+        if op == '1':
+            cadastro_simples()
+            break
+        elif op == '2':
+            cadastro_completo()
+            break
+        else:
+            print("Opção inválida.")
 
 #Função mais robusta para cadastrar e ver os pacientes
 def cadastro():
@@ -165,21 +301,19 @@ def cadastro():
     print("1 - Cadastrar paciente")
     print("2 - Ver pacientes cadastrados")
     print("3 - Dados de um paciente")
+    print("4 - Atualizar dados do paciente")
     print("0 - Voltar")
     op = input("Escolha: ")
     while op != '0':
         if op == '1':
-            nome = input("Digite o nome do paciente: ")
-            cadastroPaciente(nome)
-            '''cadastroPaciente("Vitor Gabriel")
-            cadastroPaciente("Davi Celestino")
-            cadastroPaciente("João Tenório")
-            cadastroPaciente("Humberto")'''     
+            cadastroPaciente() 
         elif op == '2':
             hospital.listarPacientes()
         elif op == '3':
             nome = input("Digite o nome do paciente: ")
             hospital.mostrarPaciente(nome)
+        elif op == '4':
+            atualizar_dados_paciente()
         else:
             print("Opção inválida.")
         op = input("Escolha: ")

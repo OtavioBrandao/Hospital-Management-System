@@ -27,45 +27,116 @@ def gerar_relatorio_paciente(paciente):
     
     pdf.chapter_title(f'Relatório do Paciente: {paciente.nome}')
     
-    info = (
-        f"CPF: {paciente.cpf or 'Não informado'}\n"
-        f"Cartão SUS: {paciente.cartao_sus or 'Não informado'}"
-    )
-    pdf.chapter_body(info)
+    # Construir informações básicas
+    info_basica = []
+    info_basica.append(f"CPF: {paciente.cpf or 'Não informado'}")
+    info_basica.append(f"Cartão SUS: {paciente.cartao_sus or 'Não informado'}")
+    info_basica.append(f"Idade: {paciente.idade or 'Não informado'}")
+    
+    if paciente.altura:
+        info_basica.append(f"Altura: {paciente.altura}cm")
+    else:
+        info_basica.append("Altura: Não informado")
+    
+    if paciente.peso:
+        info_basica.append(f"Peso: {paciente.peso}kg")
+    else:
+        info_basica.append("Peso: Não informado")
+    
+    if paciente.imc:
+        info_basica.append(f"IMC: {paciente.imc:.2f}")
+    else:
+        info_basica.append("IMC: Não calculável")
+    
+    if paciente.tipo_sanguineo:
+        info_basica.append(f"Tipo Sanguíneo: {paciente.tipo_sanguineo.value}")
+    else:
+        info_basica.append("Tipo Sanguíneo: Não informado")
+    
+    if paciente.genero:
+        info_basica.append(f"Gênero: {paciente.genero.value}")
+    else:
+        info_basica.append("Gênero: Não informado")
+    
+    if paciente.tipo_plano:
+        info_basica.append(f"Tipo de Plano: {paciente.tipo_plano.value}")
+    else:
+        info_basica.append("Tipo de Plano: Não informado")
+    
+    if paciente.telefone:
+        info_basica.append(f"Telefone: {paciente.telefone}")
+    else:
+        info_basica.append("Telefone: Não informado")
+    
+    if paciente.contato_emergencia:
+        info_basica.append(f"Contato de Emergência: {paciente.contato_emergencia}")
+    else:
+        info_basica.append("Contato de Emergência: Não informado")
+    
+    # Juntar todas as informações
+    info_completa = "\n".join(info_basica)
+    pdf.chapter_body(info_completa)
+    
+    # Histórico Médico
+    if paciente.historico_medico:
+        pdf.chapter_title('Histórico Médico')
+        historico_texto = paciente.historico_medico.resumo()
+        if historico_texto != "Nenhum histórico registrado":
+            pdf.chapter_body(historico_texto)
+        else:
+            pdf.chapter_body("Nenhum histórico médico registrado.")
+    else:
+        pdf.chapter_title('Histórico Médico')
+        pdf.chapter_body("Nenhum histórico médico registrado.")
 
+    # Prontuários
     if paciente.prontuarios:
         pdf.chapter_title('Prontuários Médicos')
         prontuarios_str = ""
         for prontuario in paciente.prontuarios:
             prontuarios_str += f"- {prontuario}\n"
         pdf.chapter_body(prontuarios_str)
+    else:
+        pdf.chapter_title('Prontuários Médicos')
+        pdf.chapter_body("Nenhum prontuário registrado.")
 
+    # Receitas
     if paciente.receitas:
         pdf.chapter_title('Receitas Médicas')
         receitas_str = ""
         for receita in paciente.receitas:
             receitas_str += f"- {receita}\n"
         pdf.chapter_body(receitas_str)
+    else:
+        pdf.chapter_title('Receitas Médicas')
+        pdf.chapter_body("Nenhuma receita registrada.")
 
+    # Consultas
     if paciente.consultas:
         pdf.chapter_title('Consultas Agendadas')
         consultas_str = ""
         for dia, medico in paciente.consultas:
             consultas_str += f"- Dia {dia} com Dr(a). {medico}\n"
         pdf.chapter_body(consultas_str)
+    else:
+        pdf.chapter_title('Consultas Agendadas')
+        pdf.chapter_body("Nenhuma consulta agendada.")
 
+    # Exames
     if paciente.exames:
         pdf.chapter_title('Exames Solicitados')
         exames_str = ""
         for exame in paciente.exames:
             exames_str += f"- {exame}\n"
         pdf.chapter_body(exames_str)
+    else:
+        pdf.chapter_title('Exames Solicitados')
+        pdf.chapter_body("Nenhum exame solicitado.")
 
     # Salva o PDF
     nome_arquivo = f"relatorio_{paciente.nome.lower().replace(' ', '_')}.pdf"
     pdf.output(nome_arquivo)
     print(f"Relatório do paciente salvo em: {nome_arquivo}")
-
 
 def gerar_relatorio_equipe(funcionarios):
     pdf = PDF()
