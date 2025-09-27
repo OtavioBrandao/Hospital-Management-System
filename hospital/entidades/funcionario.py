@@ -8,7 +8,6 @@ class FuncionarioSaude(ABC):
         self.nome = nome
         self.registro = registro
         self.exames_permitidos = [] # Cada filho definirá seus exames
-        #espaço para implementar queixa para cada funcionario
 
     @abstractmethod
     def requisitarExame(self, paciente, nome_exame):
@@ -29,8 +28,11 @@ class Medico(FuncionarioSaude):
     def __init__(self, nome, registro, especialidade=None):
         super().__init__(nome, registro)
         self.especialidade = especialidade
-        # Define os exames que o médico pode solicitar
-        self.exames_permitidos = ["hemograma", "raio-x", "urina","tomografia"]
+        self.exames_permitidos = ["hemograma", "raio-x", "urina", "tomografia", "ecocardiograma",
+        "eletrocardiograma", "ultrassom", "ressonancia", 
+        "endoscopia", "colonoscopia", "biópsia", "cintilografia", 
+        "angiografia", "densitometria", "papanicolau", "mamografia", 
+        "teste_alergia"]
 
     def atenderPaciente(self, paciente):
         print(f"O médico {self.nome} está diagnosticando o paciente: {paciente.nome}")
@@ -69,7 +71,7 @@ class Dentista(FuncionarioSaude):
         self.exames_permitidos = ["radiografia_dentaria", "limpeza","tomografia"]
 
     def atenderPaciente(self, paciente):
-        print(f"A dentista {self.nome} está fazendo uma análise bucal no paciente: {paciente.nome}")
+        print(f"Dentista {self.nome} está fazendo uma análise bucal no paciente: {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame):
         if nome_exame in self.exames_permitidos:
@@ -85,12 +87,124 @@ class Psicologo(FuncionarioSaude):
         self.exames_permitidos = ["encaminhamento"]
     
     def atenderPaciente(self, paciente):
-        print(f"A psicóloga {self.nome} está realizando uma sessão de terapia com o paciente {paciente.nome}")
+        print(f"Psicólogo(a) {self.nome} está realizando uma sessão de terapia com o paciente {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame):
         # Psicólogo tem um comportamento diferente (polimorfismo)
         if nome_exame in self.exames_permitidos:
             exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            print(f"Psicóloga {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+            print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
         else:
             print(f"'{nome_exame}' não é uma ação válida para um Psicólogo.")
+
+class Nutricionista(FuncionarioSaude):
+    def __init__(self, nome, registro):
+        super().__init__(nome, registro)
+        self.exames_permitidos = ["teste_alergia"]
+
+    def atenderPaciente(self, paciente):
+        print(f"Nutricionista {self.nome} está avaliando a dieta de {paciente.nome}")
+
+    def requisitarExame(self, paciente, nome_exame):
+        if nome_exame in self.exames_permitidos:
+            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+            paciente.solicitar_exame(exame_obj)
+            print(f"Nutricionista {self.nome} solicitou '{exame_obj}' para {paciente.nome}.")
+        else:
+            print(f"Exame '{nome_exame}' não pode ser solicitado por Nutricionista.")
+
+class Fisioterapeuta(FuncionarioSaude):
+    def __init__(self, nome, registro):
+        super().__init__(nome, registro)
+        self.exames_permitidos = ["encaminhamento"]
+
+    def atenderPaciente(self, paciente):
+        print(f"Fisioterapeuta {self.nome} está avaliando a mobilidade de {paciente.nome}")
+
+    def requisitarExame(self, paciente, nome_exame):
+        if nome_exame in self.exames_permitidos:
+            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+            print(f"Fisioterapeuta {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+        else:
+            print(f"'{nome_exame}' não é uma ação válida para Fisioterapeuta.")
+
+
+# Factory Method Design Pattern usado aqui para criar funcionários de saúde
+class FuncionarioSaudeFactory(ABC):
+    @abstractmethod
+    def criar_funcionario(self, nome, registro, especialidade):
+        pass
+
+class MedicoFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um médico.")
+        if registro.startswith("CRM") and especialidade:
+            pass
+        else:
+            raise ValueError("Registro de médico deve começar com 'CRM' e especialidade é obrigatória.")
+
+        return Medico(nome, registro, especialidade)
+
+class EnfermeiroFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um enfermeiro.")      
+        if not registro.startswith("COREN"):
+            raise ValueError("Registro de enfermeiro deve começar com 'COREN'.")
+
+        return Enfermeiro(nome, registro)
+
+class DentistaFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um dentista.")      
+        if not registro.startswith("CRO"):
+            raise ValueError("Registro de dentista deve começar com 'CRO'.")
+        
+        return Dentista(nome, registro)  
+
+class PsicologoFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um psicólogo.")
+        if not registro.startswith("CRP"):
+            raise ValueError("Registro de psicólogo deve começar com 'CRP'.")
+
+        return Psicologo(nome, registro)
+
+class NutricionistaFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um nutricionista.")
+        if not registro.startswith("CRN"):
+            raise ValueError("Registro de nutricionista deve começar com 'CRN'.")
+
+        return Nutricionista(nome, registro)
+
+class FisioterapeutaFactory(FuncionarioSaudeFactory):
+    def criar_funcionario(self, nome, registro, especialidade):
+        if not nome or not registro:
+            raise ValueError("Nome e registro são obrigatórios para criar um fisioterapeuta.")
+        if not registro.startswith("CREFITO"):
+            raise ValueError("Registro de fisioterapeuta deve começar com 'CREFITO'.")
+        
+        return Fisioterapeuta(nome, registro)
+    
+
+class GerenciadorFuncionariosSaude:
+    factories = {
+        "medico": MedicoFactory(),
+        "enfermeiro": EnfermeiroFactory(),
+        "dentista": DentistaFactory(),
+        "psicologo": PsicologoFactory(),
+        "nutricionista": NutricionistaFactory(),
+        "fisioterapeuta": FisioterapeutaFactory()
+    }
+
+    @classmethod
+    def criar_funcionario(cls, tipo, nome, registro, especialidade=None):
+        factory = cls.factories.get(tipo.lower())
+        if not factory:
+            raise ValueError(f"Tipo de funcionário de saúde desconhecido: {tipo}")
+        return factory.criar_funcionario(nome, registro, especialidade)

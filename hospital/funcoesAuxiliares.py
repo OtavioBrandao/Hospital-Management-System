@@ -48,6 +48,7 @@ def funcionarios(hospital):
     print("Deseja realizar uma queixa ou escalonar um funcionário?")
     print("1 - Queixa")
     print("2 - Escalonar funcionário")
+    print("3 - Gerenciamento de funcionários")
     print("0 - Voltar")
     op = input("Escolha: ")
     while op != '0':
@@ -56,6 +57,9 @@ def funcionarios(hospital):
             break
         elif op == '2':
             escalonamento_menu(hospital)
+            break
+        elif op == '3':
+            funcionario_manager(hospital)
             break
 def receituario_menu(hospital):
     print("\n--- RECEITUÁRIO ---")
@@ -392,6 +396,38 @@ def cadastro():
         else:
             print("Opção inválida.")
         op = input("Escolha: ")
+
+
+def funcionario_manager(hospital):
+    print("\n--- GERENCIAR FUNCIONÁRIOS ---")
+    print("1 - Adicionar funcionário")
+    print("2 - Remover funcionário")
+    print("3 - Listar funcionários")
+    print("0 - Voltar")
+    op = input("Escolha: ")
+    while op != '0':
+        if op == '1':
+            nome = input("Nome do funcionário: ")
+            registro = input("Registro profissional: ")
+            tipo = input("Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): ").strip().lower()
+            print("Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista")
+            especialidade = input("Especialidade (caso for Médico): ")
+           
+            try:
+                hospital.adicionar_funcionario(tipo, nome, registro, especialidade)
+                break
+            except ValueError as ve:
+                print(f"Erro ao adicionar funcionário: {ve}")
+        elif op == '2':
+            nome = input("Nome do funcionário a remover: ")
+            registro = input("Registro profissional: ")
+            hospital.remover_funcionario(nome, registro)
+            break
+        elif op == '3':
+            hospital.listar_funcionarios()
+            break
+        else:
+            print("Opção inválida.")
 
 
 #Funções para agendamento

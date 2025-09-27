@@ -2,10 +2,11 @@ from entidades.paciente import Paciente
 from entidades.estoque import Estoque
 from entidades.administrativo import SetorAdministrativo
 from entidades.emergencia import EmergenciaManager
-from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo
+from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta, GerenciadorFuncionariosSaude
 from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
 
 PRECO = 10.5 
+funcionarios_manager = GerenciadorFuncionariosSaude()
 
 # Implementação do padrão Singleton para a classe Hospital
 class Hospital:
@@ -41,7 +42,6 @@ class Hospital:
             Enfermeiro("Pedro", "COREN-101"),
             Enfermeiro("Josemir", "COREN-102"),
             Enfermeiro("Karina", "COREN-202"),
-            Enfermeiro("João", "COREN-123"),
             Enfermeiro("Ana", "COREN-456"),
             Enfermeiro("Agostinho de Hipona", "COREN-789"),
             Dentista("Aurora Vieira", "CRO-789"),
@@ -51,7 +51,7 @@ class Hospital:
             Psicologo("Madalena", "CRP-101"),
             Psicologo("Mariana", "CRP-202"),
             Psicologo("Marcos", "CRP-303"),
-            Psicologo("Suzana", "CRP-404")] #Funcionarios pre-estabelecidos
+            Psicologo("Suzana", "CRP-404")] 
         self.leitos = []
         self.escalonamento = {
             "Saulo de Tarso": "Manhã",
@@ -64,6 +64,45 @@ class Hospital:
         self.estoque = Estoque()
         self.administrativo = SetorAdministrativo()
         self.emergencias = EmergenciaManager()
+
+
+    def adicionar_funcionario(self, tipo, nome, registro, especialidade=None):
+
+        for funcionario in self.funcionarios:
+            if funcionario.registro == registro:
+                print("Já existe um funcionário com esse registro.")
+                return
+            
+        if not tipo in funcionarios_manager.factories:
+            print(f"Tipo de funcionário '{tipo}' inválido.")
+            return
+
+        try:
+            funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade)
+            self.funcionarios.append(funcionario)
+            print(f"{tipo.capitalize()} {nome} adicionado ao hospital.")
+        except ValueError as e:
+            print(f"Erro ao adicionar funcionário: {e}")
+
+    def remover_funcionario(self, nome, registro=None):
+        for f in self.funcionarios:
+            if f.nome.lower() == nome.lower() and (registro is None or f.registro == registro):
+                self.funcionarios.remove(f)
+                print(f"Funcionário {nome} removido.")
+                return
+        print("Funcionário não encontrado.")
+    
+    def listar_funcionarios(self):
+        if not self.funcionarios:
+            print("Nenhum funcionário cadastrado.")
+            return 
+
+        print("\n--- Lista de Funcionários ---")
+        for i, funcionario in enumerate(self.funcionarios, 1):
+            nome = funcionario.nome
+            registro = funcionario.registro if funcionario.registro else "Não informado"
+            especialidade = getattr(funcionario, 'especialidade', 'N/A')
+            print(f"{i}: Nome: {nome}, Registro: {registro}, Especialidade: {especialidade}")
 
     def cadastrar_paciente(self, nome, cpf=None, cartao_sus=None):
         paciente = Paciente(nome, cpf, cartao_sus)
