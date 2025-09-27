@@ -353,7 +353,7 @@ class PacienteBuilder:
         self._tipo_plano = None
         self._contato_emergencia = None
         self._telefone = None
-        self.historico_medico = HistoricoMedico()
+        self.historico_medico = None
         return self
 
     def _gerar_id_temporario(self):
@@ -444,22 +444,6 @@ class PacienteBuilder:
         self._telefone = telefone
         return self
 
-    def add_alergia(self, descricao):
-        self.historico_medico.adicionar_alergia(descricao)
-        return self
-
-    def add_cirurgia(self, texto):
-        self.historico_medico.adicionar_cirurgia(texto)
-        return self
-
-    def add_medicacao(self, nome):
-        self.historico_medico.adicionar_medicamento(nome)
-        return self
-
-    def add_observacao(self, texto):
-        self.historico_medico.adicionar_observacao(texto)
-        return self
-
     def com_historico_medico(self, historico_medico):
         self.historico_medico = historico_medico or HistoricoMedico()
         return self
@@ -486,7 +470,7 @@ class PacienteBuilder:
         paciente.tipo_plano = self._tipo_plano
         paciente.contato_emergencia = self._contato_emergencia
         paciente.telefone = self._telefone
-        paciente.historico_medico = self.historico_medico
+        paciente.historico_medico = self.historico_medico or HistoricoMedico()
         self.resetar()
 
         return paciente
@@ -527,16 +511,13 @@ class DiretorPaciente:
 
     def construir_paciente_simples(self, nome, cpf, cartao_sus):
         return self.builder.resetar().com_nome(nome).com_cpf(cpf or "").com_cartao_sus(cartao_sus or "").construir()
-
+    # Aqui eu posso fazer o cadastro completo se eu quiser. Posso fazer personalizado também.
     def construir_paciente_completo(self, dados):
         
         builder = self.builder.resetar()
-        
-        # Campos obrigatórios
         builder.com_nome(dados['nome'])
         builder.com_cpf(dados['cpf'] or "")
         
-       
         if dados.get('idade'):
             builder.com_idade(dados['idade'])
         

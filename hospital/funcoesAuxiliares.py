@@ -1,5 +1,5 @@
 from entidades.exame import EXAMES_DISPONIVEIS
-from entidades.paciente import PacienteBuilder, DiretorPaciente
+from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
 import os
 import random
 
@@ -183,8 +183,8 @@ def cadastro_completo():
         dados['contato_emergencia'] = (nome_emergencia, tel_emergencia)
     else:
         dados['contato_emergencia'] = None
-    
-    dados['historico_medico'] = None # Para implementar dps pois estou em duvida
+
+    dados['historico_medico'] = coletar_historico_medico()
 
     try:
         paciente = diretor_paciente.construir_paciente_completo(dados)
@@ -198,86 +198,161 @@ def cadastro_completo():
         print(f"Erro inesperado no cadastro: {e}")
         return None
     
+def coletar_historico_medico():
+    h = HistoricoMedico()
+    while True:
+        print("\n--- HISTÓRICO MÉDICO ---")
+        print("1 - Adicionar alergia")
+        print("2 - Adicionar doença crônica")
+        print("3 - Adicionar cirurgia")
+        print("4 - Adicionar medicação de uso")
+        print("5 - Adicionar observação")
+        print("6 - Ver resumo atual")
+        print("0 - Finalizar histórico")
+        op = input("Escolha: ").strip()
+
+        if op == '1':
+            txt = input("Alergia (ex: Dipirona): ").strip()
+            if txt: h.adicionar_alergia(txt)
+        elif op == '2':
+            txt = input("Doença crônica (ex: Hipertensão): ").strip()
+            if txt: h.adicionar_doenca_cronica(txt)
+        elif op == '3':
+            txt = input("Cirurgia (ex: Apendicectomia - 2019): ").strip()
+            if txt: h.adicionar_cirurgia(txt)
+        elif op == '4':
+            txt = input("Medicação (ex: Losartana 50mg 1cp/dia): ").strip()
+            if txt: h.adicionar_medicamento(txt)
+        elif op == '5':
+            txt = input("Observação livre: ").strip()
+            if txt: h.adicionar_observacao(txt)
+        elif op == '6':
+            print("\n>>> Resumo parcial:")
+            print(h.resumo() or "Nenhum histórico registrado.")
+        elif op == '0':
+            return h
+        else:
+            print("Opção inválida.")
+
+def editar_historico_medico(paciente):
+    print("\n--- EDITAR HISTÓRICO MÉDICO ---")
+    print("Histórico atual:")
+    print(paciente.historico_medico.resumo() or "Nenhum histórico registrado.")
+    resp = input("Deseja alterar/adicionar informações? (s/n): ").strip().lower()
+    if resp != 's':
+        return
+
+    h = paciente.historico_medico  
+    while True:
+        print("\n1-Alergia  2-Doença crônica  3-Cirurgia  4-Medicação  5-Observação  6-Ver resumo  0-Finalizar")
+        op = input("Escolha: ").strip()
+        if op == '1':
+            t = input("Alergia: ").strip()
+            if t: h.adicionar_alergia(t)
+        elif op == '2':
+            t = input("Doença crônica: ").strip()
+            if t: h.adicionar_doenca_cronica(t)
+        elif op == '3':
+            t = input("Cirurgia: ").strip()
+            if t: h.adicionar_cirurgia(t)
+        elif op == '4':
+            t = input("Medicação: ").strip()
+            if t: h.adicionar_medicamento(t)
+        elif op == '5':
+            t = input("Observação: ").strip()
+            if t: h.adicionar_observacao(t)
+        elif op == '6':
+            print("\n>>> Resumo parcial:")
+            print(h.resumo() or "Nenhum histórico registrado.")
+        elif op == '0':
+            print("Histórico atualizado.")
+            return
+        else:
+            print("Opção inválida.")
+
+
 def atualizar_dados_paciente():
     nome = input("Nome do paciente a atualizar: ").strip()
     paciente = hospital.encontrar_paciente(nome)
-    
     if not paciente:
         print("Paciente não encontrado.")
         return None
-    
+
     print(f"Atualizando dados de: {paciente.nome}")
     print("Deixe em branco os campos que não deseja alterar.")
-    
+
     try:
-        # Novos dados - aplicar diretamente no paciente
+        b = paciente_builder.resetar()
         novo_nome = input(f"Nome atual: {paciente.nome} | Novo nome: ").strip()
         if novo_nome:
-            paciente.nome = novo_nome
-        
+            b.com_nome(novo_nome)
         novo_cpf = input(f"CPF atual: {paciente.cpf} | Novo CPF: ").strip()
         if novo_cpf:
-            paciente.cpf = novo_cpf
-
+            b.com_cpf(novo_cpf)
         novo_cartao_sus = input(f"Cartão SUS atual: {paciente.cartao_sus} | Novo Cartão SUS: ").strip()
         if novo_cartao_sus:
-            paciente.cartao_sus = novo_cartao_sus
-        
+            b.com_cartao_sus(novo_cartao_sus)
         nova_idade = input(f"Idade atual: {paciente.idade} | Nova idade: ").strip()
         if nova_idade:
             try:
-                paciente.idade = int(nova_idade)
+                b.com_idade(int(nova_idade))
             except ValueError:
                 print("Idade inválida, mantendo valor atual")
-
         nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
         if nova_altura:
             try:
-                paciente.altura = float(nova_altura)
+                b.com_altura(float(nova_altura))
             except ValueError:
                 print("Altura inválida, mantendo valor atual")
-
         novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
         if novo_peso:
             try:
-                paciente.peso = float(novo_peso)
+                b.com_peso(float(novo_peso))
             except ValueError:
                 print("Peso inválido, mantendo valor atual")
-
-        novo_tipo_sanguineo = input(f"Tipo Sanguíneo atual: {paciente.tipo_sanguineo} | Novo Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip()
-        if novo_tipo_sanguineo:
-            paciente.tipo_sanguineo = novo_tipo_sanguineo
-
-        novo_genero = input(f"Gênero atual: {paciente.genero} | Novo Gênero (Masculino, Feminino, Outro): ").strip()
+        novo_ts = input(
+            f"Tipo Sanguíneo atual: {paciente.tipo_sanguineo} | Novo (A+, A-, B+, B-, AB+, AB-, O+, O-): "
+        ).strip()
+        if novo_ts:
+            b.com_tipo_sanguineo(novo_ts)
+        novo_genero = input(
+            f"Gênero atual: {paciente.genero} | Novo Gênero (Masculino, Feminino, Outro): "
+        ).strip()
         if novo_genero:
-            paciente.genero = novo_genero
-            
-        novo_tipo_plano = input(f"Tipo de Plano atual: {paciente.tipo_plano} | Novo Tipo de Plano (Particular, SUS, Convênio): ").strip()
-        if novo_tipo_plano:
-            paciente.tipo_plano = novo_tipo_plano
-            
-        novo_telefone = input(f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): ").strip()
-        if novo_telefone:
-            paciente.telefone = novo_telefone
-            
+            b.com_genero(novo_genero)
+        novo_plano = input(
+            f"Tipo de Plano atual: {paciente.tipo_plano} | Novo Tipo de Plano (Particular, SUS, Convênio): "
+        ).strip()
+        if novo_plano:
+            b.com_tipo_plano(novo_plano)
+        novo_tel = input(
+            f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): "
+        ).strip()
+        if novo_tel:
+            b.com_telefone(novo_tel)
         print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
-        novo_nome_emergencia = input("Novo nome do contato de emergência: ").strip()
-        novo_tel_emergencia = input("Novo telefone do contato de emergência (apenas números): ").strip()
-        
-        if novo_nome_emergencia and novo_tel_emergencia:
-            paciente.contato_emergencia = (novo_nome_emergencia, novo_tel_emergencia)
-        elif novo_nome_emergencia or novo_tel_emergencia:
-            print("Para atualizar contato de emergência, forneça tanto nome quanto telefone")
+        novo_nome_emerg = input("Novo nome do contato de emergência: ").strip()
+        novo_tel_emerg = input("Novo telefone do contato de emergência (apenas números): ").strip()
+        if novo_nome_emerg and novo_tel_emerg:
+            b.com_contato_emergencia((novo_nome_emerg, novo_tel_emerg))
+        elif novo_nome_emerg or novo_tel_emerg:
+            print("Para atualizar o contato de emergência, forneça nome e telefone juntos.")
 
-        # Ver como faria a atualização do histórico médico 
 
-        print(f"Paciente {paciente.nome} atualizado com sucesso!")
-        return paciente
-        
+        editar = input("Deseja editar o histórico médico? (s/n): ").strip().lower()
+        if editar == 's':
+            editar_historico_medico(paciente)  
+            b.com_historico_medico(paciente.historico_medico)
+
+        paciente_atualizado = b.atualizar(paciente)
+        print(f"Paciente {paciente_atualizado.nome} atualizado com sucesso!")
+        return paciente_atualizado
+
     except Exception as e:
         print(f"Erro ao atualizar paciente: {e}")
         return None
 
+    
 # Função de cadastro modificada para funcionar com Builder
 def cadastroPaciente():
     print("--- CADASTRO DE PACIENTE ---")
@@ -398,7 +473,7 @@ def prontuarioMedico():
         print("Paciente não encontrado")
         resposta = input("Deseja cadastrá-lo? ")
         if resposta.lower() == "sim":
-            cadastroPaciente(nome)
+            cadastroPaciente()
             profissional = input("Nome do profissional de saúde: ")
             descricao = input("Descrição do prontuário: ")
             hospital.registrar_prontuario(nome, profissional, descricao)
@@ -414,7 +489,7 @@ def solicitarExame():
         # Lógica opcional para cadastrar o paciente
         resposta = input("Deseja cadastrá-lo? (sim/nao) ")
         if resposta.lower() == "sim":
-            cadastroPaciente(nome_paciente)
+            cadastroPaciente()
             solicitarExame() # Tenta novamente
         return
 
