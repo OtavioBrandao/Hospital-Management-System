@@ -38,7 +38,6 @@ Resumo das alterações até agora:
 
 Bugs para ajeitar:
 - Ver pq sempre seleciona o mesmo dentista e medico.. etc
-- Ver pq o tipo sanguineo da problema na função de atualizar
 - Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados.
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
 - Navegação incorreta, loops quebrando e voltando pra onde n queria
@@ -48,29 +47,11 @@ Creational Design Patterns: Estou pensando em implementar os seguintes:
 Implementados
 - Builder  OK
 - Singleton OK
-- Factory Methods OK
-
+- Factory Methods OK (ver a possibilidade de usar **kwargs)
 
 Estudando implementação:
 
-- Abstract Factory para criar Documentos/Relatórios
+- Abstract Factory para criar Documentos/Relatórios (NÃO PRECISEI IMPLEMENTAR)
 
-Comentários antigos:
 
-Main:
-    - Lembrar de inserir a lógica de caso não seja encontrado um paciente e ele queira ser cadastrado, voltar para a própria função para que o processo não seja interrompido
-    principalmente nas funções de :
-        1. CadastroPaciente
-        2. ProntuarioMedico
-        3. SolicitarExame
-    Colocar lower para as opções de escolha e tirar o espaçamento
 
-    Fazer encapsulamento no cpf e sus para definir o tamnho padrao de caracter (setter) e se o cpf e o sus estiver repetido
-
-    Modificar a funcao do escalonamento do horario para que um mesmo funcionario tenha turnos diferentes
-
-    Fazer um dicionario para os funcionarios e ir adicionando eles ( pode ser nativo mesmo)
-
-    "Exame" pode ser alguma estrutura que tenha a maioria dos exames que médicos, enfermeiros e dentistas requesitam
-
-    Lembrar de criar um ambiente virtual e instalar "pip install fpdf2" para poder gerar o arquivo em pdf
