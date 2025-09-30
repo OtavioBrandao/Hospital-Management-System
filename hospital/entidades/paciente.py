@@ -3,10 +3,6 @@ from enum import Enum
 import random
 
 # Informações adicionais sobre o paciente
-
-def _gerar_id_temporario():
-    return str(random.randint(10000, 99999))
-
 class PesoAlturaIdade:
     def __init__(self, peso, altura, idade):
         self.peso = peso
@@ -364,7 +360,7 @@ class PacienteBuilder:
     
     def com_cpf(self, cpf):
         if cpf is None or cpf.strip() == "":
-            self._cpf = self._gerar_id_temporario()
+            self._cpf = str(random.randint(10000, 99999))
         else:
             self._cpf = cpf
         return self
