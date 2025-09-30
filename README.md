@@ -44,6 +44,10 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
     python hospital/main.py
     ```
 
+## Design Patterns utilizados
+- **Singleton**: Utilizado para garantir que hospital seja instanciado apenas uma vez e não tenhamos hospitais diferentes, gerando incoerência nos dados. Foi implementado para ser instanciado como uma váriavel global por todo o código, seguindo a estrutura de Singleton com __new__ e etc.
+- **Builder**: Utilizado para a criação de pacientes de forma personalizada, onde posso criar um paciente simples ou um mais complexo, preenchendo os dados que eu quero e ainda realizando uma atualização que segue a mesma lógica do builder com reset. Além disso, foi adicionada uma classe diretora que irá coordenar a partir desse builder a construção específica de pacientes. Ele basicamente chama os métodos 'com' para validações básicas E junta eles junto com o 'construir' no final para terminar a construção, como se fosse bloquinho por bloquinho.
+- **Factory Method**: Utilizado para a criação de funcionários da saúde para o hospital em si. É uma forma de criar o funcionário de uma forma organizada, recebendo o tipo e chamando a fábrica de acordo com esse tipo, com algumas validações simples.
 
 
 ## Funcionalidades Futuras

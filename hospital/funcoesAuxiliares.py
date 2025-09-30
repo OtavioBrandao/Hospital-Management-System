@@ -140,7 +140,6 @@ def cadastro_simples():
         hospital.pacientes.append(paciente)
         print(f"Paciente {input_nome} cadastrado com sucesso!")
         input("Pressione Enter para continuar...")
-        clear_screen()
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
@@ -205,7 +204,6 @@ def cadastro_completo():
         hospital.pacientes.append(paciente)
         print(f"Paciente {dados['nome']} cadastrado com sucesso!")
         input("Pressione Enter para continuar...")
-        clear_screen()
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
@@ -414,6 +412,7 @@ def cadastro():
         else:
             print("Opção inválida.")
         op = input("Escolha: ")
+
     clear_screen()
 
 
