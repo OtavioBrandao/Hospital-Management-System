@@ -23,6 +23,7 @@ def menu():
     print("10 - Receituário")
     print("11 - Relatórios")
     print("0  - Sair")
+    print("-----------------------------------")
 
 ''' --- Funções para facilitar na main --- '''
 
@@ -43,6 +44,7 @@ def estoque_menu(hospital):
             print("Opção inválida.")
         print()
         op = input("Escolha: ")
+    clear_screen()
 
 def funcionarios(hospital):
     print("Deseja realizar uma queixa ou escalonar um funcionário?")
@@ -61,6 +63,8 @@ def funcionarios(hospital):
         elif op == '3':
             funcionario_manager(hospital)
             break
+    clear_screen()
+
 def receituario_menu(hospital):
     print("\n--- RECEITUÁRIO ---")
     print("1 - Gerar receita")
@@ -68,6 +72,7 @@ def receituario_menu(hospital):
     print("0 - Voltar")
     op = input("Escolha: ")
     while op != '0':
+        clear_screen()
         if op == '1':
             nome = input("Nome do paciente: ")
             medicamento = input("Medicamento: ")
@@ -82,6 +87,8 @@ def receituario_menu(hospital):
             print("Opção inválida.")
         print()
         op = input("Escolha: ")
+
+    clear_screen()
 
 def emergencias_menu(hospital):
     print("\n--- EMERGÊNCIAS ---")
@@ -98,8 +105,9 @@ def emergencias_menu(hospital):
             hospital.emergencias.ver_emergencias()
         else:
             print("Opção inválida.")
-        print()
         op = input("Escolha: ")
+    clear_screen()
+
         
 def escalonamento_menu(hospital):
     print("\n--- ESCALONAMENTO ---")
@@ -117,7 +125,7 @@ def escalonamento_menu(hospital):
         else:
             print("Opção inválida.")
         op = input("Escolha: ")
-
+    clear_screen()
 
 paciente_builder = PacienteBuilder()
 diretor_paciente = DiretorPaciente(paciente_builder)
@@ -131,6 +139,8 @@ def cadastro_simples():
         paciente = diretor_paciente.construir_paciente_simples(input_nome, input_cpf, input_cartao_sus)
         hospital.pacientes.append(paciente)
         print(f"Paciente {input_nome} cadastrado com sucesso!")
+        input("Pressione Enter para continuar...")
+        clear_screen()
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
@@ -194,6 +204,8 @@ def cadastro_completo():
         paciente = diretor_paciente.construir_paciente_completo(dados)
         hospital.pacientes.append(paciente)
         print(f"Paciente {dados['nome']} cadastrado com sucesso!")
+        input("Pressione Enter para continuar...")
+        clear_screen()
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
@@ -234,9 +246,12 @@ def coletar_historico_medico():
             print("\n>>> Resumo parcial:")
             print(h.resumo() or "Nenhum histórico registrado.")
         elif op == '0':
+            clear_screen()
             return h
         else:
-            print("Opção inválida.")
+            print("Opção inválida.")     
+    
+   
 
 def editar_historico_medico(paciente):
     print("\n--- EDITAR HISTÓRICO MÉDICO ---")
@@ -269,7 +284,8 @@ def editar_historico_medico(paciente):
             print("\n>>> Resumo parcial:")
             print(h.resumo() or "Nenhum histórico registrado.")
         elif op == '0':
-            print("Histórico atualizado.")
+            input("Histórico atualizado. Pressione Enter para continuar...")
+            clear_screen()
             return
         else:
             print("Opção inválida.")
@@ -350,6 +366,8 @@ def atualizar_dados_paciente():
 
         paciente_atualizado = b.atualizar(paciente)
         print(f"Paciente {paciente_atualizado.nome} atualizado com sucesso!")
+        input("Pressione Enter para continuar...")
+        clear_screen()
         return paciente_atualizado
 
     except Exception as e:
@@ -396,6 +414,7 @@ def cadastro():
         else:
             print("Opção inválida.")
         op = input("Escolha: ")
+    clear_screen()
 
 
 def funcionario_manager(hospital):
@@ -428,12 +447,12 @@ def funcionario_manager(hospital):
             break
         else:
             print("Opção inválida.")
+    clear_screen()
 
 
 #Funções para agendamento
 def agendarConsulta():
     nome = input("Nome do paciente: ")
-    #nome = "Vitor Gabriel"
     paciente = hospital.encontrar_paciente(nome)
     if paciente:
         dia = input("Data da consulta (dd/mm): ")
@@ -495,6 +514,7 @@ def menu_agendamento():
         else:
             print("Opção inválida.")
         op = input("Escolha: ")
+    clear_screen()
 
 #Função para prontuario
 def prontuarioMedico():
@@ -505,6 +525,8 @@ def prontuarioMedico():
         profissional = input("Nome do profissional de saúde: ")
         descricao = input("Descrição do prontuário: ")
         hospital.registrar_prontuario(nome, profissional, descricao)
+        input("Prontuário registrado. Pressione Enter para continuar...")
+        clear_screen()
     else:
         print("Paciente não encontrado")
         resposta = input("Deseja cadastrá-lo? ")
@@ -513,11 +535,12 @@ def prontuarioMedico():
             profissional = input("Nome do profissional de saúde: ")
             descricao = input("Descrição do prontuário: ")
             hospital.registrar_prontuario(nome, profissional, descricao)
+            input("Prontuário registrado. Pressione Enter para continuar...")
+            clear_screen()
 
 #Solicitação de exame
 def solicitarExame():
     nome_paciente = input("Nome do paciente: ")
-    #nome_paciente = "João Tenório"
     paciente = hospital.encontrar_paciente(nome_paciente)
 
     if not paciente:
@@ -535,7 +558,6 @@ def solicitarExame():
         print(f"- {func.nome} ({func.__class__.__name__})")
     
     nome_profissional = input("Nome do profissional que está solicitando: ")
-    #nome_profissional = "Aurora"
 
     # 2. Encontrar o objeto do profissional
     profissional_encontrado = None
@@ -591,6 +613,7 @@ def queixa():
             print("Opção inválida!")
         print()
         op = input("Escolha: ")
+    clear_screen()
 
 def relatorios_menu(hospital):
     print("\n--- GERAÇÃO DE RELATÓRIOS ---")
@@ -612,3 +635,4 @@ def relatorios_menu(hospital):
         
         print()
         op = input("Escolha: ")
+    clear_screen()

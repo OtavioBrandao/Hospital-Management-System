@@ -4,6 +4,9 @@ import random
 
 # Informações adicionais sobre o paciente
 
+def _gerar_id_temporario():
+    return str(random.randint(10000, 99999))
+
 class PesoAlturaIdade:
     def __init__(self, peso, altura, idade):
         self.peso = peso
@@ -109,8 +112,6 @@ class Prontuario:
 
 class Paciente:
     def __init__(self, nome, cpf=None, cartao_sus=None):
-
-        # Novos atributos complexos
         self.nome = nome
         self._cpf = None
         self._cartao_sus = None
@@ -129,7 +130,6 @@ class Paciente:
         if cartao_sus:
             self.cartao_sus = cartao_sus
         
-        # Informações do Hospital sobre o paciente
         self.prontuarios = []
         self.receitas = []
         self.exames = []
@@ -356,9 +356,6 @@ class PacienteBuilder:
         self.historico_medico = None
         return self
 
-    def _gerar_id_temporario(self):
-        return str(random.randint(10000, 99999))
-
     # Definição dos campos obrigatórios do paciente. Caso não tenha o CPF, preencher com nada e ele vai gerar um ID temporário que substituirá o CPF temporariamente.
 
     def com_nome(self, nome):
@@ -366,7 +363,6 @@ class PacienteBuilder:
         return self
     
     def com_cpf(self, cpf):
-
         if cpf is None or cpf.strip() == "":
             self._cpf = self._gerar_id_temporario()
         else:

@@ -10,6 +10,7 @@ funcoesAuxiliares.hospital = hospital
 
 # --- Execução principal ---
 if __name__ == "__main__":
+    funcoesAuxiliares.clear_screen()
     while True:
         
         funcoesAuxiliares.menu()
@@ -31,6 +32,8 @@ if __name__ == "__main__":
         elif op == '4':
             nome = input("Nome do paciente: ")
             hospital.faturar_paciente(nome)
+            input("Paciente faturado. Pressione Enter para continuar...")
+            funcoesAuxiliares.clear_screen()
 
         elif op == '5':
             funcoesAuxiliares.estoque_menu(hospital)
@@ -39,11 +42,14 @@ if __name__ == "__main__":
             funcoesAuxiliares.emergencias_menu(hospital)
         elif op == '7':
             funcoesAuxiliares.solicitarExame()
+            input("Exame solicitado. Pressione Enter para continuar...")
+            funcoesAuxiliares.clear_screen()
 
         elif op == '8':
             nome = input("Nome do paciente: ")
             hospital.alocar_leito(nome)
-
+            input("Leito alocado. Pressione Enter para continuar...")
+            funcoesAuxiliares.clear_screen()
         elif op == '9':
             funcoesAuxiliares.funcionarios(hospital)
         elif op == '10':
