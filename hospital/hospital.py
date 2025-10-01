@@ -32,6 +32,7 @@ class Hospital:
             ] #Pacientes pre-estabelecidos
         
         self.funcionarios = [
+            Medico("Dr. House", "CRM-999", "Diagnóstico"),
             Medico("Saulo de Tarso", "CRM-123", "Cardiologista"),
             Medico("Maria", "CRM-456", "Ortopedista"),
             Medico("Joana D'Arc", "CRM-789", "Pediatra"),
