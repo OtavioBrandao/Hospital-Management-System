@@ -28,109 +28,130 @@ def menu():
 ''' --- Funções para facilitar na main --- '''
 
 def estoque_menu(hospital):
-    print("\n--- ESTOQUE ---")
-    print("1 - Adicionar item")
-    print("2 - Ver estoque")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- ESTOQUE ---")
+        print("1 - Adicionar item")
+        print("2 - Ver estoque")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             item = input("Item: ")
             qtd = int(input("Quantidade: "))
             hospital.estoque.adicionar_item(item, qtd)
+            input("Item adicionado. Pressione Enter para continuar...")
         elif op == '2':
             hospital.estoque.mostrar_estoque()
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        print()
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 def funcionarios(hospital):
-    print("Deseja realizar uma queixa ou escalonar um funcionário?")
-    print("1 - Queixa")
-    print("2 - Escalonar funcionário")
-    print("3 - Gerenciamento de funcionários")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
-            queixa()
+    while True:
+        clear_screen()
+        print("\n--- FUNCIONÁRIOS ---")
+        print("1 - Queixa")
+        print("2 - Escalonar funcionário")
+        print("3 - Gerenciamento de funcionários")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
             break
+        elif op == '1':
+            queixa()
         elif op == '2':
             escalonamento_menu(hospital)
-            break
         elif op == '3':
             funcionario_manager(hospital)
-            break
-    clear_screen()
+        else:
+            print("Opção inválida.")
+            input("Pressione Enter para continuar...")
 
 def receituario_menu(hospital):
-    print("\n--- RECEITUÁRIO ---")
-    print("1 - Gerar receita")
-    print("2 - Ver receitas")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
+    while True:
         clear_screen()
-        if op == '1':
+        print("\n--- RECEITUÁRIO ---")
+        print("1 - Gerar receita")
+        print("2 - Ver receitas")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             nome = input("Nome do paciente: ")
             medicamento = input("Medicamento: ")
             descricao = input("Descrição: ")
-            profissional = input("Profissional: ") # Depois pegar o nome do profissional logado futuramente
+            profissional = input("Profissional: ")
             dosagem = input("Dosagem: ")
             hospital.registrar_receita(nome, profissional, medicamento, descricao, dosagem)
+            input("Receita gerada. Pressione Enter para continuar...")
         elif op == '2':
-            nome = input("Nome do paciente: ") # Depois pegar os dados do paciente logado já
+            nome = input("Nome do paciente: ")
             hospital.listar_receitas(nome)
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        print()
-        op = input("Escolha: ")
-
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 def emergencias_menu(hospital):
-    print("\n--- EMERGÊNCIAS ---")
-    print("1 - Registrar emergência")
-    print("2 - Ver emergências")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- EMERGÊNCIAS ---")
+        print("1 - Registrar emergência")
+        print("2 - Ver emergências")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             nome = input("Nome do paciente: ")
             prioridade = input("Prioridade (alta/media/baixa): ").lower()
             hospital.emergencias.registrar_emergencia(nome, prioridade)
+            input("Emergência registrada. Pressione Enter para continuar...")
         elif op == '2':
             hospital.emergencias.ver_emergencias()
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
         
 def escalonamento_menu(hospital):
-    print("\n--- ESCALONAMENTO ---")
-    print("1 - Escalar funcionário")
-    print("2 - Ver escalonamento")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- ESCALONAMENTO ---")
+        print("1 - Escalar funcionário")
+        print("2 - Ver escalonamento")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             nome = input("Nome do funcionário: ")
             turno = input("Turno (manhã/tarde/noite): ")
             hospital.escalonar_funcionario(nome, turno)
+            input("Funcionário escalado. Pressione Enter para continuar...")
         elif op == '2':
             hospital.ver_escalonamento()
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 paciente_builder = PacienteBuilder()
 diretor_paciente = DiretorPaciente(paciente_builder)
 
 def cadastro_simples():
+    clear_screen()
+    print("\n--- CADASTRO SIMPLES ---")
     input_nome = input("Nome do paciente: ")
     input_cpf = input("CPF: ")
     input_cartao_sus = input("Cartão SUS(Se houver): ")
@@ -143,9 +164,12 @@ def cadastro_simples():
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
+        input("Pressione Enter para continuar...")
         return None
     
 def cadastro_completo():
+    clear_screen()
+    print("\n--- CADASTRO COMPLETO ---")
     dados = {}
 
     dados['nome'] = input("Nome do paciente: ") 
@@ -207,14 +231,17 @@ def cadastro_completo():
         return paciente
     except ValueError as ve:
         print(f"Erro no cadastro: {ve}")
+        input("Pressione Enter para continuar...")
         return None
     except Exception as e:
         print(f"Erro inesperado no cadastro: {e}")
+        input("Pressione Enter para continuar...")
         return None
     
 def coletar_historico_medico():
     h = HistoricoMedico()
     while True:
+        clear_screen()
         print("\n--- HISTÓRICO MÉDICO ---")
         print("1 - Adicionar alergia")
         print("2 - Adicionar doença crônica")
@@ -225,33 +252,50 @@ def coletar_historico_medico():
         print("0 - Finalizar histórico")
         op = input("Escolha: ").strip()
 
-        if op == '1':
+        if op == '0':
+            return h
+        elif op == '1':
             txt = input("Alergia (ex: Dipirona): ").strip()
-            if txt: h.adicionar_alergia(txt)
+            if txt: 
+                h.adicionar_alergia(txt)
+                print("Alergia adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             txt = input("Doença crônica (ex: Hipertensão): ").strip()
-            if txt: h.adicionar_doenca_cronica(txt)
+            if txt: 
+                h.adicionar_doenca_cronica(txt)
+                print("Doença crônica adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '3':
             txt = input("Cirurgia (ex: Apendicectomia - 2019): ").strip()
-            if txt: h.adicionar_cirurgia(txt)
+            if txt: 
+                h.adicionar_cirurgia(txt)
+                print("Cirurgia adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '4':
             txt = input("Medicação (ex: Losartana 50mg 1cp/dia): ").strip()
-            if txt: h.adicionar_medicamento(txt)
+            if txt: 
+                h.adicionar_medicamento(txt)
+                print("Medicação adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '5':
             txt = input("Observação livre: ").strip()
-            if txt: h.adicionar_observacao(txt)
+            if txt: 
+                h.adicionar_observacao(txt)
+                print("Observação adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '6':
             print("\n>>> Resumo parcial:")
             print(h.resumo() or "Nenhum histórico registrado.")
-        elif op == '0':
-            clear_screen()
-            return h
+            input("Pressione Enter para continuar...")
         else:
-            print("Opção inválida.")     
+            print("Opção inválida.")
+            input("Pressione Enter para continuar...")     
     
    
 
 def editar_historico_medico(paciente):
+    clear_screen()
     print("\n--- EDITAR HISTÓRICO MÉDICO ---")
     print("Histórico atual:")
     print(paciente.historico_medico.resumo() or "Nenhum histórico registrado.")
@@ -261,32 +305,57 @@ def editar_historico_medico(paciente):
 
     h = paciente.historico_medico  
     while True:
-        print("\n1-Alergia  2-Doença crônica  3-Cirurgia  4-Medicação  5-Observação  6-Ver resumo  0-Finalizar")
+        clear_screen()
+        print("\n--- EDITAR HISTÓRICO MÉDICO ---")
+        print("1 - Adicionar alergia")
+        print("2 - Adicionar doença crônica")
+        print("3 - Adicionar cirurgia")
+        print("4 - Adicionar medicação")
+        print("5 - Adicionar observação")
+        print("6 - Ver resumo")
+        print("0 - Finalizar")
         op = input("Escolha: ").strip()
-        if op == '1':
+        
+        if op == '0':
+            input("Histórico atualizado. Pressione Enter para continuar...")
+            return
+        elif op == '1':
             t = input("Alergia: ").strip()
-            if t: h.adicionar_alergia(t)
+            if t: 
+                h.adicionar_alergia(t)
+                print("Alergia adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             t = input("Doença crônica: ").strip()
-            if t: h.adicionar_doenca_cronica(t)
+            if t: 
+                h.adicionar_doenca_cronica(t)
+                print("Doença crônica adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '3':
             t = input("Cirurgia: ").strip()
-            if t: h.adicionar_cirurgia(t)
+            if t: 
+                h.adicionar_cirurgia(t)
+                print("Cirurgia adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '4':
             t = input("Medicação: ").strip()
-            if t: h.adicionar_medicamento(t)
+            if t: 
+                h.adicionar_medicamento(t)
+                print("Medicação adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '5':
             t = input("Observação: ").strip()
-            if t: h.adicionar_observacao(t)
+            if t: 
+                h.adicionar_observacao(t)
+                print("Observação adicionada!")
+                input("Pressione Enter para continuar...")
         elif op == '6':
-            print("\n>>> Resumo parcial:")
+            print("\n>>> Resumo atual:")
             print(h.resumo() or "Nenhum histórico registrado.")
-        elif op == '0':
-            input("Histórico atualizado. Pressione Enter para continuar...")
-            clear_screen()
-            return
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
+            input("Pressione Enter para continuar...")
 
 
 def atualizar_dados_paciente():
@@ -365,23 +434,27 @@ def atualizar_dados_paciente():
         paciente_atualizado = b.atualizar(paciente)
         print(f"Paciente {paciente_atualizado.nome} atualizado com sucesso!")
         input("Pressione Enter para continuar...")
-        clear_screen()
         return paciente_atualizado
 
     except Exception as e:
         print(f"Erro ao atualizar paciente: {e}")
+        input("Pressione Enter para continuar...")
         return None
 
     
 # Função de cadastro modificada para funcionar com Builder
 def cadastroPaciente():
-    print("--- CADASTRO DE PACIENTE ---")
-    print("1 - Cadastro simples")
-    print("2 - Cadastro completo")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- CADASTRO DE PACIENTE ---")
+        print("1 - Cadastro simples")
+        print("2 - Cadastro completo")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             cadastro_simples()
             break
         elif op == '2':
@@ -389,42 +462,51 @@ def cadastroPaciente():
             break
         else:
             print("Opção inválida.")
+            input("Pressione Enter para continuar...")
 
 #Função mais robusta para cadastrar e ver os pacientes
 def cadastro():
-    print("\n--- CENTRAL DE PACIENTES ---")
-    print("1 - Cadastrar paciente")
-    print("2 - Ver pacientes cadastrados")
-    print("3 - Dados de um paciente")
-    print("4 - Atualizar dados do paciente")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- CENTRAL DE PACIENTES ---")
+        print("1 - Cadastrar paciente")
+        print("2 - Ver pacientes cadastrados")
+        print("3 - Dados de um paciente")
+        print("4 - Atualizar dados do paciente")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             cadastroPaciente() 
         elif op == '2':
             hospital.listarPacientes()
+            input("Pressione Enter para continuar...")
         elif op == '3':
             nome = input("Digite o nome do paciente: ")
             hospital.mostrarPaciente(nome)
+            input("Pressione Enter para continuar...")
         elif op == '4':
             atualizar_dados_paciente()
         else:
             print("Opção inválida.")
-        op = input("Escolha: ")
-
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 
 def funcionario_manager(hospital):
-    print("\n--- GERENCIAR FUNCIONÁRIOS ---")
-    print("1 - Adicionar funcionário")
-    print("2 - Remover funcionário")
-    print("3 - Listar funcionários")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- GERENCIAR FUNCIONÁRIOS ---")
+        print("1 - Adicionar funcionário")
+        print("2 - Remover funcionário")
+        print("3 - Listar funcionários")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             nome = input("Nome do funcionário: ")
             registro = input("Registro profissional: ")
             tipo = input("Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): ").strip().lower()
@@ -433,20 +515,22 @@ def funcionario_manager(hospital):
            
             try:
                 hospital.adicionar_funcionario(tipo, nome, registro, especialidade)
-                break
+                print("Funcionário adicionado com sucesso!")
+                input("Pressione Enter para continuar...")
             except ValueError as ve:
                 print(f"Erro ao adicionar funcionário: {ve}")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             nome = input("Nome do funcionário a remover: ")
             registro = input("Registro profissional: ")
             hospital.remover_funcionario(nome, registro)
-            break
+            input("Funcionário removido. Pressione Enter para continuar...")
         elif op == '3':
             hospital.listar_funcionarios()
-            break
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 
 #Funções para agendamento
@@ -455,17 +539,18 @@ def agendarConsulta():
     paciente = hospital.encontrar_paciente(nome)
     if paciente:
         dia = input("Data da consulta (dd/mm): ")
-        # Peça o tipo de profissional
         tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
         hospital.agendar_consulta(nome, dia, tipo_profissional)
+        print("Consulta agendada com sucesso!")
     else:
         print("Paciente não encontrado.")
-        resposta = input("Deseja cadastrá-lo? ")
-        if resposta.lower() == "sim":
-            cadastroPaciente(nome)
+        resposta = input("Deseja cadastrá-lo? (s/n): ")
+        if resposta.lower() in ['s', 'sim']:
+            cadastroPaciente()
             dia = input("Data da consulta (dd/mm): ")
             tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
             hospital.agendar_consulta(nome, dia, tipo_profissional)
+            print("Consulta agendada com sucesso!")
 
 def remarcarConsulta():
     nome = input("Nome do paciente: ")
@@ -477,6 +562,7 @@ def remarcarConsulta():
            escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
            novo_dia = input("Novo dia da consulta: ")
            hospital.remarcar_consulta(nome, escolha, novo_dia)
+           print("Consulta remarcada com sucesso!")
        else:
            print("Nenhuma consulta agendada.")
     else:
@@ -491,51 +577,55 @@ def cancelarConsulta():
                 print(f"{i}: Dia {dia} com Dr(a). {medico}")
             escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
             hospital.cancelar_consulta(nome, escolha)
+            print("Consulta cancelada com sucesso!")
         else:
             print("Nenhuma consulta agendada.")
     else:
         print("Paciente não encontrado.")
 
 def menu_agendamento():
-    print("\n--- AGENDAMENTO ---")
-    print("1 - Agendar consulta")
-    print("2 - Remarcar consulta")
-    print("3 - Cancelar consulta")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- AGENDAMENTO ---")
+        print("1 - Agendar consulta")
+        print("2 - Remarcar consulta")
+        print("3 - Cancelar consulta")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             agendarConsulta()
+            input("Pressione Enter para continuar...")
         elif op == '2':
             remarcarConsulta()
+            input("Pressione Enter para continuar...")
         elif op == '3':
             cancelarConsulta()
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 #Função para prontuario
 def prontuarioMedico():
     nome = input("Digite o nome do paciente: ")
-    #nome = "Davi Celestino"
     paciente = hospital.encontrar_paciente(nome)
     if paciente:
         profissional = input("Nome do profissional de saúde: ")
         descricao = input("Descrição do prontuário: ")
         hospital.registrar_prontuario(nome, profissional, descricao)
         input("Prontuário registrado. Pressione Enter para continuar...")
-        clear_screen()
     else:
         print("Paciente não encontrado")
-        resposta = input("Deseja cadastrá-lo? ")
-        if resposta.lower() == "sim":
+        resposta = input("Deseja cadastrá-lo? (s/n): ")
+        if resposta.lower() in ['s', 'sim']:
             cadastroPaciente()
             profissional = input("Nome do profissional de saúde: ")
             descricao = input("Descrição do prontuário: ")
             hospital.registrar_prontuario(nome, profissional, descricao)
             input("Prontuário registrado. Pressione Enter para continuar...")
-            clear_screen()
 
 #Solicitação de exame
 def solicitarExame():
@@ -545,8 +635,8 @@ def solicitarExame():
     if not paciente:
         print("Paciente não encontrado.")
         # Lógica opcional para cadastrar o paciente
-        resposta = input("Deseja cadastrá-lo? (sim/nao) ")
-        if resposta.lower() == "sim":
+        resposta = input("Deseja cadastrá-lo? (s/n): ")
+        if resposta.lower() in ['s', 'sim']:
             cadastroPaciente()
             solicitarExame() # Tenta novamente
         return
@@ -572,9 +662,6 @@ def solicitarExame():
     # 3. Mostrar apenas os exames permitidos para esse profissional
     print(f"\n--- Exames que {profissional_encontrado.nome} pode solicitar ---")
     
-    # Importa o dicionário de exames
-    #from entidades.exame import EXAMES_DISPONIVEIS 
-    
     # Verifica se o profissional tem exames permitidos
     if not profissional_encontrado.exames_permitidos:
         print("Este profissional não solicita exames.")
@@ -589,49 +676,57 @@ def solicitarExame():
 
     # 4. Solicitar o exame
     codigo_selecionado = input("Digite o código do exame a solicitar: ").lower()
-    #codigo_selecionado = "limpeza"
     
     # Chama a função do hospital, que aplicará o polimorfismo
     hospital.solicitar_exame(nome_paciente, nome_profissional, codigo_selecionado)
+    print("Exame solicitado com sucesso!")
 
 def queixa():
-    print("\n--- REGISTRO DE QUEIXAS ---")
-    print("1 - Registrar queixa")
-    print("2 - Ver queixa")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- REGISTRO DE QUEIXAS ---")
+        print("1 - Registrar queixa")
+        print("2 - Ver queixa")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             print("Registre uma queixa: ")
             funcionario = input("Digite o nome do funcionário: ")
             descricao = input("Descreva o ocorrido: ")
             hospital.administrativo.registrar_queixa(funcionario,descricao)
+            input("Queixa registrada. Pressione Enter para continuar...")
         elif op == '2':
             hospital.administrativo.exibir_queixas()
+            input("Pressione Enter para continuar...")
         else: 
             print("Opção inválida!")
-        print()
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")
 
 def relatorios_menu(hospital):
-    print("\n--- GERAÇÃO DE RELATÓRIOS ---")
-    print("1 - Relatório de Paciente")
-    print("2 - Relatório da Equipe de Saúde")
-    print("3 - Relatório Geral do Hospital")
-    print("0 - Voltar")
-    op = input("Escolha: ")
-    while op != '0':
-        if op == '1':
+    while True:
+        clear_screen()
+        print("\n--- GERAÇÃO DE RELATÓRIOS ---")
+        print("1 - Relatório de Paciente")
+        print("2 - Relatório da Equipe de Saúde")
+        print("3 - Relatório Geral do Hospital")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
             nome = input("Nome do paciente: ")
             hospital.gerar_pdf_paciente(nome)
+            input("Relatório gerado. Pressione Enter para continuar...")
         elif op == '2':
             hospital.gerar_pdf_equipe()
+            input("Relatório gerado. Pressione Enter para continuar...")
         elif op == '3':
             hospital.gerar_pdf_hospital()
+            input("Relatório gerado. Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
-        
-        print()
-        op = input("Escolha: ")
-    clear_screen()
+            input("Pressione Enter para continuar...")

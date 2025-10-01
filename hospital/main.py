@@ -12,7 +12,7 @@ funcoesAuxiliares.hospital = hospital
 if __name__ == "__main__":
     funcoesAuxiliares.clear_screen()
     while True:
-        
+        funcoesAuxiliares.clear_screen()
         funcoesAuxiliares.menu()
         op = input("Escolha uma opção: ")
 
@@ -32,31 +32,33 @@ if __name__ == "__main__":
         elif op == '4':
             nome = input("Nome do paciente: ")
             hospital.faturar_paciente(nome)
-            input("Paciente faturado. Pressione Enter para continuar...")
-            funcoesAuxiliares.clear_screen()
+            input("Faturamento concluído. Pressione Enter para continuar...")
 
         elif op == '5':
             funcoesAuxiliares.estoque_menu(hospital)
 
         elif op == '6':
             funcoesAuxiliares.emergencias_menu(hospital)
+            
         elif op == '7':
             funcoesAuxiliares.solicitarExame()
-            input("Exame solicitado. Pressione Enter para continuar...")
-            funcoesAuxiliares.clear_screen()
+            input("Operação concluída. Pressione Enter para continuar...")
 
         elif op == '8':
             nome = input("Nome do paciente: ")
             hospital.alocar_leito(nome)
-            input("Leito alocado. Pressione Enter para continuar...")
-            funcoesAuxiliares.clear_screen()
+            input("Operação de leito concluída. Pressione Enter para continuar...")
+            
         elif op == '9':
             funcoesAuxiliares.funcionarios(hospital)
+            
         elif op == '10':
             funcoesAuxiliares.receituario_menu(hospital)
-            pass
+            
         elif op == '11':
             funcoesAuxiliares.relatorios_menu(hospital)
+            
         else:
             print("Opção inválida.")
+            input("Pressione Enter para continuar...")
            
