@@ -5,10 +5,10 @@
 
 Sistema de gestão hospitalar desenvolvido em Python com foco em Programação Orientada a Objetos (POO). O software permite o gerenciamento completo de pacientes, consultas, exames, leitos, estoque, equipe de saúde e emergências, com a funcionalidade de gerar relatórios em PDF.
 
-## Funcionalidades Implementadas
+## Funcionalidades Implementadas (☑️ Para os refatorados)
 
-- ✅ **Cadastro de Pacientes:** Registro de novos pacientes com nome, CPF e cartão do SUS.
-- ✅ **Agendamento de Consultas:** Marcação de consultas com profissionais específicos (Médico, Dentista, etc.), aplicando polimorfismo.
+- ☑️ **Cadastro de Pacientes:** Registro de novos pacientes com nome, CPF e cartão do SUS. (Possibilidade de fazer um cadastro completo)
+- ☑️ **Agendamento de Consultas:** Marcação de consultas com profissionais específicos (Médico, Dentista, etc.), aplicando polimorfismo. (Adicionado a possibilidade de remarcar e cancelar consultas).
 - ✅ **Prontuário Médico:** Registro de informações no prontuário do paciente.
 - ✅ **Solicitação de Exames:** Cada profissional de saúde pode solicitar exames específicos de sua área a partir de uma lista predefinida.
 - ✅ **Gerenciamento de Leitos:** Alocação de leitos para internação.
@@ -16,10 +16,11 @@ Sistema de gestão hospitalar desenvolvido em Python com foco em Programação O
 - ✅ **Escalonamento de Turnos:** Definição de turnos de trabalho para a equipe.
 - ✅ **Gerenciamento de Emergências:** Registro de casos de emergência com sistema de prioridade.
 - ✅ **Faturamento:** Cálculo automático de faturas por atendimentos.
-- ✅ **Geração de Relatórios em PDF:**
-    - ✅ Relatório individual de pacientes.
-    - ✅ Relatório completo da equipe de saúde.
-    - ✅ Relatório geral do hospital (pacientes e equipe).
+- ☑️ **Prescrição de receitas**: Funcionalidade implementada que não tinha antes.
+- ☑️ **Geração de Relatórios em PDF:**
+    - ☑️ Relatório individual de pacientes.
+    - ☑️ Relatório completo da equipe de saúde.
+    - ☑️ Relatório geral do hospital (pacientes e equipe).
 
 ## Estrutura do Projeto (POO)
 
