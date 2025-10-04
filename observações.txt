@@ -40,7 +40,7 @@ Bugs para ajeitar:
 - Ver pq sempre seleciona o mesmo dentista e medico.. etc
 - Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados.
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
-- Navegação incorreta, loops quebrando e voltando pra onde n queria
+- Ta deixando cadastrar pacientes vazios no cadastro simples
 
 Creational Design Patterns: Estou pensando em implementar os seguintes:
 
@@ -49,9 +49,12 @@ Implementados
 - Singleton OK
 - Factory Methods OK (ver a possibilidade de usar **kwargs)
 
-Estudando implementação:
+- Strategy
 
-- Abstract Factory para criar Documentos/Relatórios (NÃO PRECISEI IMPLEMENTAR)
+
+
+
+
 
 
 

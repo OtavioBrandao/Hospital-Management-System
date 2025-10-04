@@ -26,6 +26,17 @@ class TipoSanguineo(Enum):
     def __str__(self):
         return self.value
 
+class Convenio(Enum):
+    UNIMED = "Unimed"
+    AMIL = "Amil"
+    HAPVIDA = "Hapvida"
+    BRADESCO = "Bradesco"
+    SULAMERICA = "SulAmérica"
+    SEM_CONVENIO = "Sem Convênio"
+
+    def __str__(self):
+        return self.value
+
 class Genero(Enum):
     MASCULINO = "Masculino"
     FEMININO = "Feminino"
@@ -117,6 +128,7 @@ class Paciente:
         self.tipo_sanguineo = None
         self.genero = None
         self.tipo_plano = None
+        self.tipo_convenio = None
         self.telefone = None
         self.contato_emergencia = None
         self.historico_medico = HistoricoMedico()
@@ -178,6 +190,10 @@ class Paciente:
     @property
     def tipo_plano(self):
         return self._tipo_plano
+
+    @property
+    def tipo_convenio(self):
+        return self._tipo_convenio
 
     @telefone.setter
     def telefone(self, valor):
@@ -311,6 +327,23 @@ class Paciente:
         else:
             self._tipo_plano = TipoPlano.NAO_INFORMADO
 
+    @tipo_convenio.setter
+    def tipo_convenio(self, valor):
+        if valor is None:
+            self._tipo_convenio = None
+            return
+        if isinstance(valor, str):
+            try:
+                valor_processado = valor.upper().replace('É', 'E')  # SulAmérica -> SULAMERICA
+                self._tipo_convenio = Convenio[valor_processado]
+            except KeyError:
+                print(f"Tipo de convênio inválido: {valor}")
+                self._tipo_convenio = None
+        elif isinstance(valor, Convenio):
+            self._tipo_convenio = valor
+        else:
+            self._tipo_convenio = None
+
 
     def adicionar_prontuario(self, profissional, descricao):
         prontuario = Prontuario(profissional, descricao)
@@ -347,6 +380,7 @@ class PacienteBuilder:
         self._tipo_sanguineo = None
         self._genero = None
         self._tipo_plano = None
+        self._tipo_convenio = None
         self._contato_emergencia = None
         self._telefone = None
         self.historico_medico = None
@@ -380,6 +414,18 @@ class PacienteBuilder:
 
 
         self._tipo_plano = tipo_plano
+        return self
+
+    def com_tipo_convenio(self, tipo_convenio):
+        if isinstance(tipo_convenio, str):
+            try:
+                valor_processado = tipo_convenio.upper().replace('É', 'E')  # SulAmérica -> SULAMERICA
+                tipo_convenio = Convenio[valor_processado]
+            except KeyError:
+                print(f"Tipo de convênio inválido: {tipo_convenio}. Deve ser um dos seguintes: {[c.name for c in Convenio]}")
+                tipo_convenio = None
+
+        self._tipo_convenio = tipo_convenio
         return self
 
     def com_cartao_sus(self, cartao_sus):
@@ -460,6 +506,7 @@ class PacienteBuilder:
         paciente.tipo_sanguineo = self._tipo_sanguineo
         paciente.genero = self._genero
         paciente.tipo_plano = self._tipo_plano
+        paciente.tipo_convenio = self._tipo_convenio
         paciente.contato_emergencia = self._contato_emergencia
         paciente.telefone = self._telefone
         paciente.historico_medico = self.historico_medico or HistoricoMedico()
@@ -487,6 +534,8 @@ class PacienteBuilder:
             paciente.genero = self._genero
         if self._tipo_plano is not None:
             paciente.tipo_plano = self._tipo_plano
+        if self._tipo_convenio is not None:
+            paciente.tipo_convenio = self._tipo_convenio
         if self._contato_emergencia is not None:
             paciente.contato_emergencia = self._contato_emergencia
         if self._telefone is not None:
@@ -530,6 +579,9 @@ class DiretorPaciente:
         
         if dados.get('tipo_plano'):
             builder.com_tipo_plano(dados['tipo_plano'])
+        
+        if dados.get('tipo_convenio'):
+            builder.com_tipo_convenio(dados['tipo_convenio'])
         
         if dados.get('telefone'):
             builder.com_telefone(dados['telefone'])

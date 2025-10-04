@@ -210,6 +210,14 @@ def cadastro_completo():
     dados['tipo_sanguineo'] = input("Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip() or None
     dados['genero'] = input("Gênero (Masculino, Feminino, Outro): ").strip() or None
     dados['tipo_plano'] = input("Tipo de Plano (Particular, SUS, Convênio): ").strip() or None
+    
+    # Se o tipo de plano for Convênio, perguntar qual convênio
+    if dados['tipo_plano'] and (dados['tipo_plano'].lower() == 'convenio' or dados['tipo_plano'].lower() == 'convênio'):
+        print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
+        dados['tipo_convenio'] = input("Tipo de Convênio: ").strip() or None
+    else:
+        dados['tipo_convenio'] = None
+    
     dados['telefone'] = input("Telefone (apenas números): ").strip() or None
     
 
@@ -412,6 +420,14 @@ def atualizar_dados_paciente():
         ).strip()
         if novo_plano:
             b.com_tipo_plano(novo_plano)
+            # Se o novo plano for Convênio, perguntar qual convênio
+            if novo_plano.lower() == 'convênio' or novo_plano.lower() == 'convenio':
+                print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
+                novo_convenio = input(
+                    f"Convênio atual: {paciente.tipo_convenio} | Novo Convênio: "
+                ).strip()
+                if novo_convenio:
+                    b.com_tipo_convenio(novo_convenio)
         novo_tel = input(
             f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): "
         ).strip()

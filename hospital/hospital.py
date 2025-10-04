@@ -4,8 +4,9 @@ from entidades.administrativo import SetorAdministrativo
 from entidades.emergencia import EmergenciaManager
 from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta, GerenciadorFuncionariosSaude
 from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
+from entidades.faturamento import estrategia_para_faturar
+from entidades.paciente import PacienteBuilder
 
-PRECO = 10.5 
 funcionarios_manager = GerenciadorFuncionariosSaude()
 
 # Implementação do padrão Singleton para a classe Hospital
@@ -23,14 +24,96 @@ class Hospital:
             return
         Hospital._initialized = True
 
-        self.pacientes = [
-            Paciente("Vitor Gabriel", "12345", "67890"),
-            Paciente("Otávio", "54321", "09876"),
-            Paciente("Kaique Silva", "11223", "44556"),
-            Paciente("Ygor", "33445", "66778"),
-            Paciente("Marco Gomes", "55667", "77889")
-            ] #Pacientes pre-estabelecidos
-        
+        builder = PacienteBuilder()
+
+        # Vitor Gabriel - Particular, perfil completo
+        vitor = builder.resetar()\
+            .com_nome("Vitor Gabriel")\
+            .com_cpf("12345")\
+            .com_cartao_sus("67890")\
+            .com_idade(25)\
+            .com_altura(175)\
+            .com_peso(70)\
+            .com_tipo_sanguineo("O+")\
+            .com_genero("MASCULINO")\
+            .com_tipo_plano("PARTICULAR")\
+            .com_telefone("82999887766")\
+            .construir()
+
+        vitor.historico_medico.adicionar_alergia("Dipirona")
+        vitor.historico_medico.adicionar_observacao("Paciente pratica atividades físicas regularmente")
+
+        # Otávio - Convênio Unimed
+        otavio = builder.resetar()\
+            .com_nome("Otávio")\
+            .com_cpf("54321")\
+            .com_cartao_sus("09876")\
+            .com_idade(32)\
+            .com_altura(180)\
+            .com_peso(85)\
+            .com_tipo_sanguineo("A+")\
+            .com_genero("MASCULINO")\
+            .com_tipo_plano("CONVENIO")\
+            .com_tipo_convenio("UNIMED")\
+            .com_telefone("82988776655")\
+            .construir()
+
+        otavio.historico_medico.adicionar_doenca_cronica("Hipertensão")
+        otavio.historico_medico.adicionar_medicamento("Losartana 50mg - 1cp/dia")
+
+        # Kaique Silva - SUS
+        kaique = builder.resetar()\
+            .com_nome("Kaique Silva")\
+            .com_cpf("11223")\
+            .com_cartao_sus("44556")\
+            .com_idade(19)\
+            .com_altura(168)\
+            .com_peso(65)\
+            .com_tipo_sanguineo("B+")\
+            .com_genero("MASCULINO")\
+            .com_tipo_plano("SUS")\
+            .com_telefone("82987654321")\
+            .construir()
+
+        # Ygor - Convênio Amil
+        ygor = builder.resetar()\
+            .com_nome("Ygor")\
+            .com_cpf("33445")\
+            .com_cartao_sus("66778")\
+            .com_idade(28)\
+            .com_altura(172)\
+            .com_peso(78)\
+            .com_tipo_sanguineo("AB+")\
+            .com_genero("MASCULINO")\
+            .com_tipo_plano("CONVENIO")\
+            .com_tipo_convenio("AMIL")\
+            .com_telefone("82986543210")\
+            .construir()
+
+
+        ygor.historico_medico.adicionar_cirurgia("Apendicectomia - 2018")
+
+        # Marco Gomes - Convênio Bradesco
+        marco = builder.resetar()\
+            .com_nome("Marco Gomes")\
+            .com_cpf("55667")\
+            .com_cartao_sus("77889")\
+            .com_idade(45)\
+            .com_altura(178)\
+            .com_peso(92)\
+            .com_tipo_sanguineo("O-")\
+            .com_genero("MASCULINO")\
+            .com_tipo_plano("CONVENIO")\
+            .com_tipo_convenio("BRADESCO")\
+            .com_telefone("82985432109")\
+            .construir()
+
+        marco.historico_medico.adicionar_doenca_cronica("Diabetes tipo 2")
+        marco.historico_medico.adicionar_medicamento("Metformina 850mg - 2cp/dia")
+        marco.historico_medico.adicionar_alergia("Penicilina")
+
+        self.pacientes = [vitor, otavio, kaique, ygor, marco]
+
         self.funcionarios = [
             Medico("Saulo de Tarso", "CRM-123", "Cardiologista"),
             Medico("Maria", "CRM-456", "Ortopedista"),
@@ -150,6 +233,7 @@ class Hospital:
             print(f"Tipo Sanguíneo: {paciente.tipo_sanguineo.value if paciente.tipo_sanguineo else 'Não informado'}")
             print(f"Gênero: {paciente.genero.value if paciente.genero else 'Não informado'}")
             print(f"Tipo de Plano: {paciente.tipo_plano.value if paciente.tipo_plano else 'Não informado'}")
+            print(f"Convênio: {paciente.tipo_convenio.value if paciente.tipo_convenio else 'Não informado'}")
             
             # Contato
             print(f"Telefone: {paciente.telefone if paciente.telefone else 'Não informado'}")
@@ -276,11 +360,21 @@ class Hospital:
 
     def faturar_paciente(self, nome):
         paciente = self.encontrar_paciente(nome)
-        if paciente:
-            total = len(paciente.consultas) * PRECO + len(paciente.exames) * PRECO
-            print(f"Fatura para {paciente.nome}: R$ {total:.2f}")
-        else:
+        if not paciente:
             print("Paciente não encontrado.")
+            return
+
+        estrategia = estrategia_para_faturar(paciente) # Objeto de acordo com a estratégia 
+        valor = estrategia.calcular_faturamento(paciente)
+
+        print(f"\nFatura de {paciente.nome}")
+        print(f"Tipo de Plano: {paciente.tipo_plano}")
+        if paciente.tipo_convenio:
+            print(f"Convênio: {paciente.tipo_convenio}")
+        print(f"Consultas: {len(paciente.consultas)}")
+        print(f"Exames: {len(paciente.exames)}")
+        print(f"TOTAL: R$ {valor:.2f}")
+
 
     #Contem polimorfismo
     def solicitar_exame(self, nomePaciente, nomeProfissional, nomeExame):
