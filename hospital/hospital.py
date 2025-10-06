@@ -197,6 +197,9 @@ class Hospital:
             print(f"{i}: Nome: {nome}, Registro: {registro}, Especialidade: {especialidade}")
     
     def mostrar_notificacoes_emergencia(self):
+        if not self.emergencias.log:
+            print("Nenhuma notificação de emergência.")
+            return
         for log in self.emergencias.log:
             print(f"🕒 {log[0]} - {log[1].nome} recebeu a notificação: {log[2]}")
 
