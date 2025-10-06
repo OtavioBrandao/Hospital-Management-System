@@ -41,17 +41,18 @@ Bugs para ajeitar:
 - Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados.
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
 - Ta deixando cadastrar pacientes vazios no cadastro simples
+- Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
 
-Creational Design Patterns: Estou pensando em implementar os seguintes:
+Design Patterns: Estou pensando em implementar os seguintes:
 
 Implementados
 - Builder  OK
 - Singleton OK
 - Factory Methods OK (ver a possibilidade de usar **kwargs)
 
-- Strategy
-- Observer
-
+- Strategy OK
+- Observer OK
+- Template Method
 
 
 
