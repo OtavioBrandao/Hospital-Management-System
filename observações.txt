@@ -50,6 +50,7 @@ Implementados
 - Factory Methods OK (ver a possibilidade de usar **kwargs)
 
 - Strategy
+- Observer
 
 
 

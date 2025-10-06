@@ -57,6 +57,7 @@ def funcionarios(hospital):
         print("1 - Queixa")
         print("2 - Escalonar funcionário")
         print("3 - Gerenciamento de funcionários")
+        print("4 - Ver notificações de emergência")
         print("0 - Voltar")
         op = input("Escolha: ")
         
@@ -68,6 +69,9 @@ def funcionarios(hospital):
             escalonamento_menu(hospital)
         elif op == '3':
             funcionario_manager(hospital)
+        elif op == '4':
+            hospital.mostrar_notificacoes_emergencia()
+            input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
             input("Pressione Enter para continuar...")

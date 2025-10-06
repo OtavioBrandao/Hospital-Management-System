@@ -1,11 +1,12 @@
 from entidades.paciente import Paciente
 from entidades.estoque import Estoque
 from entidades.administrativo import SetorAdministrativo
-from entidades.emergencia import EmergenciaManager
+from entidades.emergencia import EmergenciaManager, FuncionarioObserver
 from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta, GerenciadorFuncionariosSaude
 from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
 from entidades.faturamento import estrategia_para_faturar
 from entidades.paciente import PacienteBuilder
+
 
 funcionarios_manager = GerenciadorFuncionariosSaude()
 
@@ -139,7 +140,8 @@ class Hospital:
         self.leitos = []
         self.escalonamento = {
             "Saulo de Tarso": "Manhã",
-            "Caio Calheiros": "Manhã",
+            "Caio Calheiros": "Tarde",
+            "Dr. House": "Noite",
             "Pedro": "Tarde",
             "Josemir": "Noite",
             "Karina": "Manhã",
@@ -148,6 +150,12 @@ class Hospital:
         self.estoque = Estoque()
         self.administrativo = SetorAdministrativo()
         self.emergencias = EmergenciaManager()
+
+        for nome, turno in self.escalonamento.items():
+            funcionario = next((f for f in self.funcionarios if f.nome == nome), None)
+            if funcionario:
+                observer = FuncionarioObserver(funcionario)
+                self.emergencias.adicionar_observer(observer, turno)
 
 
     def adicionar_funcionario(self, tipo, nome, registro, especialidade=None):
@@ -187,6 +195,10 @@ class Hospital:
             registro = funcionario.registro if funcionario.registro else "Não informado"
             especialidade = getattr(funcionario, 'especialidade', 'N/A')
             print(f"{i}: Nome: {nome}, Registro: {registro}, Especialidade: {especialidade}")
+    
+    def mostrar_notificacoes_emergencia(self):
+        for log in self.emergencias.log:
+            print(f"🕒 {log[0]} - {log[1].nome} recebeu a notificação: {log[2]}")
 
     def cadastrar_paciente(self, nome, cpf=None, cartao_sus=None):
         paciente = Paciente(nome, cpf, cartao_sus)
