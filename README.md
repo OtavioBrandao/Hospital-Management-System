@@ -14,8 +14,8 @@ Sistema de gestão hospitalar desenvolvido em Python com foco em Programação O
 - ✅ **Gerenciamento de Leitos:** Alocação de leitos para internação.
 - ✅ **Controle de Estoque:** Adição e visualização de materiais hospitalares.
 - ✅ **Escalonamento de Turnos:** Definição de turnos de trabalho para a equipe.
-- ✅ **Gerenciamento de Emergências:** Registro de casos de emergência com sistema de prioridade.
-- ✅ **Faturamento:** Cálculo automático de faturas por atendimentos.
+- ☑️ **Gerenciamento de Emergências:** Registro de casos de emergência com sistema de prioridade.
+- ☑️ **Faturamento:** Cálculo automático de faturas por atendimentos.
 - ☑️ **Prescrição de receitas**: Funcionalidade implementada que não tinha antes.
 - ☑️ **Geração de Relatórios em PDF:**
     - ☑️ Relatório individual de pacientes.
@@ -45,15 +45,21 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
     python hospital/main.py
     ```
 
-## Design Patterns utilizados
+# Design Patterns implementados
+
+## Padrões criacionais
+
 - **Singleton**: Utilizado para garantir que hospital seja instanciado apenas uma vez e não tenhamos hospitais diferentes, gerando incoerência nos dados. Foi implementado para ser instanciado como uma váriavel global por todo o código, seguindo a estrutura de Singleton com __new__ e etc.
+
 - **Builder**: Utilizado para a criação de pacientes de forma personalizada, onde posso criar um paciente simples ou um mais complexo, preenchendo os dados que eu quero e ainda realizando uma atualização que segue a mesma lógica do builder com reset. Além disso, foi adicionada uma classe diretora que irá coordenar a partir desse builder a construção específica de pacientes. Ele basicamente chama os métodos 'com' para validações básicas E junta eles junto com o 'construir' no final para terminar a construção, como se fosse bloquinho por bloquinho.
+
 - **Factory Method**: Utilizado para a criação de funcionários da saúde para o hospital em si. É uma forma de criar o funcionário de uma forma organizada, recebendo o tipo e chamando a fábrica de acordo com esse tipo, com algumas validações simples.
 
+## Padrões comportamentais
 
-## Funcionalidades Futuras
+- **Strategy**: Utilizado para gerenciar o faturamento que antes era fixa e de forma avulsa. Basicamente, o mesmo vai criar estratégias diferentes para gerar a fatura do respectivo paciente de acordo com o plano e convênio. A função para calcular o faturamento é implementada de maneiras diferentes para cada estratégia, sendo elas o plano particular, SUS e convênio, onde temos diferentes convênios e diferentes formas de fazer o faturamento. Fundamental para facilitar a implementação de outras faturas caso seja adicionado no futuro.
 
-- [ ] **Sistema de Login:** Criar perfis de acesso para pacientes e funcionários.
-- [ ] **Interface Gráfica (GUI):** Desenvolver uma interface visual para facilitar o uso do sistema.
-- [ ] **Banco de Dados:** Substituir o armazenamento em memória por um banco de dados (SQLite, por exemplo) para persistência dos dados.
-- [ ] **Testes Unitários:** Implementar testes para garantir a estabilidade do código.
+- **Template Method**: Foi utilizado para organizar a geração de PDFS, visto que antes tinha muita repetição de código. Ao montar um esqueleto que vai ser a estrutura fixa de todo o relatório, ou seja, um método fixo, ele vai obrigar todos os tipos de relatório que herdarem desse Template a ter a mesma estrutura. As únicas mudanças vão ser nos métodos abstratos que vão mudar para cada tipo de relatório, tanto no título do relatório em si como no conteúdo do mesmo. A utilização do template foi interessante pois proporcionou a possibilidade de usar menos linhas de código e deixar tudo mais organizado.
+
+- **Observer**: Foi utilizado para aprimorar o gerenciamento de emergências ao notificar funcionários da saúde diferentes sobre uma eventual emergência, notificando apenas aqueles que estão de plantão escalonados no turno atual do horário local. Esta implementação permitiu uma forma mais organizada de apenas notificar a quem interessa no momento e não necessariamente todo mundo, para que os notificados tenham sua própia reação à situação de emergência.
+
