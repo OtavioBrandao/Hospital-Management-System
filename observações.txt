@@ -42,6 +42,7 @@ Bugs para ajeitar:
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
 - Ta deixando cadastrar pacientes vazios no cadastro simples
 - Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
+- Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps
 
 Design Patterns: Estou pensando em implementar os seguintes:
 
