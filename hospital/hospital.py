@@ -207,11 +207,6 @@ class Hospital:
         for log in self.emergencias.log:
             print(f"🕒 {log[0]} - {log[1].nome} recebeu a notificação: {log[2]}")
 
-    def cadastrar_paciente(self, nome, cpf=None, cartao_sus=None):
-        paciente = Paciente(nome, cpf, cartao_sus)
-        self.pacientes.append(paciente)
-        print(f"Paciente {nome} cadastrado.")
-
     def encontrar_paciente(self, nome):
         for p in self.pacientes:
             if p.nome.lower() == nome.lower():

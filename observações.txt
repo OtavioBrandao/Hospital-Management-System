@@ -43,6 +43,7 @@ Bugs para ajeitar:
 - Ta deixando cadastrar pacientes vazios no cadastro simples
 - Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
 - Novos funcionarios não sendo alocados em turnos ( adicionar isso)
+- Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps
 
 Design Patterns: Estou pensando em implementar os seguintes:
 
