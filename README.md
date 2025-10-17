@@ -63,3 +63,4 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
 
 - **Observer**: Foi utilizado para aprimorar o gerenciamento de emergências ao notificar funcionários da saúde diferentes sobre uma eventual emergência, notificando apenas aqueles que estão de plantão escalonados no turno atual do horário local. Esta implementação permitiu uma forma mais organizada de apenas notificar a quem interessa no momento e não necessariamente todo mundo, para que os notificados tenham sua própia reação à situação de emergência.
 
+## Padrões estruturais

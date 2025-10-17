@@ -116,27 +116,31 @@ class Hospital:
         self.pacientes = [vitor, otavio, kaique, ygor, marco]
 
         self.funcionarios = [
-            Medico("Dr. House", "CRM-999", "Diagnóstico"),
-            Medico("Saulo de Tarso", "CRM-123", "Cardiologista"),
-            Medico("Maria", "CRM-456", "Ortopedista"),
-            Medico("Joana D'Arc", "CRM-789", "Pediatra"),
-            Medico("Cláudio", "CRM-101", "Neurologista"),
-            Medico("Augusto", "CRM-202", "Clínico Geral"),
-            Medico("César", "CRM-303", "Dermatologista"),
-            Medico("Caio Calheiros", "CRM-404", "Oftalmologista"),
-            Enfermeiro("Pedro", "COREN-101"),
-            Enfermeiro("Josemir", "COREN-102"),
-            Enfermeiro("Karina", "COREN-202"),
-            Enfermeiro("Ana", "COREN-456"),
-            Enfermeiro("Agostinho de Hipona", "COREN-789"),
-            Dentista("Aurora Vieira", "CRO-789"),
-            Dentista("Beatriz Silva", "CRO-456"),
-            Dentista("Carlos Eduardo", "CRO-123"),
-            Dentista("Daniela Costa", "CRO-321"),
-            Psicologo("Madalena", "CRP-101"),
-            Psicologo("Mariana", "CRP-202"),
-            Psicologo("Marcos", "CRP-303"),
-            Psicologo("Suzana", "CRP-404")] 
+        Medico("Dr. House", "CRM-999", "dr.house@hospital.com", "5582999999999", "Diagnóstico"),
+        Medico("Saulo de Tarso", "CRM-123", "saulo@hospital.com", "5582988888888", "Cardiologista"),
+        Medico("Maria", "CRM-456", "maria@hospital.com", "5582977777777", "Ortopedista"),
+        Medico("Joana D'Arc", "CRM-789", "joana@hospital.com", "5582966666666", "Pediatra"),
+        Medico("Cláudio", "CRM-101", "claudio@hospital.com", "5582955555555", "Neurologista"),
+        Medico("Augusto", "CRM-202", "augusto@hospital.com", "5582944444444", "Clínico Geral"),
+        Medico("César", "CRM-303", "cesar@hospital.com", "5582933333333", "Dermatologista"),
+        Medico("Caio Calheiros", "CRM-404", "caio@hospital.com", "5582922222222", "Oftalmologista"),
+        
+        Enfermeiro("Pedro", "COREN-101", "pedro@hospital.com", "5582911111111"),
+        Enfermeiro("Josemir", "COREN-102", "josemir@hospital.com", "5582900000000"),
+        Enfermeiro("Karina", "COREN-202", "karina@hospital.com", "5582899999999"),
+        Enfermeiro("Ana", "COREN-456", "ana@hospital.com", "5582888888888"),
+        Enfermeiro("Agostinho de Hipona", "COREN-789", "agostinho@hospital.com", "5582877777777"),
+        
+        Dentista("Aurora Vieira", "CRO-789", "aurora@hospital.com", "5582866666666"),
+        Dentista("Beatriz Silva", "CRO-456", "beatriz@hospital.com", "5582855555555"),
+        Dentista("Carlos Eduardo", "CRO-123", "carlos@hospital.com", "5582844444444"),
+        Dentista("Daniela Costa", "CRO-321", "daniela@hospital.com", "5582833333333"),
+        
+        Psicologo("Madalena", "CRP-101", "madalena@hospital.com", "5582822222222"),
+        Psicologo("Mariana", "CRP-202", "mariana@hospital.com", "5582811111111"),
+        Psicologo("Marcos", "CRP-303", "marcos@hospital.com", "5582800000000"),
+        Psicologo("Suzana", "CRP-404", "suzana@hospital.com", "5582799999999")
+        ]
         self.leitos = []
         self.escalonamento = {
             "Saulo de Tarso": "Manhã",
@@ -154,11 +158,11 @@ class Hospital:
         for nome, turno in self.escalonamento.items():
             funcionario = next((f for f in self.funcionarios if f.nome == nome), None)
             if funcionario:
-                observer = FuncionarioObserver(funcionario)
+                observer = FuncionarioObserver(funcionario, email=funcionario.email, whatsapp=funcionario.whatsapp)
                 self.emergencias.adicionar_observer(observer, turno)
 
 
-    def adicionar_funcionario(self, tipo, nome, registro, especialidade=None):
+    def adicionar_funcionario(self, tipo, nome, registro, especialidade=None, email=None, whatsapp=None):
 
         for funcionario in self.funcionarios:
             if funcionario.registro == registro:
@@ -170,7 +174,7 @@ class Hospital:
             return
 
         try:
-            funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade)
+            funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
             self.funcionarios.append(funcionario)
             print(f"{tipo.capitalize()} {nome} adicionado ao hospital.")
         except ValueError as e:

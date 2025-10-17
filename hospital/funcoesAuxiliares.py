@@ -532,9 +532,11 @@ def funcionario_manager(hospital):
             tipo = input("Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): ").strip().lower()
             print("Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista")
             especialidade = input("Especialidade (caso for Médico): ")
+            email = input("Email: ")
+            whatsapp = input("WhatsApp: ")
            
             try:
-                hospital.adicionar_funcionario(tipo, nome, registro, especialidade)
+                hospital.adicionar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
                 print("Funcionário adicionado com sucesso!")
                 input("Pressione Enter para continuar...")
             except ValueError as ve:

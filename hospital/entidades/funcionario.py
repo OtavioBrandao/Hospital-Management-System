@@ -4,9 +4,11 @@ from .exame import EXAMES_DISPONIVEIS
 
 # Ver se é necessário fazer mais coisa aqui
 class FuncionarioSaude(ABC):
-    def __init__(self, nome, registro):
+    def __init__(self, nome, registro, email, whatsapp):
         self.nome = nome
         self.registro = registro
+        self.email = email          
+        self.whatsapp = whatsapp 
         self.exames_permitidos = [] # Cada filho definirá seus exames
 
     @abstractmethod
@@ -25,8 +27,8 @@ class FuncionarioSaude(ABC):
         return f"{self.nome} ({self.registro})"
 
 class Medico(FuncionarioSaude):
-    def __init__(self, nome, registro, especialidade=None):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp, especialidade=None):
+        super().__init__(nome, registro, email, whatsapp)
         self.especialidade = especialidade
         self.exames_permitidos = ["hemograma", "raio-x", "urina", "tomografia", "ecocardiograma",
         "eletrocardiograma", "ultrassom", "ressonancia", 
@@ -50,8 +52,8 @@ class Medico(FuncionarioSaude):
         print(f"Dr(a). {self.nome} receitou {medicamento} para {paciente.nome}.")
 
 class Enfermeiro(FuncionarioSaude):
-    def __init__(self, nome, registro):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp):
+        super().__init__(nome, registro, email, whatsapp)
         self.exames_permitidos = ["glicemia", "pressao"]
 
     def atenderPaciente(self, paciente):
@@ -66,8 +68,8 @@ class Enfermeiro(FuncionarioSaude):
             print(f"Exame '{nome_exame}' não pode ser solicitado por um Enfermeiro.")
 
 class Dentista(FuncionarioSaude):
-    def __init__(self, nome, registro):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp):
+        super().__init__(nome, registro, email, whatsapp)
         self.exames_permitidos = ["radiografia_dentaria", "limpeza","tomografia"]
 
     def atenderPaciente(self, paciente):
@@ -82,8 +84,8 @@ class Dentista(FuncionarioSaude):
             print(f"Exame '{nome_exame}' não pode ser solicitado por um Dentista.")
 
 class Psicologo(FuncionarioSaude):
-    def __init__(self, nome, registro):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp):
+        super().__init__(nome, registro, email, whatsapp)
         self.exames_permitidos = ["encaminhamento"]
     
     def atenderPaciente(self, paciente):
@@ -98,8 +100,8 @@ class Psicologo(FuncionarioSaude):
             print(f"'{nome_exame}' não é uma ação válida para um Psicólogo.")
 
 class Nutricionista(FuncionarioSaude):
-    def __init__(self, nome, registro):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp):
+        super().__init__(nome, registro, email, whatsapp)
         self.exames_permitidos = ["teste_alergia"]
 
     def atenderPaciente(self, paciente):
@@ -114,8 +116,8 @@ class Nutricionista(FuncionarioSaude):
             print(f"Exame '{nome_exame}' não pode ser solicitado por Nutricionista.")
 
 class Fisioterapeuta(FuncionarioSaude):
-    def __init__(self, nome, registro):
-        super().__init__(nome, registro)
+    def __init__(self, nome, registro, email, whatsapp):
+        super().__init__(nome, registro, email, whatsapp)
         self.exames_permitidos = ["encaminhamento"]
 
     def atenderPaciente(self, paciente):
@@ -132,11 +134,17 @@ class Fisioterapeuta(FuncionarioSaude):
 # Factory Method Design Pattern usado aqui para criar funcionários de saúde
 class FuncionarioSaudeFactory(ABC):
     @abstractmethod
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
         pass
 
 class MedicoFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
+    
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um médico.")
         if registro.startswith("CRM") and especialidade:
@@ -144,53 +152,72 @@ class MedicoFactory(FuncionarioSaudeFactory):
         else:
             raise ValueError("Registro de médico deve começar com 'CRM' e especialidade é obrigatória.")
 
-        return Medico(nome, registro, especialidade)
+        return Medico(nome, registro, email, whatsapp, especialidade)
 
 class EnfermeiroFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um enfermeiro.")      
         if not registro.startswith("COREN"):
             raise ValueError("Registro de enfermeiro deve começar com 'COREN'.")
 
-        return Enfermeiro(nome, registro)
+        return Enfermeiro(nome, registro, email, whatsapp)
 
 class DentistaFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um dentista.")      
         if not registro.startswith("CRO"):
             raise ValueError("Registro de dentista deve começar com 'CRO'.")
         
-        return Dentista(nome, registro)  
+        return Dentista(nome, registro, email, whatsapp)  
 
 class PsicologoFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um psicólogo.")
         if not registro.startswith("CRP"):
             raise ValueError("Registro de psicólogo deve começar com 'CRP'.")
 
-        return Psicologo(nome, registro)
+        return Psicologo(nome, registro, email, whatsapp)
 
 class NutricionistaFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um nutricionista.")
         if not registro.startswith("CRN"):
             raise ValueError("Registro de nutricionista deve começar com 'CRN'.")
 
-        return Nutricionista(nome, registro)
+        return Nutricionista(nome, registro, email, whatsapp)
 
 class FisioterapeutaFactory(FuncionarioSaudeFactory):
-    def criar_funcionario(self, nome, registro, especialidade):
+    def criar_funcionario(self, nome, registro, especialidade, email, whatsapp):
+        if len(whatsapp) < 12:
+            raise ValueError("Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.")
+        if ".com" not in email or "@" not in email:
+            raise ValueError("Endereço de email inválido. Verifique o formato do email.")
         if not nome or not registro:
             raise ValueError("Nome e registro são obrigatórios para criar um fisioterapeuta.")
         if not registro.startswith("CREFITO"):
             raise ValueError("Registro de fisioterapeuta deve começar com 'CREFITO'.")
-        
-        return Fisioterapeuta(nome, registro)
-    
+
+        return Fisioterapeuta(nome, registro, email, whatsapp)
 
 class GerenciadorFuncionariosSaude:
     factories = {
@@ -203,8 +230,8 @@ class GerenciadorFuncionariosSaude:
     }
 
     @classmethod
-    def criar_funcionario(cls, tipo, nome, registro, especialidade=None):
+    def criar_funcionario(cls, tipo, nome, registro, especialidade=None, email=None, whatsapp=None):
         factory = cls.factories.get(tipo.lower())
         if not factory:
             raise ValueError(f"Tipo de funcionário de saúde desconhecido: {tipo}")
-        return factory.criar_funcionario(nome, registro, especialidade)
+        return factory.criar_funcionario(nome, registro, especialidade, email, whatsapp)

@@ -42,6 +42,7 @@ Bugs para ajeitar:
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
 - Ta deixando cadastrar pacientes vazios no cadastro simples
 - Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
+- Novos funcionarios não sendo alocados em turnos ( adicionar isso)
 
 Design Patterns: Estou pensando em implementar os seguintes:
 
@@ -52,7 +53,9 @@ Implementados
 
 - Strategy OK
 - Observer OK
-- Template Method
+- Template Method OK
+
+- Adapter OK
 
 
 

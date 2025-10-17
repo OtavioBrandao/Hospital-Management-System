@@ -127,6 +127,7 @@ class RelatorioEquipe(RelatorioTemplate):
                 info = f"  Registro: {funcionario.registro}\n  Profissão: {funcionario.__class__.__name__}"
                 if hasattr(funcionario, 'especialidade') and funcionario.especialidade:
                     info += f"\n  Especialidade: {funcionario.especialidade}"
+                info += f"\n  Email: {funcionario.email}\n  WhatsApp: {funcionario.whatsapp}"
                 pdf.multi_cell(0, 10, info)
                 pdf.ln(5)
 
