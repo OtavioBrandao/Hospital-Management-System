@@ -39,7 +39,7 @@ if __name__ == "__main__":
             funcoesAuxiliares.emergencias_menu(hospital)
             
         elif op == '7':
-            funcoesAuxiliares.solicitarExame()
+            funcoesAuxiliares.exame_menu(hospital)
             input("Operação concluída. Pressione Enter para continuar...")
 
         elif op == '8':

@@ -649,6 +649,40 @@ def prontuarioMedico():
             input("Prontuário registrado. Pressione Enter para continuar...")
 
 #Solicitação de exame
+
+def exame_menu(hospital):
+    while True:
+        clear_screen()
+        print("\n--- SOLICITAÇÃO DE EXAMES ---")
+        print("1 - Solicitar exame")
+        print("2 - Pacotes de exames")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
+            solicitarExame()
+            input("Pressione Enter para continuar...")
+        elif op == '2':
+            paciente = input("Nome do paciente: ")
+            profissional = input("Nome do profissional: ")
+            print("Pacotes disponíveis:\n" 
+                  "- checkup_basico\n"
+                  "- avaliacao_cardiaca\n"
+                  "- pre_operatorio\n"
+                  "- checkup_feminino\n"
+                  "- avaliacao_odonto")
+            codigo_pacote = input("Código do pacote de exames: ").lower()
+
+            hospital.solicitar_pacote_exames(paciente, profissional, codigo_pacote)
+            input("Pressione Enter para continuar...")
+        else:
+            print("Opção inválida.")
+            input("Pressione Enter para continuar...")
+
+
+
 def solicitarExame():
     nome_paciente = input("Nome do paciente: ")
     paciente = hospital.encontrar_paciente(nome_paciente)

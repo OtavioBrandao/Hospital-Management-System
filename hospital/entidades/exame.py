@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 class Exame():
     def __init__(self,nome,codigo):
         self.nome = nome
@@ -75,7 +77,6 @@ VALORES_EXAMES = {
     # Dentista
     "radiografia_dentaria": 60,
     "limpeza": 120,
-    # "tomografia": 200,  # mesma chave já definida acima
     "exame_periodontal": 100,
     "exame_caries": 70,
     "exame_endodontico": 250,
@@ -95,3 +96,100 @@ VALORES_EXAMES = {
     # Psicólogo (encaminhamento)
     "encaminhamento": 10
 }
+
+# Composite para exames 
+class ComponenteExame(ABC):
+
+    @abstractmethod
+    def executar(self, profissional, paciente):
+        pass
+
+    @abstractmethod
+    def obter_custo(self):
+        pass
+
+    @abstractmethod
+    def listar_exames(self):
+        pass
+
+class ExameSimples(ComponenteExame):
+    def __init__(self, codigo):
+        self.codigo = codigo
+        self.exame = EXAMES_DISPONIVEIS[codigo]
+        self.custo = VALORES_EXAMES[codigo]
+
+    def executar(self, profissional, paciente):
+        profissional.requisitarExame(paciente, self.codigo, False)
+
+    def obter_custo(self):
+        return self.custo
+    
+    def listar_exames(self):
+        return [self.exame.nome]
+        
+# Vários exames simples
+class ExameComposto(ComponenteExame):
+    def __init__(self, nome, descricao):
+        self.nome = nome
+        self.descricao = descricao
+        self.exames = []
+
+    def adicionar_exame(self, exame: ComponenteExame):
+        self.exames.append(exame)
+        return self
+
+    def executar(self, profissional, paciente):
+        print(f"\n🔬 Solicitando pacote: {self.nome}")
+        for exame in self.exames:
+            exame.executar(profissional, paciente)
+
+    def obter_custo(self):
+        return sum(exame.obter_custo() for exame in self.exames)
+    
+    def listar_exames(self):
+        nomes = []
+        for exame in self.exames:
+            nomes.extend(exame.listar_exames())
+        return nomes
+    
+def criar_catalogo_pacotes():
+    catalogo = {}
+    # Check-up Básico
+    checkup_basico = ExameComposto("Checkup Básico", "Exames de rotina")
+    checkup_basico.adicionar_exame(ExameSimples("hemograma"))
+    checkup_basico.adicionar_exame(ExameSimples("urina"))
+    checkup_basico.adicionar_exame(ExameSimples("glicemia"))
+    catalogo["checkup_basico"] = checkup_basico
+    
+    # Avaliação Cardíaca
+    cardio = ExameComposto("Avaliação Cardíaca Completa", "Exames para avaliação do coração")
+    cardio.adicionar_exame(ExameSimples("ecocardiograma"))
+    cardio.adicionar_exame(ExameSimples("eletrocardiograma"))
+    cardio.adicionar_exame(ExameSimples("hemograma"))
+    catalogo["avaliacao_cardiaca"] = cardio
+    
+    # Pré-Operatório
+    pre_op = ExameComposto("Pré-Operatório", "Exames necessários antes de cirurgias")
+    pre_op.adicionar_exame(ExameSimples("hemograma"))
+    pre_op.adicionar_exame(ExameSimples("raio-x"))
+    pre_op.adicionar_exame(ExameSimples("eletrocardiograma"))
+    pre_op.adicionar_exame(ExameSimples("urina"))
+    catalogo["pre_operatorio"] = pre_op
+    
+    # Saúde da Mulher
+    mulher = ExameComposto("Checkup Feminino", "Exames para a saúde da mulher")
+    mulher.adicionar_exame(ExameSimples("papanicolau"))
+    mulher.adicionar_exame(ExameSimples("mamografia"))
+    mulher.adicionar_exame(ExameSimples("ultrassom"))
+    catalogo["checkup_feminino"] = mulher
+
+    # Saúde Bucal
+    bucal = ExameComposto("Avaliação Odontológica Completa", "Exames para a saúde bucal")
+    bucal.adicionar_exame(ExameSimples("radiografia_dentaria"))
+    bucal.adicionar_exame(ExameSimples("exame_periodontal"))
+    bucal.adicionar_exame(ExameSimples("limpeza"))
+    catalogo["avaliacao_odonto"] = bucal
+    
+    return catalogo
+
+PACOTES_EXAMES = criar_catalogo_pacotes()

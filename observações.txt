@@ -1,6 +1,3 @@
-Etapa Inicial:
-Ver quais são as 10 funcionalidades e ver como cada uma delas funciona. Se tiver alguma coisa que eu ache incompleta, implementar.
-Depois, pensar em como refatorar cada uma dessas funcionalidades, focando no uso de Design Patterns.
 
 No Software Projects, temos:
 
@@ -14,19 +11,6 @@ No Software Projects, temos:
 • Inventory Management: Management of medical supplies and inventory; OK (Parte do estoque)
 • Staff Scheduling: Scheduling shifts and duties for hospital staff; (Escalonamento de funcionarios) OK
 • Emergency Services Management: Handling and prioritizing emergency cases. OK (Acho que não precisa mudar)
-
-Vamos verificar as 10, entender como cada uma funciona e começar os refatoramentos.
-
-Obs: Se possível, usar o design patterns para alguma dessas modificações que vão ser feitas
-- No alocar leito, adicionar a opção de ver os pacientes alocados
-- Na parte funcionários, ver a possibilidade de ver os dados de cada tipo de funcionário do hospital (funcionario.py)
-- Tá faltando uma função para fazer as receitas dos medicamentos para cada tipo de funcionário se ele poder fazer (PRIORIDADE) -> Adicionei a parte de receita, mas ainda tem q ver pra pegar o funcionario direto q ta usando e usar o metodo que faz isso se o funcionario pode gerar receita claro
-- Adicionar mais funcionários OK
-- Enquanto ao sistema de login, ver as diferenças para cada funcionário ao acessar o sistema se eu ver q é necessário fazer
-- Ver como fazer a parte do relatório em PDF funcionar (PRIORIDADE) OK
-- Tratar CPF e Cartão SUS repetidos, caso tenhamos pacientes com mesmo nome para consultar o paciente correto
-- Falta a parte de remarcar e cancelar consultas OK
-- Ver pq as consultas medicas vao sempre pro saulo de tarso (o msm problema deve ocorrer pra dentista e etc)
 
 Resumo das alterações até agora:
 - Consertei a geração de PDF
@@ -43,11 +27,15 @@ Bugs para ajeitar:
 - Ta deixando cadastrar pacientes vazios no cadastro simples
 - Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
 - Novos funcionarios não sendo alocados em turnos ( adicionar isso)
-- Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps
+- Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps.. diferenciar pelo cpf ou id temporario
+- Ver pq as consultas medicas vao sempre pro Dr. House(o msm problema deve ocorrer pra dentista e etc)
+- No alocar leito, adicionar a opção de ver os pacientes alocados
+
 
 Design Patterns: Estou pensando em implementar os seguintes:
 
-Implementados
+Implementados:
+
 - Builder  OK
 - Singleton OK
 - Factory Methods OK 
@@ -58,7 +46,7 @@ Implementados
 
 - Adapter OK
 - Facade OK
-
+- Composite OK
 
 
 

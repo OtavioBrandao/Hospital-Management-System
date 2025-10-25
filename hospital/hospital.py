@@ -410,8 +410,36 @@ class Hospital:
 
         # Polimorfismo: O hospital não sabe os detalhes, apenas
         # manda o objeto profissional requisitar o exame.
-        profissional.requisitarExame(paciente, nomeExame)
+        profissional.requisitarExame(paciente, nomeExame, True)
+    
+    def solicitar_pacote_exames(self, nome_paciente, nome_profissional, codigo_pacote):
+        from entidades.exame import PACOTES_EXAMES
         
+        paciente = self.encontrar_paciente(nome_paciente)
+        if not paciente:
+            print("Paciente não encontrado.")
+            return
+        
+        profissional = next((f for f in self.funcionarios if f.nome.lower() == nome_profissional.lower()), None)
+        if not profissional:
+            print("Profissional não encontrado.")
+            return
+        
+        pacote = PACOTES_EXAMES.get(codigo_pacote)
+        if not pacote:
+            print("Pacote não encontrado.")
+            return
+        
+        print(f"\n📋 Pacote: {pacote.nome}")
+        print(f"📝 Descrição: {pacote.descricao}")
+        print(f"💰 Valor total: R$ {pacote.obter_custo():.2f}")
+        print(f"📝 Exames inclusos: {', '.join(pacote.listar_exames())}")
+        
+        confirma = input("\nConfirmar solicitação? (s/n): ")
+        if confirma.lower() == 's':
+            pacote.executar(profissional, paciente)
+            print("✅ Pacote solicitado com sucesso!")
+            
     # Adicionar opção de ver leitos alocados e situação do hospital
     def alocar_leito(self, nome):
         paciente = self.encontrar_paciente(nome)
