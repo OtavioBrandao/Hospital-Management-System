@@ -189,7 +189,14 @@ def criar_catalogo_pacotes():
     bucal.adicionar_exame(ExameSimples("exame_periodontal"))
     bucal.adicionar_exame(ExameSimples("limpeza"))
     catalogo["avaliacao_odonto"] = bucal
-    
+
+    # Composição da composição
+    super_checkup = ExameComposto("Super Checkup", "Completo")
+    super_checkup.adicionar_exame(checkup_basico)  
+    super_checkup.adicionar_exame(ExameSimples("raio-x")) 
+    super_checkup.adicionar_exame(ExameSimples("tomografia"))
+    catalogo["super_checkup"] = super_checkup
+        
     return catalogo
 
 PACOTES_EXAMES = criar_catalogo_pacotes()

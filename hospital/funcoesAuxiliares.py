@@ -672,7 +672,8 @@ def exame_menu(hospital):
                   "- avaliacao_cardiaca\n"
                   "- pre_operatorio\n"
                   "- checkup_feminino\n"
-                  "- avaliacao_odonto")
+                  "- avaliacao_odonto\n"
+                  "- super_checkup")
             codigo_pacote = input("Código do pacote de exames: ").lower()
 
             hospital.solicitar_pacote_exames(paciente, profissional, codigo_pacote)
