@@ -3,7 +3,6 @@ from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
 import os
 import random
 
-
 hospital = None
 
 def clear_screen():
@@ -41,10 +40,10 @@ def estoque_menu(hospital):
         elif op == '1':
             item = input("Item: ")
             qtd = int(input("Quantidade: "))
-            hospital.estoque.adicionar_item(item, qtd)
+            hospital.add_item_estoque(item, qtd)
             input("Item adicionado. Pressione Enter para continuar...")
         elif op == '2':
-            hospital.estoque.mostrar_estoque()
+            hospital.ver_estoque()
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -70,7 +69,7 @@ def funcionarios(hospital):
         elif op == '3':
             funcionario_manager(hospital)
         elif op == '4':
-            hospital.mostrar_notificacoes_emergencia()
+            hospital.notificacoes_emergencia()
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -93,11 +92,11 @@ def receituario_menu(hospital):
             descricao = input("Descrição: ")
             profissional = input("Profissional: ")
             dosagem = input("Dosagem: ")
-            hospital.registrar_receita(nome, profissional, medicamento, descricao, dosagem)
+            hospital.receita(nome, profissional, medicamento, descricao, dosagem)
             input("Receita gerada. Pressione Enter para continuar...")
         elif op == '2':
             nome = input("Nome do paciente: ")
-            hospital.listar_receitas(nome)
+            hospital.receitas(nome)
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -117,10 +116,10 @@ def emergencias_menu(hospital):
         elif op == '1':
             nome = input("Nome do paciente: ")
             prioridade = input("Prioridade (alta/media/baixa): ").lower()
-            hospital.emergencias.registrar_emergencia(nome, prioridade)
+            hospital.registrar_emergencia(nome, prioridade)
             input("Emergência registrada. Pressione Enter para continuar...")
         elif op == '2':
-            hospital.emergencias.ver_emergencias()
+            hospital.ver_emergencias()
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -141,10 +140,10 @@ def escalonamento_menu(hospital):
         elif op == '1':
             nome = input("Nome do funcionário: ")
             turno = input("Turno (manhã/tarde/noite): ")
-            hospital.escalonar_funcionario(nome, turno)
+            hospital.escalar(nome, turno)
             input("Funcionário escalado. Pressione Enter para continuar...")
         elif op == '2':
-            hospital.ver_escalonamento()
+            hospital.ver_escalas()
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -501,11 +500,11 @@ def cadastro():
         elif op == '1':
             cadastroPaciente() 
         elif op == '2':
-            hospital.listarPacientes()
+            hospital.listar_pacientes()
             input("Pressione Enter para continuar...")
         elif op == '3':
             nome = input("Digite o nome do paciente: ")
-            hospital.mostrarPaciente(nome)
+            hospital.detalhes_paciente(nome)
             input("Pressione Enter para continuar...")
         elif op == '4':
             atualizar_dados_paciente()

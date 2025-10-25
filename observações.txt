@@ -50,14 +50,14 @@ Design Patterns: Estou pensando em implementar os seguintes:
 Implementados
 - Builder  OK
 - Singleton OK
-- Factory Methods OK (ver a possibilidade de usar **kwargs)
+- Factory Methods OK 
 
 - Strategy OK
 - Observer OK
 - Template Method OK
 
 - Adapter OK
-
+- Facade OK
 
 
 

@@ -1,8 +1,6 @@
-from hospital import Hospital
-#import gerarPdf
+from hospital_facade import HospitalFacade
 import funcoesAuxiliares
-#import apresentacao
-hospital = Hospital()
+hospital = HospitalFacade()
 
 # Definir a instância global do hospital para funcoesAuxiliares
 funcoesAuxiliares.hospital = hospital
