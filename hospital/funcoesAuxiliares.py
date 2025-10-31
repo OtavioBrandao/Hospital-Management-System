@@ -1,6 +1,6 @@
 from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
-from entidades.exceptions import PacienteNaoEncontradoException
+from entidades.exceptions import PacienteNaoEncontradoException, ProfissionalNaoEncontradoException
 import os
 import random
 
@@ -566,54 +566,57 @@ def funcionario_manager(hospital):
 
 #Funções para agendamento
 def agendarConsulta():
-    nome = input("Nome do paciente: ")
-    paciente = hospital.encontrar_paciente(nome)
-    if paciente:
-        dia = input("Data da consulta (dd/mm): ")
-        tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
-        hospital.agendar_consulta(nome, dia, tipo_profissional)
-        print("Consulta agendada com sucesso!")
-    else:
-        print("Paciente não encontrado.")
-        resposta = input("Deseja cadastrá-lo? (s/n): ")
-        if resposta.lower() in ['s', 'sim']:
-            cadastroPaciente()
-            dia = input("Data da consulta (dd/mm): ")
-            tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
-            hospital.agendar_consulta(nome, dia, tipo_profissional)
-            print("Consulta agendada com sucesso!")
+    try:
+        nome = input("Nome do paciente: ")
+        paciente = hospital.encontrar_paciente(nome)
+    except PacienteNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
+        return
+    dia = input("Data da consulta (dd/mm): ")
+    tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
+    hospital.agendar_consulta(nome, dia, tipo_profissional)
+    print("Consulta agendada com sucesso!")
+
 
 def remarcarConsulta():
-    nome = input("Nome do paciente: ")
-    paciente = hospital.encontrar_paciente(nome)
-    if paciente:
-       if paciente.consultas:
-           for i, (dia, medico) in enumerate(paciente.consultas, 1):
-               print(f"{i}: Dia {dia} com Dr(a). {medico}")
-           escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
-           novo_dia = input("Novo dia da consulta: ")
-           hospital.remarcar_consulta(nome, escolha, novo_dia)
-           print("Consulta remarcada com sucesso!")
-       else:
-           print("Nenhuma consulta agendada.")
+    try:
+        nome = input("Nome do paciente: ")
+        paciente = hospital.encontrar_paciente(nome)
+    except PacienteNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
+        return
+    
+    if paciente.consultas:
+        for i, (dia, medico) in enumerate(paciente.consultas, 1):
+            print(f"{i}: Dia {dia} com Dr(a). {medico}")
+        escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
+        novo_dia = input("Novo dia da consulta: ")
+        hospital.remarcar_consulta(nome, escolha, novo_dia)
+        print("Consulta remarcada com sucesso!")
     else:
-       print("Paciente não encontrado.")
+        print("Nenhuma consulta agendada.")
+  
 
 def cancelarConsulta():
-    nome = input("Nome do paciente: ")
-    paciente = hospital.encontrar_paciente(nome)
-    if paciente:
-        if paciente.consultas:
-            for i, (dia, medico) in enumerate(paciente.consultas, 1):
-                print(f"{i}: Dia {dia} com Dr(a). {medico}")
-            escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
-            hospital.cancelar_consulta(nome, escolha)
-            print("Consulta cancelada com sucesso!")
-        else:
-            print("Nenhuma consulta agendada.")
+    try:
+        nome = input("Nome do paciente: ")
+        paciente = hospital.encontrar_paciente(nome)
+    except PacienteNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
+        return
+  
+    if paciente.consultas:
+        for i, (dia, medico) in enumerate(paciente.consultas, 1):
+            print(f"{i}: Dia {dia} com Dr(a). {medico}")
+        escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
+        hospital.cancelar_consulta(nome, escolha)
+        print("Consulta cancelada com sucesso!")
     else:
-        print("Paciente não encontrado.")
-
+        print("Nenhuma consulta agendada.")
+  
 def menu_agendamento():
     while True:
         clear_screen()
@@ -641,22 +644,24 @@ def menu_agendamento():
 
 #Função para prontuario
 def prontuarioMedico():
-    nome = input("Digite o nome do paciente: ")
-    paciente = hospital.encontrar_paciente(nome)
-    if paciente:
+    try:
+        nome = input("Digite o nome do paciente: ")
+        paciente = hospital.encontrar_paciente(nome)
+    except PacienteNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
+        return
+    try:
         profissional = input("Nome do profissional de saúde: ")
-        descricao = input("Descrição do prontuário: ")
-        hospital.registrar_prontuario(nome, profissional, descricao)
-        input("Prontuário registrado. Pressione Enter para continuar...")
-    else:
-        print("Paciente não encontrado")
-        resposta = input("Deseja cadastrá-lo? (s/n): ")
-        if resposta.lower() in ['s', 'sim']:
-            cadastroPaciente()
-            profissional = input("Nome do profissional de saúde: ")
-            descricao = input("Descrição do prontuário: ")
-            hospital.registrar_prontuario(nome, profissional, descricao)
-            input("Prontuário registrado. Pressione Enter para continuar...")
+        hospital.encontrar_funcionario(profissional)
+    except ProfissionalNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
+        return
+    descricao = input("Descrição do prontuário: ")
+    hospital.registrar_prontuario(nome, profissional, descricao)
+    input("Pressione Enter para continuar...")
+
 
 #Solicitação de exame
 
@@ -695,55 +700,41 @@ def exame_menu(hospital):
 
 
 def solicitarExame():
-    nome_paciente = input("Nome do paciente: ")
-    paciente = hospital.encontrar_paciente(nome_paciente)
-
-    if not paciente:
-        print("Paciente não encontrado.")
-        # Lógica opcional para cadastrar o paciente
-        resposta = input("Deseja cadastrá-lo? (s/n): ")
-        if resposta.lower() in ['s', 'sim']:
-            cadastroPaciente()
-            solicitarExame() # Tenta novamente
+    try:
+        nome_paciente = input("Nome do paciente: ")
+        paciente = hospital.encontrar_paciente(nome_paciente)
+    except PacienteNaoEncontradoException as e:
+        print(e)
         return
-
-    # 1. Escolher o profissional
+    
     print("\n--- Profissionais Disponíveis ---")
     for func in hospital.funcionarios:
         print(f"- {func.nome} ({func.__class__.__name__})")
-    
-    nome_profissional = input("Nome do profissional que está solicitando: ")
 
-    # 2. Encontrar o objeto do profissional
-    profissional_encontrado = None
-    for func in hospital.funcionarios:
-        if func.nome.lower() == nome_profissional.lower():
-            profissional_encontrado = func
-            break
-    
-    if not profissional_encontrado:
-        print(f"Profissional '{nome_profissional}' não encontrado.")
+    try:
+        nome_profissional = input("Nome do profissional que está solicitando: ")
+        profissional = hospital.encontrar_funcionario(nome_profissional)
+    except ProfissionalNaoEncontradoException as e:
+        print(e)
+        input("Pressione Enter para continuar...")
         return
 
-    # 3. Mostrar apenas os exames permitidos para esse profissional
-    print(f"\n--- Exames que {profissional_encontrado.nome} pode solicitar ---")
+    print(f"\n--- Exames que {profissional.nome} pode solicitar ---")
     
     # Verifica se o profissional tem exames permitidos
-    if not profissional_encontrado.exames_permitidos:
+    if not profissional.exames_permitidos:
         print("Este profissional não solicita exames.")
         return
 
     # Itera sobre a lista de exames permitidos do profissional
-    for codigo_exame in profissional_encontrado.exames_permitidos:
+    for codigo_exame in profissional.exames_permitidos:
         # Pega o nome completo do exame do dicionário principal
         exame_obj = EXAMES_DISPONIVEIS.get(codigo_exame)
         if exame_obj:
             print(f"- {codigo_exame}: {exame_obj.nome}")
 
-    # 4. Solicitar o exame
     codigo_selecionado = input("Digite o código do exame a solicitar: ").lower()
-    
-    # Chama a função do hospital, que aplicará o polimorfismo
+
     hospital.solicitar_exame(nome_paciente, nome_profissional, codigo_selecionado)
     print("Exame solicitado com sucesso!")
 

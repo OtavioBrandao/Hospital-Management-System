@@ -22,21 +22,13 @@ Resumo das alterações até agora:
 
 Bugs para ajeitar:
 - Ver pq sempre seleciona o mesmo dentista e medico.. etc ( msm bug do dr.house la embaixo, n foi resolvido!!)
-- Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados. FIXED
 - ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois 
-- Ta deixando cadastrar pacientes vazios no cadastro simples FIXED
-- Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade) fixed
 - Novos funcionarios não sendo alocados em turnos (Ele é alocado a um turno aleatorio, porem ao trocar ele de turno ele não é chamado pro turno atual qnd tem emergencia, resolver isso)
 - Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps.. diferenciar pelo cpf ou id temporario
 - Ver pq as consultas medicas vao sempre pro Dr. House(o msm problema deve ocorrer pra dentista e etc) NÃO FOI RESOLVIDO
 - No alocar leito, adicionar a opção de ver os pacientes alocados
+- Quando temos dois pacientes com o mesmo nome, ele pergunta duas vezes quem é o paciente, encontrar paciente ta sendo chamada duas vezes
 
---- CADASTRO SIMPLES ---
-Nome do paciente: Daniel
-CPF: 
-Cartão SUS(Se houver): 
-Aviso: CPF '42937' é inválido. Deve conter 5 dígitos numéricos.
-- rever a validação do CPF
 
 - Interromper o cadastro imediatamente no momento que um campo obrigatorio nao é preenchido. Continuar normalmente se o campo não for obrigatorio
 - Interromper qualquer processo que peça o nome do paciente assim que o nome for digitado errado, com uma execeção de paciente não encontrado ERROR
@@ -44,7 +36,7 @@ Aviso: CPF '42937' é inválido. Deve conter 5 dígitos numéricos.
 
 
 Problema:
-
+(Ver validações de dados no registros e usar as exceções necessárias, criar mais caso seja necessário)
 Registro profissional: CRM 001  
 Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): Medico
 Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista
@@ -55,6 +47,39 @@ Erro ao adicionar funcionário: Número de WhatsApp inválido. Verifique se o c�
 Funcionário adicionado com sucesso!
 
 Não faz sentido isso aí!!!
+
+( Em pacotes exame)
+Escolha: 2
+Nome do paciente: Ygorr
+Nome do profissional: IDWDW
+Pacotes disponíveis:
+- checkup_basico
+- avaliacao_cardiaca
+- pre_operatorio
+- checkup_feminino
+- avaliacao_odonto
+- super_checkup
+Código do pacote de exames: chek
+ERRO: Paciente 'Ygorr' não foi encontrado no sistema.
+Pressione Enter para continuar...
+
+Era pra ter encerrado no momento que Ygor foi digitado errado. O mesmo problema deve ta pro nome do profissional e tals
+Ver tambem o KEYERROR desses dicionarios
+
+Problema:
+- Daniela Costa (Dentista)
+- Madalena (Psicologo)
+- Mariana (Psicologo)
+- Marcos (Psicologo)
+- Suzana (Psicologo)
+Nome do profissional que está solicitando: Pedro
+
+--- Exames que Pedro pode solicitar ---
+- glicemia: Teste de Glicemia Capilar
+- pressao: Aferição de Pressão Arterial
+Digite o código do exame a solicitar: fku[
+Exame 'fku[' não pode ser solicitado por um Enfermeiro. (Tratar isso com KEYERROR e mensagem de erro CLARA)
+Exame solicitado com sucesso! - ver pq essa mensagem aparece ( remover)
 
 
 

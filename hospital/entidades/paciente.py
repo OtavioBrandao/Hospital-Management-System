@@ -261,11 +261,13 @@ class Paciente:
         if valor is None: 
             self._cpf = None
             return
-        if isinstance(valor, str) and len(valor) == 5 and valor.isdigit():
-            self._cpf = valor
-        else:
-            print(f"Aviso: CPF '{valor}' é inválido. Deve conter 5 dígitos numéricos.")
-            self._cpf = None
+        if isinstance(valor, str):
+            # Aceita CPF de 5 dígitos ou ID temporário TMP+5 dígitos
+            if (len(valor) == 5 and valor.isdigit()) or (len(valor) == 8 and valor.startswith('TMP') and valor[3:].isdigit()):
+                self._cpf = valor
+                return
+        print(f"Aviso: CPF '{valor}' é inválido. Deve conter 5 dígitos numéricos ou formato TMP+5 dígitos.")
+        self._cpf = None
 
     @cartao_sus.setter
     def cartao_sus(self, valor):

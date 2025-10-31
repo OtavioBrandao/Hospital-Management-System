@@ -183,11 +183,11 @@ class Hospital:
         try:
             funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
             self.funcionarios.append(funcionario)
-            # Automaticamente alocar o novo funcionário em um turno padrão
             self._alocar_turno_padrao(funcionario)
             print(f"{tipo.capitalize()} {nome} adicionado ao hospital e alocado em turno.")
         except ValueError as e:
             print(f"Erro ao adicionar funcionário: {e}")
+            return
     
     def _alocar_turno_padrao(self, funcionario):
         """Aloca automaticamente um novo funcionário em um turno padrão"""
@@ -227,6 +227,12 @@ class Hospital:
             registro = funcionario.registro if funcionario.registro else "Não informado"
             especialidade = getattr(funcionario, 'especialidade', 'N/A')
             print(f"{i}: Nome: {nome}, Registro: {registro}, Especialidade: {especialidade}")
+
+    def encontrar_funcionario(self, nome_profissional: str):
+        for f in self.funcionarios:
+            if f.nome.lower() == nome_profissional.lower():
+                return f
+        raise ProfissionalNaoEncontradoException(nome_profissional)
     
     def mostrar_notificacoes_emergencia(self):
         if not self.emergencias.log:
@@ -236,10 +242,33 @@ class Hospital:
             print(f"🕒 {log[0]} - {log[1].nome} recebeu a notificação: {log[2]}")
 
     def encontrar_paciente(self, nome):
-        for p in self.pacientes:
-            if p.nome.lower() == nome.lower():
-                return p
-        raise PacienteNaoEncontradoException(nome)
+        pacientes_encontrados = [p for p in self.pacientes if p.nome.lower() == nome.lower()]
+        
+        if not pacientes_encontrados:
+            raise PacienteNaoEncontradoException(nome)
+        
+        if len(pacientes_encontrados) == 1:
+            return pacientes_encontrados[0]
+        
+        # Múltiplos pacientes com mesmo nome
+        return self._escolher_paciente_duplicado(pacientes_encontrados)
+    
+    def _escolher_paciente_duplicado(self, pacientes):
+        """Permite escolher entre pacientes com mesmo nome"""
+        print(f"\nEncontrados {len(pacientes)} pacientes com o mesmo nome:")
+        for i, p in enumerate(pacientes, 1):
+            cpf_display = p.cpf if p.cpf else "Não informado"
+            idade_display = f"{p.idade} anos" if p.idade else "Não informado"
+            print(f"{i}: {p.nome} - CPF: {cpf_display} - Idade: {idade_display}")
+        
+        while True:
+            try:
+                escolha = int(input("Escolha o número do paciente: ")) - 1
+                if 0 <= escolha < len(pacientes):
+                    return pacientes[escolha]
+                print("Número inválido. Tente novamente.")
+            except ValueError:
+                print("Digite um número válido.")
 
     def _verificar_paciente_duplicado(self, nome, cpf, id_temp=None):
         """Verifica se já existe um paciente com o mesmo CPF ou ID temporário"""
@@ -252,7 +281,8 @@ class Hospital:
             # Verifica duplicação por ID temporário
             if cpf and cpf.startswith('TMP') and p.cpf == cpf:
                 return True, f"Já existe um paciente com o ID temporário {cpf}"
-                
+        
+        # Permite pacientes com mesmo nome mas CPFs diferentes
         return False, ""
     
     def listarPacientes(self):
@@ -448,19 +478,11 @@ class Hospital:
         except PacienteNaoEncontradoException as e:
             print(e)
             return
-
-        profissional = None
-        for funcionario in self.funcionarios: #Procuramos o profissional
-            if funcionario.nome.lower() == nomeProfissional.lower():
-                profissional = funcionario
-                break
-        # Colocar Try e Except aqui tbm
-        if not profissional:
-            print(f"Profissional {nomeProfissional} não encontrado.")
+        try:
+             profissional = self.encontrar_funcionario(nomeProfissional)
+        except ProfissionalNaoEncontradoException as e:
+            print(e)
             return
-
-        # Polimorfismo: O hospital não sabe os detalhes, apenas
-        # manda o objeto profissional requisitar o exame.
         profissional.requisitarExame(paciente, nomeExame, True)
     
     def solicitar_pacote_exames(self, nome_paciente, nome_profissional, codigo_pacote):
