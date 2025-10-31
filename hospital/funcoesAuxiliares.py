@@ -1,5 +1,6 @@
 from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
+from entidades.exceptions import PacienteNaoEncontradoException
 import os
 import random
 
@@ -115,9 +116,18 @@ def emergencias_menu(hospital):
             break
         elif op == '1':
             nome = input("Nome do paciente: ")
+            try:
+                hospital.encontrar_paciente(nome)
+            except PacienteNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                return
+
             prioridade = input("Prioridade (alta/media/baixa): ").lower()
-            hospital.registrar_emergencia(nome, prioridade)
-            input("Emergência registrada. Pressione Enter para continuar...")
+            if hospital.registrar_emergencia(nome, prioridade):
+                input("Emergência registrada. Pressione Enter para continuar...")
+            else:
+                input("Falha ao registrar emergência. Pressione Enter para continuar...")
         elif op == '2':
             hospital.ver_emergencias()
             input("Pressione Enter para continuar...")

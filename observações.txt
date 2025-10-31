@@ -21,15 +21,41 @@ Resumo das alterações até agora:
 - Adicionei a possibilidade de criar novos funcionarios para o hospital
 
 Bugs para ajeitar:
-- Ver pq sempre seleciona o mesmo dentista e medico.. etc
-- Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados.
-- ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois
-- Ta deixando cadastrar pacientes vazios no cadastro simples
-- Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade)
-- Novos funcionarios não sendo alocados em turnos ( adicionar isso)
+- Ver pq sempre seleciona o mesmo dentista e medico.. etc ( msm bug do dr.house la embaixo, n foi resolvido!!)
+- Psicologo nao conseguindo colocar encaminhamento na parte de exames solicitados. FIXED
+- ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois 
+- Ta deixando cadastrar pacientes vazios no cadastro simples FIXED
+- Tratamento de exceção na emergencias ( ele deixa ir vazio a prioridade) fixed
+- Novos funcionarios não sendo alocados em turnos (Ele é alocado a um turno aleatorio, porem ao trocar ele de turno ele não é chamado pro turno atual qnd tem emergencia, resolver isso)
 - Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps.. diferenciar pelo cpf ou id temporario
-- Ver pq as consultas medicas vao sempre pro Dr. House(o msm problema deve ocorrer pra dentista e etc)
+- Ver pq as consultas medicas vao sempre pro Dr. House(o msm problema deve ocorrer pra dentista e etc) NÃO FOI RESOLVIDO
 - No alocar leito, adicionar a opção de ver os pacientes alocados
+
+--- CADASTRO SIMPLES ---
+Nome do paciente: Daniel
+CPF: 
+Cartão SUS(Se houver): 
+Aviso: CPF '42937' é inválido. Deve conter 5 dígitos numéricos.
+- rever a validação do CPF
+
+- Interromper o cadastro imediatamente no momento que um campo obrigatorio nao é preenchido. Continuar normalmente se o campo não for obrigatorio
+- Interromper qualquer processo que peça o nome do paciente assim que o nome for digitado errado, com uma execeção de paciente não encontrado ERROR
+
+
+
+Problema:
+
+Registro profissional: CRM 001  
+Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): Medico
+Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista
+Especialidade (caso for Médico): Cardiologista
+Email: blaze@gmail.com
+WhatsApp: 82988632867
+Erro ao adicionar funcionário: Número de WhatsApp inválido. Verifique se o código do país está incluído e o DDD está correto.
+Funcionário adicionado com sucesso!
+
+Não faz sentido isso aí!!!
+
 
 
 Design Patterns: Estou pensando em implementar os seguintes:

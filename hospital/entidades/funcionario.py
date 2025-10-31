@@ -111,11 +111,13 @@ class Psicologo(FuncionarioSaude):
         if restricao is True:
             if nome_exame in self.exames_permitidos:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
                 print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
             else:
                 print(f"'{nome_exame}' não é uma ação válida para um Psicólogo.")
         else:
             exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+            paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
             print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
 
 class Nutricionista(FuncionarioSaude):
@@ -151,6 +153,7 @@ class Fisioterapeuta(FuncionarioSaude):
         if restricao is True:
             if nome_exame in self.exames_permitidos:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
                 print(f"Fisioterapeuta {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
             else:
                 print(f"'{nome_exame}' não é uma ação válida para Fisioterapeuta.")

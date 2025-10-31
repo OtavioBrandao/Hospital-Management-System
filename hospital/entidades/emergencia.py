@@ -60,9 +60,22 @@ class EmergenciaManager:
                 self.whatsapp_notificador.enviar(observer.whatsapp, mensagem)
     
     def registrar_emergencia(self, nome, prioridade):
-        self.emergencias.append((nome, prioridade))
-        mensagem = f"🚨 EMERGÊNCIA: {nome} - Prioridade: {prioridade.upper()}"
-        self.notificar_turno_atual(mensagem)
+        try:
+            # Validação de prioridade
+            if not prioridade or prioridade.strip() == "":
+                raise ValueError("Prioridade é obrigatória para registrar uma emergência. Use: alta, media ou baixa.")
+            
+            prioridades_validas = ["alta", "media", "baixa"]
+            if prioridade.lower() not in prioridades_validas:
+                raise ValueError(f"Prioridade inválida. Use uma das opções: {', '.join(prioridades_validas)}")
+            
+            self.emergencias.append((nome, prioridade.lower()))
+            mensagem = f"🚨 EMERGÊNCIA: {nome} - Prioridade: {prioridade.upper()}"
+            self.notificar_turno_atual(mensagem)
+            return True
+        except ValueError as ve:
+            print(f"❌ Erro ao registrar emergência: {ve}")
+            return False
 
     def ver_emergencias(self):
         if not self.emergencias:

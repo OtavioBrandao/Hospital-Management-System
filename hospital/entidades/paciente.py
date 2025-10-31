@@ -394,10 +394,14 @@ class PacienteBuilder:
     
     def com_cpf(self, cpf):
         if cpf is None or cpf.strip() == "":
-            self._cpf = str(random.randint(10000, 99999))
+            self._cpf = self._gerar_id_temporario()
         else:
             self._cpf = cpf
         return self
+    
+    def _gerar_id_temporario(self):
+        """Gera um ID temporário no formato TMP12345"""
+        return f"TMP{random.randint(10000, 99999)}"
     
     # Definição dos campos opcionais, que podem ser preenchidos depois se necessário, com algumas validações
 
@@ -487,12 +491,11 @@ class PacienteBuilder:
         return self
     
     def construir(self) -> Paciente:
-
-        if self.nome is None:
+        if not self.nome or self.nome.strip() == "":
             raise ValueError("O nome do paciente é obrigatório.")
         
+        # Gerar ID temporário se CPF não foi fornecido
         cpf_final = self._cpf if self._cpf is not None else self._gerar_id_temporario()
-        #self._cartao_sus = self._cartao_sus if self._cartao_sus is not None else "Não informado"
 
         paciente = Paciente(
             nome=self.nome,
@@ -551,9 +554,13 @@ class DiretorPaciente:
         self.builder = builder
 
     def construir_paciente_simples(self, nome, cpf, cartao_sus):
+        if not nome or nome.strip() == "":
+            raise ValueError("Nome é obrigatório para cadastrar um paciente.")
         return self.builder.resetar().com_nome(nome).com_cpf(cpf or "").com_cartao_sus(cartao_sus or "").construir()
     # Aqui eu posso fazer o cadastro completo se eu quiser. Posso fazer personalizado também.
     def construir_paciente_completo(self, dados):
+        if not dados.get('nome') or dados['nome'].strip() == "":
+            raise ValueError("Nome é obrigatório para cadastrar um paciente.")
         
         builder = self.builder.resetar()
         builder.com_nome(dados['nome'])

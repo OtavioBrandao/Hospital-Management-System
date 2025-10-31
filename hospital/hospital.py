@@ -6,7 +6,7 @@ from entidades.funcionario import Medico, Enfermeiro, Dentista, Psicologo, Nutri
 from gerarPdf import gerar_relatorio_paciente, gerar_relatorio_equipe, gerar_relatorio_hospital
 from entidades.faturamento import estrategia_para_faturar
 from entidades.paciente import PacienteBuilder
-
+from entidades.exceptions import *
 
 funcionarios_manager = GerenciadorFuncionariosSaude()
 
@@ -160,10 +160,17 @@ class Hospital:
             if funcionario:
                 observer = FuncionarioObserver(funcionario, email=funcionario.email, whatsapp=funcionario.whatsapp)
                 self.emergencias.adicionar_observer(observer, turno)
-
+    
+    def adicionar_paciente(self, paciente):
+        """Adiciona um paciente após verificar duplicação"""
+        duplicado, mensagem = self._verificar_paciente_duplicado(paciente.nome, paciente.cpf)
+        if duplicado:
+            raise ValueError(mensagem)
+        
+        self.pacientes.append(paciente)
+        return paciente
 
     def adicionar_funcionario(self, tipo, nome, registro, especialidade=None, email=None, whatsapp=None):
-
         for funcionario in self.funcionarios:
             if funcionario.registro == registro:
                 print("Já existe um funcionário com esse registro.")
@@ -176,9 +183,30 @@ class Hospital:
         try:
             funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
             self.funcionarios.append(funcionario)
-            print(f"{tipo.capitalize()} {nome} adicionado ao hospital.")
+            # Automaticamente alocar o novo funcionário em um turno padrão
+            self._alocar_turno_padrao(funcionario)
+            print(f"{tipo.capitalize()} {nome} adicionado ao hospital e alocado em turno.")
         except ValueError as e:
             print(f"Erro ao adicionar funcionário: {e}")
+    
+    def _alocar_turno_padrao(self, funcionario):
+        """Aloca automaticamente um novo funcionário em um turno padrão"""
+        # Distribuição simples: conta quantos funcionários já estão em cada turno
+        turnos = ["Manhã", "Tarde", "Noite"]
+        contagem_turnos = {turno: 0 for turno in turnos}
+        
+        for nome, turno in self.escalonamento.items():
+            if turno in contagem_turnos:
+                contagem_turnos[turno] += 1
+        
+        # Escolhe o turno com menos funcionários
+        turno_escolhido = min(contagem_turnos, key=contagem_turnos.get)
+        self.escalonar_funcionario(funcionario.nome, turno_escolhido)
+        
+        # Adiciona o observer para emergências
+        from entidades.emergencia import FuncionarioObserver
+        observer = FuncionarioObserver(funcionario, email=funcionario.email, whatsapp=funcionario.whatsapp)
+        self.emergencias.adicionar_observer(observer, turno_escolhido)
 
     def remover_funcionario(self, nome, registro=None):
         for f in self.funcionarios:
@@ -211,7 +239,21 @@ class Hospital:
         for p in self.pacientes:
             if p.nome.lower() == nome.lower():
                 return p
-        return None
+        raise PacienteNaoEncontradoException(nome)
+
+    def _verificar_paciente_duplicado(self, nome, cpf, id_temp=None):
+        """Verifica se já existe um paciente com o mesmo CPF ou ID temporário"""
+        for p in self.pacientes:
+            # Verifica duplicação por CPF (se ambos tiverem CPF)
+            if cpf and p.cpf and not p.cpf.startswith('TMP') and not cpf.startswith('TMP'):
+                if p.cpf == cpf:
+                    return True, f"Já existe um paciente cadastrado com o CPF {cpf}"
+            
+            # Verifica duplicação por ID temporário
+            if cpf and cpf.startswith('TMP') and p.cpf == cpf:
+                return True, f"Já existe um paciente com o ID temporário {cpf}"
+                
+        return False, ""
     
     def listarPacientes(self):
         if not self.pacientes:
@@ -226,8 +268,8 @@ class Hospital:
             print(f"{i}: Nome: {nome}, CPF: {cpf}, Cartão SUS: {cartao_sus}")
 
     def mostrarPaciente(self, nome):
-        paciente = self.encontrar_paciente(nome)
-        if paciente:
+        try:
+            paciente = self.encontrar_paciente(nome)
             print(f"\n--- Detalhes do Paciente: {paciente.nome} ---")
             
             # Dados básicos
@@ -283,8 +325,9 @@ class Hospital:
                     print(f"{i}: Dia {dia} com Dr(a). {medico}")
             else:
                 print("Nenhuma consulta agendada.")
-        else:
-            print("Paciente não encontrado.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
+
 
     '''Nesta função é onde implementamos o polimorfismo:
         - Cada profissional da saúde tem o seu "jeito" de atender o paciente
@@ -292,91 +335,98 @@ class Hospital:
     '''
     #Contem polimorfismo
     # Adicionar aqui a possibilidade de cancelar consulta e remarcar consulta
-    def agendar_consulta(self, nome_paciente, dia, tipo_profissional):
-        paciente = self.encontrar_paciente(nome_paciente)
-        if not paciente:
-            print("Paciente não encontrado.")
-            return
+    def agendar_consulta(self, nome_paciente, dia, tipo_profissional, nome_profissional=None):
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+            if not paciente:
+                print("Paciente não encontrado.")
+                return
 
-        profissional_encontrado = None #Inicialmente nenhum profissional é encontrado
-        # Polimorfismo em ação: procuramos por um objeto que seja da classe desejada
-        # (ex: Medico, Dentista)
+            profissional_encontrado = None
+        
+            if nome_profissional:
+                for funcionario in self.funcionarios:
+                    if (funcionario.nome.lower() == nome_profissional.lower() and 
+                        funcionario.__class__.__name__.lower() == tipo_profissional.lower()):
+                        profissional_encontrado = funcionario
+                        break
+            else:
+                # Caso contrário, pegar o primeiro profissional do tipo solicitado
+                for funcionario in self.funcionarios:
+                    if funcionario.__class__.__name__.lower() == tipo_profissional.lower():
+                        profissional_encontrado = funcionario
+                        break
 
-        for funcionario in self.funcionarios:
-            #Aqui não precisamos saber exatamente o tipo de profissional buscado, 
-            # apenas comparamos o nome da classe com o tipo de profissional solicitado
-
-            if funcionario.__class__.__name__.lower() == tipo_profissional.lower():
-                profissional_encontrado = funcionario
-                break # Encontramos o profissional, podemos parar o loop
-
-        if profissional_encontrado: #Encontramos o profissional que queremos
-            # Usamos o nome do objeto encontrado para agendar
-            paciente.agendar_consulta(dia, profissional_encontrado.nome)
-            print(f"Consulta agendada para {paciente.nome} com {tipo_profissional} {profissional_encontrado.nome} no dia {dia}.")
-            # Exemplo de polimorfismo: chamar o método do profissional encontrado
-            profissional_encontrado.atenderPaciente(paciente)
-        else:
-            print(f"Não foi encontrado um profissional do tipo '{tipo_profissional}' disponível.")
+            if profissional_encontrado:
+                paciente.agendar_consulta(dia, profissional_encontrado.nome)
+                print(f"Consulta agendada para {paciente.nome} com {tipo_profissional} {profissional_encontrado.nome} no dia {dia}.")
+                profissional_encontrado.atenderPaciente(paciente)
+            else:
+                if nome_profissional:
+                    print(f"Profissional '{nome_profissional}' do tipo '{tipo_profissional}' não encontrado.")
+                else:
+                    print(f"Não foi encontrado um profissional do tipo '{tipo_profissional}' disponível.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
     
     def remarcar_consulta(self, nome_paciente, indice_consulta, novo_dia):
-        paciente = self.encontrar_paciente(nome_paciente)
-        if not paciente:
-            print("Paciente não encontrado.")
-            return
-        if 0 <= indice_consulta < len(paciente.consultas):
-            consulta = list(paciente.consultas[indice_consulta])
-            consulta[0] = novo_dia
-            paciente.consultas[indice_consulta] = tuple(consulta)
-            print(f"Consulta remarcada para o dia {novo_dia}.")
-        else:
-            print("Índice de consulta inválido.")
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+            try:
+                consulta = list(paciente.consultas[indice_consulta])
+                consulta[0] = novo_dia
+                paciente.consultas[indice_consulta] = tuple(consulta)
+                print(f"Consulta remarcada para o dia {novo_dia}.")
+            except IndexError:
+                print("Índice de consulta inválido.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
    
     def cancelar_consulta(self, nome_paciente, indice_consulta):
-        paciente = self.encontrar_paciente(nome_paciente)
-        if not paciente:
-            print("Paciente não encontrado.")
-            return
-        if 0 <= indice_consulta < len(paciente.consultas):
-            consulta = paciente.consultas.pop(indice_consulta)
-            print(f"Consulta removida: {consulta[0]} com {consulta[1]}.")
-        else:
-            print("Índice de consulta inválido.")
-  
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+            try:
+                consulta = paciente.consultas.pop(indice_consulta)
+                print(f"Consulta removida: {consulta[0]} com {consulta[1]}.")
+            except IndexError:
+                print("Índice de consulta inválido.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
 
     def registrar_prontuario(self, nome, profissional, descricao):
-        paciente = self.encontrar_paciente(nome)
-        if paciente:
+        try:
+            paciente = self.encontrar_paciente(nome)
             paciente.adicionar_prontuario(profissional, descricao)
             print("Prontuário registrado.")
-        else:
-            print("Paciente não encontrado.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
 
     def registrar_receita(self, nome, profissional, medicamento, descricao, dosagem):
-        paciente = self.encontrar_paciente(nome)
-        
-        if paciente:
+        try:
+            paciente = self.encontrar_paciente(nome)
             paciente.adicionar_receita(profissional, medicamento, descricao, dosagem)
-        else:
-            print("Paciente não encontrado.")
-    
+        except PacienteNaoEncontradoException as e:
+            print(e)
+
     def listar_receitas(self, nome):
-        paciente = self.encontrar_paciente(nome)
-        if paciente:
-            if paciente.receitas:
-                print(f"\n--- Receitas de {paciente.nome} ---")
+        try:
+            paciente = self.encontrar_paciente(nome)
+            if paciente:
+                if paciente.receitas:
+                    print(f"\n--- Receitas de {paciente.nome} ---")
                 for i, receita in enumerate(paciente.receitas, 1):
                     print(f"{i}: {receita}")
             else:
                 print(f"\n--- Receitas de {paciente.nome} ---")
                 print("Nenhuma receita registrada.")
-        else:
-            print("Paciente não encontrado.")
+        except PacienteNaoEncontradoException as e:
+            print(e)
 
     def faturar_paciente(self, nome):
-        paciente = self.encontrar_paciente(nome)
-        if not paciente:
-            print("Paciente não encontrado.")
+        try:
+            paciente = self.encontrar_paciente(nome)
+        except PacienteNaoEncontradoException as e:
+            print(e)
             return
 
         estrategia = estrategia_para_faturar(paciente) # Objeto de acordo com a estratégia 
@@ -393,9 +443,10 @@ class Hospital:
 
     #Contem polimorfismo
     def solicitar_exame(self, nomePaciente, nomeProfissional, nomeExame):
-        paciente = self.encontrar_paciente(nomePaciente)
-        if not paciente:
-            print("Paciente não encontrado.")
+        try:
+            paciente = self.encontrar_paciente(nomePaciente)
+        except PacienteNaoEncontradoException as e:
+            print(e)
             return
 
         profissional = None
@@ -403,7 +454,7 @@ class Hospital:
             if funcionario.nome.lower() == nomeProfissional.lower():
                 profissional = funcionario
                 break
-        
+        # Colocar Try e Except aqui tbm
         if not profissional:
             print(f"Profissional {nomeProfissional} não encontrado.")
             return
@@ -414,10 +465,11 @@ class Hospital:
     
     def solicitar_pacote_exames(self, nome_paciente, nome_profissional, codigo_pacote):
         from entidades.exame import PACOTES_EXAMES
-        
-        paciente = self.encontrar_paciente(nome_paciente)
-        if not paciente:
-            print("Paciente não encontrado.")
+
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+        except PacienteNaoEncontradoException as e:
+            print(e)
             return
         
         profissional = next((f for f in self.funcionarios if f.nome.lower() == nome_profissional.lower()), None)
@@ -442,13 +494,15 @@ class Hospital:
             
     # Adicionar opção de ver leitos alocados e situação do hospital
     def alocar_leito(self, nome):
-        paciente = self.encontrar_paciente(nome)
-        if paciente:
-            leito = f"Leito-{len(self.leitos)+1}"
-            self.leitos.append((leito, paciente.nome))
-            print(f"{paciente.nome} alocado no {leito}.")
-        else:
-            print("Paciente não encontrado.")
+        try:
+            paciente = self.encontrar_paciente(nome)
+        except PacienteNaoEncontradoException as e:
+            print(e)
+            return
+
+        leito = f"Leito-{len(self.leitos)+1}"
+        self.leitos.append((leito, paciente.nome))
+        print(f"{paciente.nome} alocado no {leito}.")
 
     def escalonar_funcionario(self, nome, turno):
         self.escalonamento[nome ] = turno
@@ -463,11 +517,12 @@ class Hospital:
 
     #PDF
     def gerar_pdf_paciente(self, nome_paciente):
-        paciente = self.encontrar_paciente(nome_paciente)
-        if paciente:
-            gerar_relatorio_paciente(paciente)
-        else:
-            print("Paciente não encontrado.")
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+        except PacienteNaoEncontradoException as e:
+            print(e)
+            return
+        gerar_relatorio_paciente(paciente)
 
     def gerar_pdf_equipe(self):
         gerar_relatorio_equipe(self.funcionarios)
