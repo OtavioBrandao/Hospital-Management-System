@@ -40,17 +40,20 @@ class Medico(FuncionarioSaude):
         print(f"O médico {self.nome} está diagnosticando o paciente: {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame, restricao):
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Dr(a). {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"Exame '{nome_exame}' não pode ser solicitado por um Médico.")
+            else:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
                 paciente.solicitar_exame(exame_obj)
                 print(f"Dr(a). {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
-            else:
-             print(f"Exame '{nome_exame}' não pode ser solicitado por um Médico.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)
-            print(f"Dr(a). {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
 
     def receitar_medicamento(self, paciente, medicamento, descricao, dosagem):
         paciente.adicionar_receita(self.nome, medicamento, descricao, dosagem)
@@ -65,17 +68,20 @@ class Enfermeiro(FuncionarioSaude):
         print(f"O enfermeiro {self.nome} está checando os sinais vitais do paciente {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame, restricao):
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Enfermeiro(a) {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"Exame '{nome_exame}' não pode ser solicitado por um Enfermeiro.")
+            else:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
                 paciente.solicitar_exame(exame_obj)
                 print(f"Enfermeiro(a) {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
-            else:
-                print(f"Exame '{nome_exame}' não pode ser solicitado por um Enfermeiro.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)
-            print(f"Enfermeiro(a) {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
 
 class Dentista(FuncionarioSaude):
     def __init__(self, nome, registro, email, whatsapp):
@@ -86,17 +92,20 @@ class Dentista(FuncionarioSaude):
         print(f"Dentista {self.nome} está fazendo uma análise bucal no paciente: {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame, restricao):
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Dentista {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"Exame '{nome_exame}' não pode ser solicitado por um Dentista.")
+            else:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
                 paciente.solicitar_exame(exame_obj)
                 print(f"Dentista {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
-            else:
-                print(f"Exame '{nome_exame}' não pode ser solicitado por um Dentista.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)
-            print(f"Dentista {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
 
 class Psicologo(FuncionarioSaude):
     def __init__(self, nome, registro, email, whatsapp):
@@ -108,17 +117,20 @@ class Psicologo(FuncionarioSaude):
 
     def requisitarExame(self, paciente, nome_exame, restricao):
         # Psicólogo tem um comportamento diferente (polimorfismo)
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
-                exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-                paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
-                print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"'{nome_exame}' não é uma ação válida para um Psicólogo.")
             else:
-                print(f"'{nome_exame}' não é uma ação válida para um Psicólogo.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
-            print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+                exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                paciente.solicitar_exame(exame_obj)
+                print(f"Psicólogo(a) {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
 
 class Nutricionista(FuncionarioSaude):
     def __init__(self, nome, registro, email, whatsapp):
@@ -129,17 +141,20 @@ class Nutricionista(FuncionarioSaude):
         print(f"Nutricionista {self.nome} está avaliando a dieta de {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame, restricao):
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Nutricionista {self.nome} solicitou '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"Exame '{nome_exame}' não pode ser solicitado por Nutricionista.")
+            else:
                 exame_obj = EXAMES_DISPONIVEIS[nome_exame]
                 paciente.solicitar_exame(exame_obj)
                 print(f"Nutricionista {self.nome} solicitou '{exame_obj}' para {paciente.nome}.")
-            else:
-                print(f"Exame '{nome_exame}' não pode ser solicitado por Nutricionista.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)
-            print(f"Nutricionista {self.nome} solicitou '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
             
 class Fisioterapeuta(FuncionarioSaude):
     def __init__(self, nome, registro, email, whatsapp):
@@ -150,17 +165,20 @@ class Fisioterapeuta(FuncionarioSaude):
         print(f"Fisioterapeuta {self.nome} está avaliando a mobilidade de {paciente.nome}")
 
     def requisitarExame(self, paciente, nome_exame, restricao):
-        if restricao is True:
-            if nome_exame in self.exames_permitidos:
-                exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-                paciente.solicitar_exame(exame_obj)  # Fix: Actually add the exam to patient
-                print(f"Fisioterapeuta {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+        try:
+            if restricao is True:
+                if nome_exame in self.exames_permitidos:
+                    exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                    paciente.solicitar_exame(exame_obj)
+                    print(f"Fisioterapeuta {self.nome} gerou um '{exame_obj}' para {paciente.nome}.")
+                else:
+                    print(f"'{nome_exame}' não é uma ação válida para Fisioterapeuta.")
             else:
-                print(f"'{nome_exame}' não é uma ação válida para Fisioterapeuta.")
-        else:
-            exame_obj = EXAMES_DISPONIVEIS[nome_exame]
-            paciente.solicitar_exame(exame_obj)
-            print(f"Fisioterapeuta {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+                exame_obj = EXAMES_DISPONIVEIS[nome_exame]
+                paciente.solicitar_exame(exame_obj)
+                print(f"Fisioterapeuta {self.nome} solicitou o exame '{exame_obj}' para {paciente.nome}.")
+        except KeyError:
+            print(f"Erro: Código de exame '{nome_exame}' inválido.")
 
 
 # Factory Method Design Pattern usado aqui para criar funcionários de saúde

@@ -114,6 +114,8 @@ class ComponenteExame(ABC):
 
 class ExameSimples(ComponenteExame):
     def __init__(self, codigo):
+        if codigo not in EXAMES_DISPONIVEIS:
+            raise KeyError(f"Código de exame '{codigo}' não encontrado")
         self.codigo = codigo
         self.exame = EXAMES_DISPONIVEIS[codigo]
         self.custo = VALORES_EXAMES[codigo]

@@ -14,32 +14,32 @@ class PacienteNaoEncontradoException(PacienteException):
     """Paciente não existe no sistema"""
     def __init__(self, nome_paciente: str):
         self.nome_paciente = nome_paciente
-        super().__init__(f"ERRO: Paciente '{nome_paciente}' não foi encontrado no sistema.")
+        super().__init__(f"❌ ERRO: Paciente '{nome_paciente}' não foi encontrado no sistema.")
 
 # Ainda não utilizado, mas pode ser útil futuramente
 class PacienteDuplicadoException(PacienteException):
     """Tentativa de cadastrar paciente que já existe"""
     def __init__(self, nome_paciente: str):
         self.nome_paciente = nome_paciente
-        super().__init__(f"ERRO: Paciente '{nome_paciente}' já está cadastrado no sistema.")
+        super().__init__(f"❌ ERRO: Paciente '{nome_paciente}' já está cadastrado no sistema.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class DadosInvalidosException(PacienteException):
     """Dados do paciente são inválidos"""
     def __init__(self, campo: str):
         self.campo = campo
-        super().__init__(f"ERRO: Dados inválidos para o campo '{campo}'.")
+        super().__init__(f"❌ ERRO: Dados inválidos para o campo '{campo}'.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class CampoObrigatorioException(PacienteException):
     """Campo obrigatório não foi preenchido"""
     def __init__(self, campo: str):
         self.campo = campo
-        super().__init__(f"ERRO: Campo obrigatório '{campo}' não foi preenchido.")
+        super().__init__(f"❌ ERRO: Campo obrigatório '{campo}' não foi preenchido.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class DocumentoInvalidoException(PacienteException):
     """CPF ou Cartão SUS inválido"""
     def __init__(self, documento: str):
         self.documento = documento
-        super().__init__(f"ERRO: Documento '{documento}' é inválido.")
+        super().__init__(f"❌ERRO: Documento '{documento}' é inválido.")
 
 
 # ============= FUNCIONÁRIOS =============
@@ -51,23 +51,31 @@ class ProfissionalNaoEncontradoException(FuncionarioException):
     """Profissional não existe no sistema"""
     def __init__(self, nome_profissional: str):
         self.nome_profissional = nome_profissional
-        super().__init__(f"ERRO: Profissional '{nome_profissional}' não foi encontrado no sistema.")
+        super().__init__(f"❌ ERRO: Profissional '{nome_profissional}' não foi encontrado no sistema.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class RegistroInvalidoException(FuncionarioException):
     """Registro profissional inválido"""
-    pass
+    def __init__(self, registro: str):
+        self.registro = registro
+        super().__init__(f"❌ ERRO: Registro profissional '{registro}' é inválido.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class ContatoInvalidoException(FuncionarioException):
     """Email ou WhatsApp inválido"""
-    pass
+    def __init__(self, contato: str):
+        self.contato = contato
+        super().__init__(f"❌ ERRO: Contato '{contato}' é inválido.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class PermissaoNegadaException(FuncionarioException):
     """Funcionário não tem permissão para esta ação"""
-    pass
+    def __init__(self, acao: str):
+        self.acao = acao
+        super().__init__(f"❌ ERRO: Funcionário não tem permissão para a ação '{acao}'.")
 # Ainda não utilizado, mas pode ser útil futuramente
 class FuncionarioDuplicadoException(FuncionarioException):
     """Tentativa de cadastrar funcionário que já existe"""
-    pass
+    def __init__(self, nome_funcionario: str):
+        self.nome_funcionario = nome_funcionario
+        super().__init__(f"❌ ERRO: Funcionário '{nome_funcionario}' já está cadastrado no sistema.")
 
 
 # ============= EXAMES =============

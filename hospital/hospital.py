@@ -479,10 +479,17 @@ class Hospital:
             print(e)
             return
         try:
-             profissional = self.encontrar_funcionario(nomeProfissional)
+            profissional = self.encontrar_funcionario(nomeProfissional)
         except ProfissionalNaoEncontradoException as e:
             print(e)
             return
+        
+        # Verificar se o código do exame existe antes de tentar solicitar
+        from entidades.exame import EXAMES_DISPONIVEIS
+        if nomeExame not in EXAMES_DISPONIVEIS:
+            print("❌ Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
+            return
+            
         profissional.requisitarExame(paciente, nomeExame, True)
     
     def solicitar_pacote_exames(self, nome_paciente, nome_profissional, codigo_pacote):
@@ -494,14 +501,15 @@ class Hospital:
             print(e)
             return
         
-        profissional = next((f for f in self.funcionarios if f.nome.lower() == nome_profissional.lower()), None)
-        if not profissional:
-            print("Profissional não encontrado.")
+        try:
+            profissional = self.encontrar_funcionario(nome_profissional)
+        except ProfissionalNaoEncontradoException as e:
+            print(e)
             return
         
         pacote = PACOTES_EXAMES.get(codigo_pacote)
         if not pacote:
-            print("Pacote não encontrado.")
+            print("Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
             return
         
         print(f"\n📋 Pacote: {pacote.nome}")

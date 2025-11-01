@@ -680,8 +680,22 @@ def exame_menu(hospital):
             solicitarExame()
             input("Pressione Enter para continuar...")
         elif op == '2':
-            paciente = input("Nome do paciente: ")
-            profissional = input("Nome do profissional: ")
+            try:
+                paciente = input("Nome do paciente: ")
+                hospital.encontrar_paciente(paciente)
+            except PacienteNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                continue
+            
+            try:
+                profissional = input("Nome do profissional: ")
+                hospital.encontrar_funcionario(profissional)
+            except ProfissionalNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                continue
+            
             print("Pacotes disponíveis:\n" 
                   "- checkup_basico\n"
                   "- avaliacao_cardiaca\n"
@@ -716,7 +730,6 @@ def solicitarExame():
         profissional = hospital.encontrar_funcionario(nome_profissional)
     except ProfissionalNaoEncontradoException as e:
         print(e)
-        input("Pressione Enter para continuar...")
         return
 
     print(f"\n--- Exames que {profissional.nome} pode solicitar ---")
@@ -735,8 +748,12 @@ def solicitarExame():
 
     codigo_selecionado = input("Digite o código do exame a solicitar: ").lower()
 
+    # Verificar se o código existe no dicionário antes de solicitar
+    if codigo_selecionado not in EXAMES_DISPONIVEIS:
+        print("Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
+        return
+
     hospital.solicitar_exame(nome_paciente, nome_profissional, codigo_selecionado)
-    print("Exame solicitado com sucesso!")
 
 def queixa():
     while True:
