@@ -116,30 +116,30 @@ class Hospital:
         self.pacientes = [vitor, otavio, kaique, ygor, marco]
 
         self.funcionarios = [
-        Medico("Dr. House", "CRM-999", "dr.house@hospital.com", "5582999999999", "Diagnóstico"),
-        Medico("Saulo de Tarso", "CRM-123", "saulo@hospital.com", "5582988888888", "Cardiologista"),
-        Medico("Maria", "CRM-456", "maria@hospital.com", "5582977777777", "Ortopedista"),
-        Medico("Joana D'Arc", "CRM-789", "joana@hospital.com", "5582966666666", "Pediatra"),
-        Medico("Cláudio", "CRM-101", "claudio@hospital.com", "5582955555555", "Neurologista"),
-        Medico("Augusto", "CRM-202", "augusto@hospital.com", "5582944444444", "Clínico Geral"),
-        Medico("César", "CRM-303", "cesar@hospital.com", "5582933333333", "Dermatologista"),
-        Medico("Caio Calheiros", "CRM-404", "caio@hospital.com", "5582922222222", "Oftalmologista"),
+        Medico("Dr. House", "CRM999", "dr.house@hospital.com", "5582999999999", "Diagnóstico"),
+        Medico("Saulo de Tarso", "CRM123", "saulo@hospital.com", "5582988888888", "Cardiologista"),
+        Medico("Maria", "CRM456", "maria@hospital.com", "5582977777777", "Ortopedista"),
+        Medico("Joana D'Arc", "CRM789", "joana@hospital.com", "5582966666666", "Pediatra"),
+        Medico("Cláudio", "CRM101", "claudio@hospital.com", "5582955555555", "Neurologista"),
+        Medico("Augusto", "CRM202", "augusto@hospital.com", "5582944444444", "Clínico Geral"),
+        Medico("César", "CRM303", "cesar@hospital.com", "5582933333333", "Dermatologista"),
+        Medico("Caio Calheiros", "CRM404", "caio@hospital.com", "5582922222222", "Oftalmologista"),
         
-        Enfermeiro("Pedro", "COREN-101", "pedro@hospital.com", "5582911111111"),
-        Enfermeiro("Josemir", "COREN-102", "josemir@hospital.com", "5582900000000"),
-        Enfermeiro("Karina", "COREN-202", "karina@hospital.com", "5582899999999"),
-        Enfermeiro("Ana", "COREN-456", "ana@hospital.com", "5582888888888"),
+        Enfermeiro("Pedro", "COREN101", "pedro@hospital.com", "5582911111111"),
+        Enfermeiro("Josemir", "COREN102", "josemir@hospital.com", "5582900000000"),
+        Enfermeiro("Karina", "COREN202", "karina@hospital.com", "5582899999999"),
+        Enfermeiro("Ana", "COREN456", "ana@hospital.com", "5582888888888"),
         Enfermeiro("Agostinho de Hipona", "COREN-789", "agostinho@hospital.com", "5582877777777"),
         
-        Dentista("Aurora Vieira", "CRO-789", "aurora@hospital.com", "5582866666666"),
-        Dentista("Beatriz Silva", "CRO-456", "beatriz@hospital.com", "5582855555555"),
-        Dentista("Carlos Eduardo", "CRO-123", "carlos@hospital.com", "5582844444444"),
-        Dentista("Daniela Costa", "CRO-321", "daniela@hospital.com", "5582833333333"),
+        Dentista("Aurora Vieira", "CRO789", "aurora@hospital.com", "5582866666666"),
+        Dentista("Beatriz Silva", "CRO456", "beatriz@hospital.com", "5582855555555"),
+        Dentista("Carlos Eduardo", "CRO123", "carlos@hospital.com", "5582844444444"),
+        Dentista("Daniela Costa", "CRO321", "daniela@hospital.com", "5582833333333"),
         
-        Psicologo("Madalena", "CRP-101", "madalena@hospital.com", "5582822222222"),
-        Psicologo("Mariana", "CRP-202", "mariana@hospital.com", "5582811111111"),
-        Psicologo("Marcos", "CRP-303", "marcos@hospital.com", "5582800000000"),
-        Psicologo("Suzana", "CRP-404", "suzana@hospital.com", "5582799999999")
+        Psicologo("Madalena", "CRP101", "madalena@hospital.com", "5582822222222"),
+        Psicologo("Mariana", "CRP202", "mariana@hospital.com", "5582811111111"),
+        Psicologo("Marcos", "CRP303", "marcos@hospital.com", "5582800000000"),
+        Psicologo("Suzana", "CRP404", "suzana@hospital.com", "5582799999999")
         ]
         self.leitos = []
         self.escalonamento = {
@@ -173,21 +173,23 @@ class Hospital:
     def adicionar_funcionario(self, tipo, nome, registro, especialidade=None, email=None, whatsapp=None):
         for funcionario in self.funcionarios:
             if funcionario.registro == registro:
-                print("Já existe um funcionário com esse registro.")
-                return
+                raise FuncionarioDuplicadoException(f"funcionário com registro {registro}")
             
         if not tipo in funcionarios_manager.factories:
-            print(f"Tipo de funcionário '{tipo}' inválido.")
-            return
+            raise ValueError(f"Tipo de funcionário '{tipo}' inválido.")
 
         try:
             funcionario = funcionarios_manager.criar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
-            self.funcionarios.append(funcionario)
-            self._alocar_turno_padrao(funcionario)
-            print(f"{tipo.capitalize()} {nome} adicionado ao hospital e alocado em turno.")
         except ValueError as e:
-            print(f"Erro ao adicionar funcionário: {e}")
-            return
+            error_msg = str(e)
+            if "WhatsApp" in error_msg or "email" in error_msg:
+                raise ContatoInvalidoException(error_msg)
+            else:
+                raise RegistroInvalidoException(error_msg)
+        
+        self.funcionarios.append(funcionario)
+        self._alocar_turno_padrao(funcionario)
+        print(f"{tipo.capitalize()} {nome} adicionado ao hospital e alocado em turno.")
     
     def _alocar_turno_padrao(self, funcionario):
         """Aloca automaticamente um novo funcionário em um turno padrão"""
@@ -210,11 +212,10 @@ class Hospital:
 
     def remover_funcionario(self, nome, registro=None):
         for f in self.funcionarios:
-            if f.nome.lower() == nome.lower() and (registro is None or f.registro == registro):
+            if f.nome.lower() == nome.lower() and (registro is None or f.registro.strip().lower() == registro.strip().lower()):
                 self.funcionarios.remove(f)
-                print(f"Funcionário {nome} removido.")
                 return
-        print("Funcionário não encontrado.")
+        raise ProfissionalNaoEncontradoException(nome)
     
     def listar_funcionarios(self):
         if not self.funcionarios:
@@ -492,6 +493,16 @@ class Hospital:
             
         profissional.requisitarExame(paciente, nomeExame, True)
     
+    def solicitar_exame_direto(self, paciente, profissional, nomeExame):
+        """Solicita exame usando objetos já encontrados para evitar duplicação de confirmações"""
+        # Verificar se o código do exame existe antes de tentar solicitar
+        from entidades.exame import EXAMES_DISPONIVEIS
+        if nomeExame not in EXAMES_DISPONIVEIS:
+            print("❌ Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
+            return
+            
+        profissional.requisitarExame(paciente, nomeExame, True)
+    
     def solicitar_pacote_exames(self, nome_paciente, nome_profissional, codigo_pacote):
         from entidades.exame import PACOTES_EXAMES
 
@@ -506,6 +517,25 @@ class Hospital:
         except ProfissionalNaoEncontradoException as e:
             print(e)
             return
+        
+        pacote = PACOTES_EXAMES.get(codigo_pacote)
+        if not pacote:
+            print("Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
+            return
+        
+        print(f"\n📋 Pacote: {pacote.nome}")
+        print(f"📝 Descrição: {pacote.descricao}")
+        print(f"💰 Valor total: R$ {pacote.obter_custo():.2f}")
+        print(f"📝 Exames inclusos: {', '.join(pacote.listar_exames())}")
+        
+        confirma = input("\nConfirmar solicitação? (s/n): ")
+        if confirma.lower() == 's':
+            pacote.executar(profissional, paciente)
+            print("✅ Pacote solicitado com sucesso!")
+    
+    def solicitar_pacote_exames_direto(self, paciente, profissional, codigo_pacote):
+        """Solicita pacote de exames usando objetos já encontrados para evitar duplicação de confirmações"""
+        from entidades.exame import PACOTES_EXAMES
         
         pacote = PACOTES_EXAMES.get(codigo_pacote)
         if not pacote:

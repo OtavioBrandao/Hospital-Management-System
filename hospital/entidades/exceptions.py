@@ -4,7 +4,6 @@ class SistemaHospitalarException(Exception):
     """Exceção base para todo o sistema"""
     pass
 
-
 # ============= PACIENTES =============
 class PacienteException(SistemaHospitalarException):
     """Exceção base para erros relacionados a pacientes"""
@@ -16,7 +15,6 @@ class PacienteNaoEncontradoException(PacienteException):
         self.nome_paciente = nome_paciente
         super().__init__(f"❌ ERRO: Paciente '{nome_paciente}' não foi encontrado no sistema.")
 
-# Ainda não utilizado, mas pode ser útil futuramente
 class PacienteDuplicadoException(PacienteException):
     """Tentativa de cadastrar paciente que já existe"""
     def __init__(self, nome_paciente: str):
@@ -27,8 +25,8 @@ class DadosInvalidosException(PacienteException):
     """Dados do paciente são inválidos"""
     def __init__(self, campo: str):
         self.campo = campo
-        super().__init__(f"❌ ERRO: Dados inválidos para o campo '{campo}'.")
-# Ainda não utilizado, mas pode ser útil futuramente
+        super().__init__(f"❌ ERRO: {campo} inválido(a), será definido como 'Não Informado'.")
+
 class CampoObrigatorioException(PacienteException):
     """Campo obrigatório não foi preenchido"""
     def __init__(self, campo: str):
@@ -52,18 +50,18 @@ class ProfissionalNaoEncontradoException(FuncionarioException):
     def __init__(self, nome_profissional: str):
         self.nome_profissional = nome_profissional
         super().__init__(f"❌ ERRO: Profissional '{nome_profissional}' não foi encontrado no sistema.")
-# Ainda não utilizado, mas pode ser útil futuramente
+
 class RegistroInvalidoException(FuncionarioException):
     """Registro profissional inválido"""
     def __init__(self, registro: str):
         self.registro = registro
-        super().__init__(f"❌ ERRO: Registro profissional '{registro}' é inválido.")
-# Ainda não utilizado, mas pode ser útil futuramente
+        super().__init__(f"❌ ERRO: Registro profissional é inválido. '{registro}' ")
+
 class ContatoInvalidoException(FuncionarioException):
     """Email ou WhatsApp inválido"""
     def __init__(self, contato: str):
         self.contato = contato
-        super().__init__(f"❌ ERRO: Contato '{contato}' é inválido.")
+        super().__init__(f"❌ ERRO: Contato é inválido. ('{contato}')")
 # Ainda não utilizado, mas pode ser útil futuramente
 class PermissaoNegadaException(FuncionarioException):
     """Funcionário não tem permissão para esta ação"""
@@ -80,24 +78,6 @@ class FuncionarioDuplicadoException(FuncionarioException):
 
 # ============= EXAMES =============
 """Será feita com KeyError pois são dicionários"""
-
-
-# ============= FATURAMENTO =============
-class FaturamentoException(SistemaHospitalarException):
-    """Exceção base para faturamento"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class PlanoNaoEncontradoException(FaturamentoException):
-    """Tipo de plano não reconhecido"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class ConvenioNaoEncontradoException(FaturamentoException):
-    """Convênio não reconhecido"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class DadosFaturamentoIncompletosException(FaturamentoException):
-    """Faltam dados para calcular faturamento"""
-    pass
 
 
 # ============= HOSPITAL =============

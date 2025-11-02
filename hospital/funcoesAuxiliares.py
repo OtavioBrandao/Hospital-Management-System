@@ -1,6 +1,6 @@
 from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
-from entidades.exceptions import PacienteNaoEncontradoException, ProfissionalNaoEncontradoException
+from entidades.exceptions import CampoObrigatorioException, PacienteNaoEncontradoException, ProfissionalNaoEncontradoException, ContatoInvalidoException, FuncionarioDuplicadoException, RegistroInvalidoException, DadosInvalidosException
 import os
 import random
 
@@ -148,10 +148,22 @@ def escalonamento_menu(hospital):
         if op == '0':
             break
         elif op == '1':
-            nome = input("Nome do funcionário: ")
-            turno = input("Turno (manhã/tarde/noite): ")
-            hospital.escalar(nome, turno)
-            input("Funcionário escalado. Pressione Enter para continuar...")
+            try:
+                nome = input("Nome do funcionário: ")
+                hospital.encontrar_funcionario(nome)
+            except ProfissionalNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                return
+            try:
+                turno = input("Turno (manhã/tarde/noite): ")
+                if turno not in ['manhã', 'tarde', 'noite']:
+                    raise ValueError("Turno inválido.")
+                hospital.escalar(nome, turno)
+                input("Funcionário escalado. Pressione Enter para continuar...")
+            except ValueError as e:
+                print(f"ERRO: {e}")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             hospital.ver_escalas()
             input("Pressione Enter para continuar...")
@@ -165,7 +177,15 @@ diretor_paciente = DiretorPaciente(paciente_builder)
 def cadastro_simples():
     clear_screen()
     print("\n--- CADASTRO SIMPLES ---")
-    input_nome = input("Nome do paciente: ")
+    try:
+        input_nome = input("Nome do paciente: ")
+        if not input_nome:
+            raise CampoObrigatorioException("Nome")
+    except CampoObrigatorioException as e:
+        print(f"{e}")
+        input("Pressione Enter para continuar...")
+        return None
+    
     input_cpf = input("CPF: ")
     input_cartao_sus = input("Cartão SUS(Se houver): ")
 
@@ -184,62 +204,129 @@ def cadastro_completo():
     clear_screen()
     print("\n--- CADASTRO COMPLETO ---")
     dados = {}
-
-    dados['nome'] = input("Nome do paciente: ") 
+    try:
+        dados['nome'] = input("Nome do paciente: ")
+        if not dados['nome']:
+            raise CampoObrigatorioException("Nome")
+    except CampoObrigatorioException as e:
+        print(f"{e}")
+        input("Pressione Enter para continuar...")
+        return None
+    
     dados['cpf'] = input("CPF: ") or None
     dados['cartao_sus'] = input("Cartão SUS(Se houver): ") or None
     
-    idade_input = input("Idade: ").strip()
-    if idade_input:
-        try:
+    try:
+        idade_input = input("Idade: ").strip()
+        if idade_input:
             dados['idade'] = int(idade_input)
-        except ValueError:
-            print("Idade inválida, será definida como None")
+        else:
             dados['idade'] = None
-    else:
+    except ValueError:
+        print(DadosInvalidosException("Idade"))
         dados['idade'] = None
     
-
-    altura_input = input("Altura (em cm): ").strip()
-    if altura_input:
-        try:
+    try:
+        altura_input = input("Altura (em cm): ").strip()
+        if altura_input:
             dados['altura'] = float(altura_input)
-        except ValueError:
-            print("Altura inválida, será definida como None")
+        else:
             dados['altura'] = None
-    else:
+    except ValueError:
+        print(DadosInvalidosException("Altura"))
         dados['altura'] = None
     
-    peso_input = input("Peso (em kg): ").strip()
-    if peso_input:
-        try:
+    try:
+        peso_input = input("Peso (em kg): ").strip()
+        if peso_input:
             dados['peso'] = float(peso_input)
-        except ValueError:
-            print("Peso inválido, será definido como None")
+        else:
             dados['peso'] = None
-    else:
+    except ValueError:
+        print(DadosInvalidosException("Peso"))
         dados['peso'] = None
     
-    dados['tipo_sanguineo'] = input("Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip() or None
-    dados['genero'] = input("Gênero (Masculino, Feminino, Outro): ").strip() or None
-    dados['tipo_plano'] = input("Tipo de Plano (Particular, SUS, Convênio): ").strip() or None
+    try:
+        tipo_sanguineo_input = input("Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip()
+        if tipo_sanguineo_input:
+            tipos_validos = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+            if tipo_sanguineo_input not in tipos_validos:
+                raise ValueError("Tipo sanguíneo inválido")
+            dados['tipo_sanguineo'] = tipo_sanguineo_input
+        else:
+            dados['tipo_sanguineo'] = None
+    except ValueError:
+        print(DadosInvalidosException("Tipo Sanguíneo"))
+        dados['tipo_sanguineo'] = None
+    
+    try:
+        genero_input = input("Gênero (Masculino, Feminino, Outro): ").strip()
+        if genero_input:
+            generos_validos = ['masculino', 'feminino', 'outro']
+            if genero_input.lower() not in generos_validos:
+                raise ValueError("Gênero inválido")
+            dados['genero'] = genero_input
+        else:
+            dados['genero'] = None
+    except ValueError:
+        print(DadosInvalidosException("Gênero"))
+        dados['genero'] = None
+    
+    try:
+        tipo_plano_input = input("Tipo de Plano (Particular, SUS, Convênio): ").strip()
+        if tipo_plano_input:
+            planos_validos = ['particular', 'sus', 'convenio', 'convênio']
+            if tipo_plano_input.lower() not in planos_validos:
+                raise ValueError("Tipo de plano inválido")
+            dados['tipo_plano'] = tipo_plano_input
+        else:
+            dados['tipo_plano'] = None
+    except ValueError:
+        print(DadosInvalidosException("Tipo de Plano"))
+        dados['tipo_plano'] = None
     
     # Se o tipo de plano for Convênio, perguntar qual convênio
     if dados['tipo_plano'] and (dados['tipo_plano'].lower() == 'convenio' or dados['tipo_plano'].lower() == 'convênio'):
-        print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
-        dados['tipo_convenio'] = input("Tipo de Convênio: ").strip() or None
+        try:
+            print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
+            convenio_input = input("Tipo de Convênio: ").strip()
+            if convenio_input:
+                convenios_validos = ['unimed', 'amil', 'hapvida', 'bradesco', 'sulamérica']
+                if convenio_input.lower() not in convenios_validos:
+                    raise ValueError("Convênio inválido")
+                dados['tipo_convenio'] = convenio_input
+            else:
+                dados['tipo_convenio'] = None
+        except ValueError:
+            print(DadosInvalidosException("Tipo de Convênio"))
+            dados['tipo_convenio'] = None
     else:
         dados['tipo_convenio'] = None
     
-    dados['telefone'] = input("Telefone (apenas números): ").strip() or None
+    try:
+        telefone_input = input("Telefone (DDD) XXXX-XXXX: ").strip()
+        if telefone_input:
+            if not telefone_input.isdigit() or len(telefone_input) < 10:
+                raise ValueError("Telefone inválido")
+            dados['telefone'] = telefone_input
+        else:
+            dados['telefone'] = None
+    except ValueError:
+        print(DadosInvalidosException("Telefone"))
+        dados['telefone'] = None
     
-
-    nome_emergencia = input("Nome do contato de emergência: ").strip()
-    tel_emergencia = input("Telefone do contato de emergência (apenas números): ").strip()
-    
-    if nome_emergencia and tel_emergencia:
-        dados['contato_emergencia'] = (nome_emergencia, tel_emergencia)
-    else:
+    try:
+        nome_emergencia = input("Nome do contato de emergência: ").strip()
+        tel_emergencia = input("Telefone do contato de emergência (DDD) XXXX-XXXX: ").strip()
+        
+        if nome_emergencia and tel_emergencia:
+            if not tel_emergencia.isdigit() or len(tel_emergencia) < 10:
+                raise ValueError("Telefone de emergência inválido")
+            dados['contato_emergencia'] = (nome_emergencia, tel_emergencia)
+        else:
+            dados['contato_emergencia'] = None
+    except ValueError:
+        print(DadosInvalidosException("Contato de Emergência"))
         dados['contato_emergencia'] = None
 
     dados['historico_medico'] = coletar_historico_medico()
@@ -250,10 +337,6 @@ def cadastro_completo():
         print(f"Paciente {dados['nome']} cadastrado com sucesso!")
         input("Pressione Enter para continuar...")
         return paciente
-    except ValueError as ve:
-        print(f"Erro no cadastro: {ve}")
-        input("Pressione Enter para continuar...")
-        return None
     except Exception as e:
         print(f"Erro inesperado no cadastro: {e}")
         input("Pressione Enter para continuar...")
@@ -400,59 +483,100 @@ def atualizar_dados_paciente():
         novo_cartao_sus = input(f"Cartão SUS atual: {paciente.cartao_sus} | Novo Cartão SUS: ").strip()
         if novo_cartao_sus:
             b.com_cartao_sus(novo_cartao_sus)
-        nova_idade = input(f"Idade atual: {paciente.idade} | Nova idade: ").strip()
-        if nova_idade:
-            try:
+        try:
+            nova_idade = input(f"Idade atual: {paciente.idade} | Nova idade: ").strip()
+            if nova_idade:
                 b.com_idade(int(nova_idade))
-            except ValueError:
-                print("Idade inválida, mantendo valor atual")
-        nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
-        if nova_altura:
-            try:
+        except ValueError:
+            print(DadosInvalidosException("Idade"))
+        
+        try:
+            nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
+            if nova_altura:
                 b.com_altura(float(nova_altura))
-            except ValueError:
-                print("Altura inválida, mantendo valor atual")
-        novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
-        if novo_peso:
-            try:
+        except ValueError:
+            print(DadosInvalidosException("Altura"))
+        
+        try:
+            novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
+            if novo_peso:
                 b.com_peso(float(novo_peso))
-            except ValueError:
-                print("Peso inválido, mantendo valor atual")
-        novo_ts = input(
-            f"Tipo Sanguíneo atual: {paciente.tipo_sanguineo} | Novo (A+, A-, B+, B-, AB+, AB-, O+, O-): "
-        ).strip()
-        if novo_ts:
-            b.com_tipo_sanguineo(novo_ts)
-        novo_genero = input(
-            f"Gênero atual: {paciente.genero} | Novo Gênero (Masculino, Feminino, Outro): "
-        ).strip()
-        if novo_genero:
-            b.com_genero(novo_genero)
-        novo_plano = input(
-            f"Tipo de Plano atual: {paciente.tipo_plano} | Novo Tipo de Plano (Particular, SUS, Convênio): "
-        ).strip()
-        if novo_plano:
-            b.com_tipo_plano(novo_plano)
-            # Se o novo plano for Convênio, perguntar qual convênio
-            if novo_plano.lower() == 'convênio' or novo_plano.lower() == 'convenio':
-                print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
-                novo_convenio = input(
-                    f"Convênio atual: {paciente.tipo_convenio} | Novo Convênio: "
-                ).strip()
-                if novo_convenio:
-                    b.com_tipo_convenio(novo_convenio)
-        novo_tel = input(
-            f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): "
-        ).strip()
-        if novo_tel:
-            b.com_telefone(novo_tel)
-        print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
-        novo_nome_emerg = input("Novo nome do contato de emergência: ").strip()
-        novo_tel_emerg = input("Novo telefone do contato de emergência (apenas números): ").strip()
-        if novo_nome_emerg and novo_tel_emerg:
-            b.com_contato_emergencia((novo_nome_emerg, novo_tel_emerg))
-        elif novo_nome_emerg or novo_tel_emerg:
-            print("Para atualizar o contato de emergência, forneça nome e telefone juntos.")
+        except ValueError:
+            print(DadosInvalidosException("Peso"))
+        
+        try:
+            novo_ts = input(
+                f"Tipo Sanguíneo atual: {paciente.tipo_sanguineo} | Novo (A+, A-, B+, B-, AB+, AB-, O+, O-): "
+            ).strip()
+            if novo_ts:
+                tipos_validos = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+                if novo_ts not in tipos_validos:
+                    raise ValueError("Tipo sanguíneo inválido")
+                b.com_tipo_sanguineo(novo_ts)
+        except ValueError:
+            print(DadosInvalidosException("Tipo Sanguíneo"))
+        
+        try:
+            novo_genero = input(
+                f"Gênero atual: {paciente.genero} | Novo Gênero (Masculino, Feminino, Outro): "
+            ).strip()
+            if novo_genero:
+                generos_validos = ['masculino', 'feminino', 'outro']
+                if novo_genero.lower() not in generos_validos:
+                    raise ValueError("Gênero inválido")
+                b.com_genero(novo_genero)
+        except ValueError:
+            print(DadosInvalidosException("Gênero"))
+        
+        try:
+            novo_plano = input(
+                f"Tipo de Plano atual: {paciente.tipo_plano} | Novo Tipo de Plano (Particular, SUS, Convênio): "
+            ).strip()
+            if novo_plano:
+                planos_validos = ['particular', 'sus', 'convenio', 'convênio']
+                if novo_plano.lower() not in planos_validos:
+                    raise ValueError("Tipo de plano inválido")
+                b.com_tipo_plano(novo_plano)
+                # Se o novo plano for Convênio, perguntar qual convênio
+                if novo_plano.lower() == 'convênio' or novo_plano.lower() == 'convenio':
+                    try:
+                        print("Convênios disponíveis: Unimed, Amil, Hapvida, Bradesco, SulAmérica")
+                        novo_convenio = input(
+                            f"Convênio atual: {paciente.tipo_convenio} | Novo Convênio: "
+                        ).strip()
+                        if novo_convenio:
+                            convenios_validos = ['unimed', 'amil', 'hapvida', 'bradesco', 'sulamérica']
+                            if novo_convenio.lower() not in convenios_validos:
+                                raise ValueError("Convênio inválido")
+                            b.com_tipo_convenio(novo_convenio)
+                    except ValueError:
+                        print(DadosInvalidosException("Tipo de Convênio"))
+        except ValueError:
+            print(DadosInvalidosException("Tipo de Plano"))
+        
+        try:
+            novo_tel = input(
+                f"Telefone atual: {paciente.telefone} | Novo Telefone (apenas números): "
+            ).strip()
+            if novo_tel:
+                if not novo_tel.isdigit() or len(novo_tel) < 10:
+                    raise ValueError("Telefone inválido")
+                b.com_telefone(novo_tel)
+        except ValueError:
+            print(DadosInvalidosException("Telefone"))
+        
+        try:
+            print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
+            novo_nome_emerg = input("Novo nome do contato de emergência: ").strip()
+            novo_tel_emerg = input("Novo telefone do contato de emergência (apenas números): ").strip()
+            if novo_nome_emerg and novo_tel_emerg:
+                if not novo_tel_emerg.isdigit() or len(novo_tel_emerg) < 10:
+                    raise ValueError("Telefone de emergência inválido")
+                b.com_contato_emergencia((novo_nome_emerg, novo_tel_emerg))
+            elif novo_nome_emerg or novo_tel_emerg:
+                print("Para atualizar o contato de emergência, forneça nome e telefone juntos.")
+        except ValueError:
+            print(DadosInvalidosException("Contato de Emergência"))
 
 
         editar = input("Deseja editar o histórico médico? (s/n): ").strip().lower()
@@ -536,26 +660,60 @@ def funcionario_manager(hospital):
         if op == '0':
             break
         elif op == '1':
-            nome = input("Nome do funcionário: ")
-            registro = input("Registro profissional: ")
-            tipo = input("Tipo (Medico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta): ").strip().lower()
-            print("Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista")
-            especialidade = input("Especialidade (caso for Médico): ")
-            email = input("Email: ")
-            whatsapp = input("WhatsApp: ")
-           
+            try:
+                nome = input("Nome do funcionário: ")
+                if any(char.isdigit() for char in nome):
+                    raise ValueError("Nome não pode conter números;")
+                if not nome.strip():
+                    raise ValueError("Nome não pode estar vazio;")
+            except ValueError as e:
+                print(f"ERRO: {e}")
+                input("Pressione Enter para continuar...")
+                continue
+            try:
+                registro = input("Registro profissional(Ex: CRM002): ")
+                if not registro.strip():
+                    raise RegistroInvalidoException("Registro profissional não pode estar vazio.")
+
+            except RegistroInvalidoException as e:
+                print(f"{e}")
+                input("Pressione Enter para continuar...")
+                continue
+
+            try:
+                tipo = input("Tipo (Médico, Enfermeiro, Dentista, Psicologo, Nutricionista, Fisioterapeuta.): ").strip().lower()
+                tipo = tipo.replace("médico", "medico").replace("psicólogo", "psicologo")
+                tipos_validos = ["medico", "enfermeiro", "dentista", "psicologo", "nutricionista", "fisioterapeuta"]
+                if tipo not in tipos_validos:
+                    raise ValueError(f"Tipo '{tipo}' inválido. Tipos válidos: {', '.join(tipos_validos)}")
+            except ValueError as e:
+                print(f"ERRO: {e}")
+                input("Pressione Enter para continuar...")
+                continue
+            
+            print("Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista.")
+            especialidade = input("Especialidade (caso for Médico, vazio caso não for): ")
+            email = input("Email (example@email.com): ")
+            whatsapp = input("WhatsApp (55 (DDD) 9XXXX-XXXX): ")
+        
             try:
                 hospital.adicionar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
                 print("Funcionário adicionado com sucesso!")
                 input("Pressione Enter para continuar...")
-            except ValueError as ve:
-                print(f"Erro ao adicionar funcionário: {ve}")
+            except (ContatoInvalidoException, FuncionarioDuplicadoException, RegistroInvalidoException, ValueError) as e:
+                print(f"Erro ao adicionar funcionário: {e}")
                 input("Pressione Enter para continuar...")
+
         elif op == '2':
-            nome = input("Nome do funcionário a remover: ")
+            hospital.listar_funcionarios()
+            nome = input("\nNome do funcionário a remover(Pressione 'Enter' duas vezes para cancelar): ")
             registro = input("Registro profissional: ")
-            hospital.remover_funcionario(nome, registro)
-            input("Funcionário removido. Pressione Enter para continuar...")
+            try:
+                hospital.remover_funcionario(nome, registro)
+                print("Funcionário removido com sucesso!")
+            except ProfissionalNaoEncontradoException as e:
+                print(f"{e}")
+            input("Pressione Enter para continuar...")
         elif op == '3':
             hospital.listar_funcionarios()
             input("Pressione Enter para continuar...")
@@ -681,16 +839,20 @@ def exame_menu(hospital):
             input("Pressione Enter para continuar...")
         elif op == '2':
             try:
-                paciente = input("Nome do paciente: ")
-                hospital.encontrar_paciente(paciente)
+                nome_paciente = input("Nome do paciente: ")
+                paciente_obj = hospital.encontrar_paciente(nome_paciente)
             except PacienteNaoEncontradoException as e:
                 print(e)
                 input("Pressione Enter para continuar...")
                 continue
-            
+
+            print("\n--- Profissionais Disponíveis ---")
+            for func in hospital.funcionarios:
+                print(f"- {func.nome} ({func.__class__.__name__})")
+
             try:
-                profissional = input("Nome do profissional: ")
-                hospital.encontrar_funcionario(profissional)
+                nome_profissional = input("Nome do profissional: ")
+                profissional_obj = hospital.encontrar_funcionario(nome_profissional)
             except ProfissionalNaoEncontradoException as e:
                 print(e)
                 input("Pressione Enter para continuar...")
@@ -705,13 +867,11 @@ def exame_menu(hospital):
                   "- super_checkup")
             codigo_pacote = input("Código do pacote de exames: ").lower()
 
-            hospital.solicitar_pacote_exames(paciente, profissional, codigo_pacote)
+            hospital.solicitar_pacote_exames_direto(paciente_obj, profissional_obj, codigo_pacote)
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
             input("Pressione Enter para continuar...")
-
-
 
 def solicitarExame():
     try:
@@ -753,7 +913,7 @@ def solicitarExame():
         print("Erro: O código não foi digitado corretamente. Verifique a escrita e tente novamente.")
         return
 
-    hospital.solicitar_exame(nome_paciente, nome_profissional, codigo_selecionado)
+    hospital.solicitar_exame_direto(paciente, profissional, codigo_selecionado)
 
 def queixa():
     while True:
@@ -768,7 +928,13 @@ def queixa():
             break
         elif op == '1':
             print("Registre uma queixa: ")
-            funcionario = input("Digite o nome do funcionário: ")
+            try:
+                funcionario = input("Digite o nome do funcionário: ")
+                hospital.encontrar_funcionario(funcionario)
+            except ProfissionalNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                continue
             descricao = input("Descreva o ocorrido: ")
             hospital.administrativo.registrar_queixa(funcionario,descricao)
             input("Queixa registrada. Pressione Enter para continuar...")

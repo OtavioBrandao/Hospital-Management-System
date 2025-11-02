@@ -25,13 +25,24 @@ class PDF(FPDF):
 # Template Method Pattern (Esqueleto para montagem de relatórios do hospital)
 class RelatorioTemplate(ABC):
     def gerar_relatorio(self, data):
-        pdf = PDF()
-        pdf.add_page()
-        pdf.chapter_title(self.get_titulo(data))
-        self.adicionar_conteudo(pdf, data)
-        nome_arquivo = self.get_nome_arquivo(data)
-        pdf.output(nome_arquivo)
-        print(f"Relatório salvo em: {nome_arquivo}")
+        try:
+            pdf = PDF()
+            pdf.add_page()
+            pdf.chapter_title(self.get_titulo(data))
+            self.adicionar_conteudo(pdf, data)
+            nome_arquivo = self.get_nome_arquivo(data)
+            pdf.output(nome_arquivo)
+            print(f"Relatório salvo em: {nome_arquivo}")
+            return True
+        except (OSError, IOError) as e:
+            print(f"ERRO ao salvar relatório: Problema de arquivo - {e}")
+            return False
+        except AttributeError as e:
+            print(f"ERRO ao gerar relatório: Dados inconsistentes - {e}")
+            return False
+        except Exception as e:
+            print(f"ERRO inesperado ao gerar relatório: {e}")
+            return False
     
     @abstractmethod
     def get_titulo(self, data):
