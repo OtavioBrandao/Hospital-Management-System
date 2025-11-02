@@ -49,15 +49,25 @@ class EmergenciaManager:
             print(f"⚠️  Nenhum funcionário cadastrado no turno {turno}")
             return
         
-        print(f"\n🔔 Notificando funcionários do turno: {turno}")
+        print(f"\n📢 Notificando funcionários do turno: {turno}")
         for observer in observers:
-            observer.update(mensagem)
-            self.log.append((datetime.now(), observer, mensagem))
-            if hasattr(observer, 'email'):
-                self.email_notificador.enviar(observer.email, mensagem)
-            
-            if hasattr(observer, 'whatsapp'):
-                self.whatsapp_notificador.enviar(observer.whatsapp, mensagem)
+            try:
+                observer.update(mensagem)
+                self.log.append((datetime.now(), observer, mensagem))
+                
+                if hasattr(observer, 'email'):
+                    try:
+                        self.email_notificador.enviar(observer.email, mensagem)
+                    except Exception as e:
+                        print(f"❌ Erro inesperado: Falha ao enviar Email para {observer.nome}: {e}")
+                
+                if hasattr(observer, 'whatsapp'):
+                    try:
+                        self.whatsapp_notificador.enviar(observer.whatsapp, mensagem)
+                    except Exception as e:
+                        print(f"❌ Erro inesperado: Falha ao enviar WhatsApp para {observer.nome}: {e}")
+            except Exception as e:
+                print(f"❌ Erro inesperado ao notificar {observer.nome}: {e}")
     
     def registrar_emergencia(self, nome, prioridade):
         try:

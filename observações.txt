@@ -22,12 +22,9 @@ Resumo das alterações até agora:
 
 Bugs para ajeitar:
 - Ver pq sempre seleciona o mesmo dentista e medico.. etc ( msm bug do dr.house la embaixo, n foi resolvido!!)
-- ID temporario ao nao digitar o CPF não funcionando por algum motivo, ver Depois 
 - Novos funcionarios não sendo alocados em turnos (Ele é alocado a um turno aleatorio, porem ao trocar ele de turno ele não é chamado pro turno atual qnd tem emergencia, resolver isso)
 - Ele deixa cadastrar pacientes com o mesmo nome, ver isso dps.. diferenciar pelo cpf ou id temporario
 - Ver pq as consultas medicas vao sempre pro Dr. House(o msm problema deve ocorrer pra dentista e etc) NÃO FOI RESOLVIDO
-- No alocar leito, adicionar a opção de ver os pacientes alocados
-
 
 
 Design Patterns: Estou pensando em implementar os seguintes:

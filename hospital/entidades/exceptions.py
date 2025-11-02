@@ -20,7 +20,7 @@ class PacienteDuplicadoException(PacienteException):
     def __init__(self, nome_paciente: str):
         self.nome_paciente = nome_paciente
         super().__init__(f"❌ ERRO: Paciente '{nome_paciente}' já está cadastrado no sistema.")
-# Ainda não utilizado, mas pode ser útil futuramente
+
 class DadosInvalidosException(PacienteException):
     """Dados do paciente são inválidos"""
     def __init__(self, campo: str):
@@ -68,7 +68,7 @@ class PermissaoNegadaException(FuncionarioException):
     def __init__(self, acao: str):
         self.acao = acao
         super().__init__(f"❌ ERRO: Funcionário não tem permissão para a ação '{acao}'.")
-# Ainda não utilizado, mas pode ser útil futuramente
+
 class FuncionarioDuplicadoException(FuncionarioException):
     """Tentativa de cadastrar funcionário que já existe"""
     def __init__(self, nome_funcionario: str):
@@ -84,26 +84,20 @@ class FuncionarioDuplicadoException(FuncionarioException):
 class HospitalException(SistemaHospitalarException):
     """Exceção base para operações do hospital"""
     pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class LeitoIndisponivelException(HospitalException):
-    """Não há leitos disponíveis"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class ConsultaNaoEncontradaException(HospitalException):
-    """Índice de consulta inválido"""
-    pass
 
-# ============= RELATÓRIOS =============
-class RelatorioException(SistemaHospitalarException):
-    """Exceção base para geração de relatórios"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class DadosRelatorioInvalidosException(RelatorioException):
-    """Dados para relatório estão incompletos"""
-    pass
-# Ainda não utilizado, mas pode ser útil futuramente
-class ErroGeracaoPDFException(RelatorioException):
-    """PDF não pode ser gerado"""
-    pass
+class LeitoIndisponivelException(HospitalException): 
+    def __init__(self):
+        super().__init__(f"❌ ERRO: Todos os leitos estão ocupados.")
 
-"""EM ALGUNS LUGARES UTILIZAREMOS KEYERROR PARA COISAS QUE SÃO DICIONÁRIOS GERALMENTE, EXEMPLO NOS EXAMES"""
+class EstoqueInvalidoException(HospitalException):
+    """Item de estoque inválido"""
+    def __init__(self, quantidade: int, item: str):
+        self.quantidade = quantidade
+        self.item = item
+        super().__init__(f"❌ ERRO: Quantidade de estoque '{quantidade}' para o item '{item}' é inválido ou insuficiente.")
+
+class EstoqueMaximoException(HospitalException):
+    """Estoque atingiu o limite máximo"""
+    def __init__(self, item: str):
+        self.item = item
+        super().__init__(f"❌ ERRO: Estoque do item '{item}' só pode ter até 1000 unidades.")

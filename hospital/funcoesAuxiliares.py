@@ -1,8 +1,9 @@
 from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
-from entidades.exceptions import CampoObrigatorioException, PacienteNaoEncontradoException, ProfissionalNaoEncontradoException, ContatoInvalidoException, FuncionarioDuplicadoException, RegistroInvalidoException, DadosInvalidosException
+from entidades.exceptions import (EstoqueInvalidoException, CampoObrigatorioException, PacienteNaoEncontradoException, 
+ProfissionalNaoEncontradoException, ContatoInvalidoException, FuncionarioDuplicadoException, 
+RegistroInvalidoException, DadosInvalidosException, EstoqueMaximoException, LeitoIndisponivelException)
 import os
-import random
 
 hospital = None
 
@@ -27,6 +28,23 @@ def menu():
 
 ''' --- Funções para facilitar na main --- '''
 
+def validar_item_estoque(item, quantidade):
+    if not item:
+        raise CampoObrigatorioException("Item de estoque")
+    if quantidade <= 0:
+        raise EstoqueInvalidoException(quantidade, item)
+    if quantidade > 1000:
+        raise EstoqueMaximoException(item)
+    if item.strip().isdigit():
+        raise ValueError("❌ ERRO: Nome do item não pode ser apenas números.")
+    
+    if not any(char.isalpha() for char in item):
+        raise ValueError("❌ ERRO: Nome do item deve conter pelo menos uma letra.")
+
+    for char in item:
+        if not (char.isalnum() or char.isspace()):
+            raise ValueError("❌ ERRO: Nome do item contém caracteres inválidos.")
+
 def estoque_menu(hospital):
     while True:
         clear_screen()
@@ -39,10 +57,21 @@ def estoque_menu(hospital):
         if op == '0':
             break
         elif op == '1':
-            item = input("Item: ")
-            qtd = int(input("Quantidade: "))
-            hospital.add_item_estoque(item, qtd)
-            input("Item adicionado. Pressione Enter para continuar...")
+            try:
+                item = input("Item: ")
+                qtd_input = input("Quantidade: ")
+                try:
+                    qtd = int(qtd_input)
+                except ValueError:
+                    print(DadosInvalidosException("Quantidade"))
+                    input("Pressione Enter para continuar...")
+                    continue
+                validar_item_estoque(item, qtd)
+                hospital.add_item_estoque(item, qtd)
+                input("Item adicionado. Pressione Enter para continuar...")
+            except (CampoObrigatorioException, EstoqueInvalidoException, EstoqueMaximoException, ValueError) as e:
+                print(f"{e}")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             hospital.ver_estoque()
             input("Pressione Enter para continuar...")
@@ -125,9 +154,18 @@ def emergencias_menu(hospital):
 
             prioridade = input("Prioridade (alta/media/baixa): ").lower()
             if hospital.registrar_emergencia(nome, prioridade):
-                input("Emergência registrada. Pressione Enter para continuar...")
+                print("Emergência registrada com sucesso!")
+                if prioridade == 'alta':
+                    try:
+                        hospital.alocar_leito(nome)
+                        print(f"Paciente {nome} foi automaticamente alocado em um leito devido à prioridade alta.")
+                    except LeitoIndisponivelException as e:
+                        print(e)
+                    except Exception as e:
+                        print(f"⚠️  Erro inesperadono alocamento automático: {e}")
+                input("Pressione Enter para continuar...")
             else:
-                input("Falha ao registrar emergência. Pressione Enter para continuar...")
+                input("Pressione Enter para continuar...")
         elif op == '2':
             hospital.ver_emergencias()
             input("Pressione Enter para continuar...")
@@ -749,7 +787,12 @@ def remarcarConsulta():
     if paciente.consultas:
         for i, (dia, medico) in enumerate(paciente.consultas, 1):
             print(f"{i}: Dia {dia} com Dr(a). {medico}")
-        escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
+        try:
+            escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
+        except ValueError:
+            print(DadosInvalidosException("Número da consulta"))
+            input("Pressione Enter para continuar...")
+            return
         novo_dia = input("Novo dia da consulta: ")
         hospital.remarcar_consulta(nome, escolha, novo_dia)
         print("Consulta remarcada com sucesso!")
@@ -769,7 +812,12 @@ def cancelarConsulta():
     if paciente.consultas:
         for i, (dia, medico) in enumerate(paciente.consultas, 1):
             print(f"{i}: Dia {dia} com Dr(a). {medico}")
-        escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
+        try:
+            escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
+        except ValueError:
+            print(DadosInvalidosException("Número da consulta"))
+            input("Pressione Enter para continuar...")
+            return
         hospital.cancelar_consulta(nome, escolha)
         print("Consulta cancelada com sucesso!")
     else:
@@ -943,6 +991,36 @@ def queixa():
             input("Pressione Enter para continuar...")
         else: 
             print("Opção inválida!")
+            input("Pressione Enter para continuar...")
+
+def leitos_menu(hospital):
+    while True:
+        clear_screen()
+        print("\n--- GERENCIAMENTO DE LEITOS ---")
+        print("1 - Alocar leito")
+        print("2 - Ver leitos ocupados")
+        print("3 - Liberar leito")
+        print("0 - Voltar")
+        op = input("Escolha: ")
+        
+        if op == '0':
+            break
+        elif op == '1':
+            nome = input("Nome do paciente: ")
+            try:
+                hospital.alocar_leito(nome)
+            except LeitoIndisponivelException as e:
+                print(f"{e}")
+            input("Pressione Enter para continuar...")
+        elif op == '2':
+            hospital.ver_leitos()
+            input("Pressione Enter para continuar...")
+        elif op == '3':
+            nome = input("Nome do paciente a liberar: ")
+            hospital.liberar_leito(nome)
+            input("Pressione Enter para continuar...")
+        else:
+            print("Opção inválida.")
             input("Pressione Enter para continuar...")
 
 def relatorios_menu(hospital):

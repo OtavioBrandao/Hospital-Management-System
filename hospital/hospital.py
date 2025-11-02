@@ -552,17 +552,51 @@ class Hospital:
             pacote.executar(profissional, paciente)
             print("✅ Pacote solicitado com sucesso!")
             
-    # Adicionar opção de ver leitos alocados e situação do hospital
     def alocar_leito(self, nome):
         try:
             paciente = self.encontrar_paciente(nome)
         except PacienteNaoEncontradoException as e:
             print(e)
             return
-
+        
+        # Verificar se o paciente já está em um leito
+        for leito, nome_paciente in self.leitos:
+            if nome_paciente.lower() == paciente.nome.lower():
+                print(f"Paciente {paciente.nome} já está alocado no {leito}.")
+                return
+        
+        # Verificar limite de leitos (máximo 50)
+        if len(self.leitos) >= 50:
+            raise LeitoIndisponivelException()
+        
         leito = f"Leito-{len(self.leitos)+1}"
         self.leitos.append((leito, paciente.nome))
         print(f"{paciente.nome} alocado no {leito}.")
+    
+    def ver_leitos(self):
+        if not self.leitos:
+            print("Nenhum leito ocupado.")
+            return
+        
+        print(f"\n--- Leitos Ocupados ({len(self.leitos)}/50) ---")
+        for leito, paciente in self.leitos:
+            print(f"{leito}: {paciente}")
+        print(f"\nLeitos disponíveis: {50 - len(self.leitos)}")
+    
+    def liberar_leito(self, nome_paciente):
+        try:
+            paciente = self.encontrar_paciente(nome_paciente)
+        except PacienteNaoEncontradoException as e:
+            print(e)
+            return
+        
+        for i, (leito, nome) in enumerate(self.leitos):
+            if nome.lower() == paciente.nome.lower():
+                self.leitos.pop(i)
+                print(f"Paciente {paciente.nome} liberado do {leito}.")
+                return
+        
+        print(f"Paciente {paciente.nome} não está em nenhum leito.")
 
     def escalonar_funcionario(self, nome, turno):
         self.escalonamento[nome ] = turno

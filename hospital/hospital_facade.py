@@ -80,7 +80,7 @@ class HospitalFacade:
 
     # Emergências (Observer + Adapters já plugados por trás)
     def registrar_emergencia(self, nome_paciente: str, prioridade: str):
-        self._hospital.emergencias.registrar_emergencia(nome_paciente, prioridade)
+        return self._hospital.emergencias.registrar_emergencia(nome_paciente, prioridade)
 
     def ver_emergencias(self):
         self._hospital.emergencias.ver_emergencias()

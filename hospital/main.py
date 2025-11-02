@@ -43,8 +43,7 @@ if __name__ == "__main__":
             input("Operação concluída. Pressione Enter para continuar...")
 
         elif op == '8':
-            nome = input("Nome do paciente: ")
-            hospital.alocar_leito(nome)
+            funcoesAuxiliares.leitos_menu(hospital)
             input("Operação de leito concluída. Pressione Enter para continuar...")
             
         elif op == '9':
