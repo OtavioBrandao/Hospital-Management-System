@@ -39,6 +39,12 @@ class DocumentoInvalidoException(PacienteException):
         self.documento = documento
         super().__init__(f"❌ERRO: Documento '{documento}' é inválido.")
 
+class CaracteresInvalidosException(PacienteException):
+    """Nome contém caracteres inválidos"""
+    def __init__(self, nome: str):
+        self.nome = nome
+        super().__init__(f"❌ ERRO: Nome '{nome}' contém caracteres inválidos. Use apenas letras e espaços.")
+
 
 # ============= FUNCIONÁRIOS =============
 class FuncionarioException(SistemaHospitalarException):

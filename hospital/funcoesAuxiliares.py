@@ -2,13 +2,37 @@ from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
 from entidades.exceptions import (EstoqueInvalidoException, CampoObrigatorioException, PacienteNaoEncontradoException, 
 ProfissionalNaoEncontradoException, ContatoInvalidoException, FuncionarioDuplicadoException, 
-RegistroInvalidoException, DadosInvalidosException, EstoqueMaximoException, LeitoIndisponivelException)
+RegistroInvalidoException, DadosInvalidosException, EstoqueMaximoException, LeitoIndisponivelException, CaracteresInvalidosException)
 import os
 
 hospital = None
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def validar_nome(nome):
+    if not nome or not nome.strip():
+        raise CampoObrigatorioException("Nome")
+    
+    if nome.strip().isdigit():
+        raise CaracteresInvalidosException(nome)
+    
+    if not any(char.isalpha() for char in nome):
+        raise CaracteresInvalidosException(nome)
+ 
+    for char in nome:
+        if not (char.isalpha() or char.isspace()):
+            raise CaracteresInvalidosException(nome)
+
+def validar_texto_sem_numeros(texto, campo):
+    """Valida texto que não deve conter números (alergias, doenças, observações)"""
+    if any(char.isdigit() for char in texto):
+        raise ValueError(f"{campo} não deve conter números")
+
+def validar_texto_com_numeros(texto, campo):
+    """Valida texto que pode conter números e letras (cirurgias, medicamentos)"""
+    if not any(char.isalpha() for char in texto):
+        raise ValueError(f"{campo} deve conter pelo menos uma letra")
 
 def menu():
     print("\n--- SISTEMA DE GESTÃO HOSPITALAR ---")
@@ -63,7 +87,7 @@ def estoque_menu(hospital):
                 try:
                     qtd = int(qtd_input)
                 except ValueError:
-                    print(DadosInvalidosException("Quantidade"))
+                    print(str(DadosInvalidosException("Quantidade")))
                     input("Pressione Enter para continuar...")
                     continue
                 validar_item_estoque(item, qtd)
@@ -117,16 +141,56 @@ def receituario_menu(hospital):
         if op == '0':
             break
         elif op == '1':
-            nome = input("Nome do paciente: ")
-            medicamento = input("Medicamento: ")
-            descricao = input("Descrição: ")
-            profissional = input("Profissional: ")
-            dosagem = input("Dosagem: ")
-            hospital.receita(nome, profissional, medicamento, descricao, dosagem)
-            input("Receita gerada. Pressione Enter para continuar...")
+            try:
+                nome = input("Nome do paciente: ")
+                hospital.encontrar_paciente(nome)
+            except PacienteNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                continue
+            
+            try:
+                profissional = input("Profissional: ")
+                hospital.encontrar_funcionario(profissional)
+            except ProfissionalNaoEncontradoException as e:
+                print(e)
+                input("Pressione Enter para continuar...")
+                continue
+            
+            medicamento = input("Medicamento: ").strip()
+            if not medicamento:
+                print(str(CampoObrigatorioException("Medicamento")))
+                print("❌ Geração de receita cancelada.")
+                input("Pressione Enter para continuar...")
+                continue
+            
+            try:
+                validar_texto_com_numeros(medicamento, "Medicamento")
+            except ValueError:
+                print(str(DadosInvalidosException("Medicamento")))
+                print("❌ Geração de receita cancelada.")
+                input("Pressione Enter para continuar...")
+                continue
+            
+            descricao = input("Descrição: ").strip() or "Não informado"
+            dosagem = input("Dosagem: ").strip() or "Não informado"
+            
+            try:
+                hospital.receita(nome, profissional, medicamento, descricao, dosagem)
+                print("✅ Receita gerada com sucesso!")
+            except Exception as e:
+                print(f"❌ Erro ao gerar receita: {e}")
+            input("Pressione Enter para continuar...")
         elif op == '2':
-            nome = input("Nome do paciente: ")
-            hospital.receitas(nome)
+            try:
+                nome = input("Nome do paciente: ")
+                paciente = hospital.encontrar_paciente(nome)
+                if not paciente.receitas:
+                    print(f"⚠️  Nenhuma receita registrada para o paciente {nome}.")
+                else:
+                    hospital.receitas(nome)
+            except PacienteNaoEncontradoException as e:
+                print(e)
             input("Pressione Enter para continuar...")
         else:
             print("Opção inválida.")
@@ -217,9 +281,8 @@ def cadastro_simples():
     print("\n--- CADASTRO SIMPLES ---")
     try:
         input_nome = input("Nome do paciente: ")
-        if not input_nome:
-            raise CampoObrigatorioException("Nome")
-    except CampoObrigatorioException as e:
+        validar_nome(input_nome)
+    except (CampoObrigatorioException, CaracteresInvalidosException) as e:
         print(f"{e}")
         input("Pressione Enter para continuar...")
         return None
@@ -244,15 +307,19 @@ def cadastro_completo():
     dados = {}
     try:
         dados['nome'] = input("Nome do paciente: ")
-        if not dados['nome']:
-            raise CampoObrigatorioException("Nome")
-    except CampoObrigatorioException as e:
+        validar_nome(dados['nome'])
+    except (CampoObrigatorioException, CaracteresInvalidosException) as e:
         print(f"{e}")
         input("Pressione Enter para continuar...")
         return None
     
     dados['cpf'] = input("CPF: ") or None
+    if dados['cpf'] is None:
+        print("⚠️  CPF não informado, será gerado um ID temporário.")
+    
     dados['cartao_sus'] = input("Cartão SUS(Se houver): ") or None
+    if dados['cartao_sus'] is None:
+        print("⚠️  Cartão SUS não informado, será definido como 'Não Informado'.")
     
     try:
         idade_input = input("Idade: ").strip()
@@ -260,8 +327,9 @@ def cadastro_completo():
             dados['idade'] = int(idade_input)
         else:
             dados['idade'] = None
+            print("⚠️  Idade não informada, será definida como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Idade"))
+        print(str(DadosInvalidosException("Idade")))
         dados['idade'] = None
     
     try:
@@ -270,8 +338,9 @@ def cadastro_completo():
             dados['altura'] = float(altura_input)
         else:
             dados['altura'] = None
+            print("⚠️  Altura não informada, será definida como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Altura"))
+        print(str(DadosInvalidosException("Altura")))
         dados['altura'] = None
     
     try:
@@ -280,8 +349,9 @@ def cadastro_completo():
             dados['peso'] = float(peso_input)
         else:
             dados['peso'] = None
+            print("⚠️  Peso não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Peso"))
+        print(str(DadosInvalidosException("Peso")))
         dados['peso'] = None
     
     try:
@@ -293,8 +363,9 @@ def cadastro_completo():
             dados['tipo_sanguineo'] = tipo_sanguineo_input
         else:
             dados['tipo_sanguineo'] = None
+            print("⚠️  Tipo Sanguíneo não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Tipo Sanguíneo"))
+        print(str(DadosInvalidosException("Tipo Sanguíneo")))
         dados['tipo_sanguineo'] = None
     
     try:
@@ -306,8 +377,9 @@ def cadastro_completo():
             dados['genero'] = genero_input
         else:
             dados['genero'] = None
+            print("⚠️  Gênero não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Gênero"))
+        print(str(DadosInvalidosException("Gênero")))
         dados['genero'] = None
     
     try:
@@ -319,8 +391,9 @@ def cadastro_completo():
             dados['tipo_plano'] = tipo_plano_input
         else:
             dados['tipo_plano'] = None
+            print("⚠️  Tipo de Plano não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Tipo de Plano"))
+        print(str(DadosInvalidosException("Tipo de Plano")))
         dados['tipo_plano'] = None
     
     # Se o tipo de plano for Convênio, perguntar qual convênio
@@ -335,8 +408,9 @@ def cadastro_completo():
                 dados['tipo_convenio'] = convenio_input
             else:
                 dados['tipo_convenio'] = None
+                print("⚠️  Tipo de Convênio não informado, será definido como 'Não Informado'.")
         except ValueError:
-            print(DadosInvalidosException("Tipo de Convênio"))
+            print(str(DadosInvalidosException("Tipo de Convênio")))
             dados['tipo_convenio'] = None
     else:
         dados['tipo_convenio'] = None
@@ -349,8 +423,9 @@ def cadastro_completo():
             dados['telefone'] = telefone_input
         else:
             dados['telefone'] = None
+            print("⚠️  Telefone não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Telefone"))
+        print(str(DadosInvalidosException("Telefone")))
         dados['telefone'] = None
     
     try:
@@ -363,9 +438,13 @@ def cadastro_completo():
             dados['contato_emergencia'] = (nome_emergencia, tel_emergencia)
         else:
             dados['contato_emergencia'] = None
+            print("⚠️  Contato de Emergência não informado, será definido como 'Não Informado'.")
     except ValueError:
-        print(DadosInvalidosException("Contato de Emergência"))
+        print(str(DadosInvalidosException("Contato de Emergência")))
         dados['contato_emergencia'] = None
+        
+    # Pausa para mostrar mensagens antes de continuar
+    input("\nPressione Enter para continuar com o histórico médico...")
 
     dados['historico_medico'] = coletar_historico_medico()
 
@@ -398,33 +477,53 @@ def coletar_historico_medico():
             return h
         elif op == '1':
             txt = input("Alergia (ex: Dipirona): ").strip()
-            if txt: 
-                h.adicionar_alergia(txt)
-                print("Alergia adicionada!")
+            if txt:
+                try:
+                    validar_texto_sem_numeros(txt, "Alergia")
+                    h.adicionar_alergia(txt)
+                    print("Alergia adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Alergia")))
                 input("Pressione Enter para continuar...")
         elif op == '2':
             txt = input("Doença crônica (ex: Hipertensão): ").strip()
-            if txt: 
-                h.adicionar_doenca_cronica(txt)
-                print("Doença crônica adicionada!")
+            if txt:
+                try:
+                    validar_texto_sem_numeros(txt, "Doença crônica")
+                    h.adicionar_doenca_cronica(txt)
+                    print("Doença crônica adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Doença crônica")))
                 input("Pressione Enter para continuar...")
         elif op == '3':
             txt = input("Cirurgia (ex: Apendicectomia - 2019): ").strip()
-            if txt: 
-                h.adicionar_cirurgia(txt)
-                print("Cirurgia adicionada!")
+            if txt:
+                try:
+                    validar_texto_com_numeros(txt, "Cirurgia")
+                    h.adicionar_cirurgia(txt)
+                    print("Cirurgia adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Cirurgia")))
                 input("Pressione Enter para continuar...")
         elif op == '4':
             txt = input("Medicação (ex: Losartana 50mg 1cp/dia): ").strip()
-            if txt: 
-                h.adicionar_medicamento(txt)
-                print("Medicação adicionada!")
+            if txt:
+                try:
+                    validar_texto_com_numeros(txt, "Medicação")
+                    h.adicionar_medicamento(txt)
+                    print("Medicação adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Medicação")))
                 input("Pressione Enter para continuar...")
         elif op == '5':
             txt = input("Observação livre: ").strip()
-            if txt: 
-                h.adicionar_observacao(txt)
-                print("Observação adicionada!")
+            if txt:
+                try:
+                    validar_texto_sem_numeros(txt, "Observação")
+                    h.adicionar_observacao(txt)
+                    print("Observação adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Observação")))
                 input("Pressione Enter para continuar...")
         elif op == '6':
             print("\n>>> Resumo parcial:")
@@ -463,33 +562,53 @@ def editar_historico_medico(paciente):
             return
         elif op == '1':
             t = input("Alergia: ").strip()
-            if t: 
-                h.adicionar_alergia(t)
-                print("Alergia adicionada!")
+            if t:
+                try:
+                    validar_texto_sem_numeros(t, "Alergia")
+                    h.adicionar_alergia(t)
+                    print("Alergia adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Alergia")))
                 input("Pressione Enter para continuar...")
         elif op == '2':
             t = input("Doença crônica: ").strip()
-            if t: 
-                h.adicionar_doenca_cronica(t)
-                print("Doença crônica adicionada!")
+            if t:
+                try:
+                    validar_texto_sem_numeros(t, "Doença crônica")
+                    h.adicionar_doenca_cronica(t)
+                    print("Doença crônica adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Doença crônica")))
                 input("Pressione Enter para continuar...")
         elif op == '3':
             t = input("Cirurgia: ").strip()
-            if t: 
-                h.adicionar_cirurgia(t)
-                print("Cirurgia adicionada!")
+            if t:
+                try:
+                    validar_texto_com_numeros(t, "Cirurgia")
+                    h.adicionar_cirurgia(t)
+                    print("Cirurgia adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Cirurgia")))
                 input("Pressione Enter para continuar...")
         elif op == '4':
             t = input("Medicação: ").strip()
-            if t: 
-                h.adicionar_medicamento(t)
-                print("Medicação adicionada!")
+            if t:
+                try:
+                    validar_texto_com_numeros(t, "Medicação")
+                    h.adicionar_medicamento(t)
+                    print("Medicação adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Medicação")))
                 input("Pressione Enter para continuar...")
         elif op == '5':
             t = input("Observação: ").strip()
-            if t: 
-                h.adicionar_observacao(t)
-                print("Observação adicionada!")
+            if t:
+                try:
+                    validar_texto_sem_numeros(t, "Observação")
+                    h.adicionar_observacao(t)
+                    print("Observação adicionada!")
+                except ValueError:
+                    print(str(DadosInvalidosException("Observação")))
                 input("Pressione Enter para continuar...")
         elif op == '6':
             print("\n>>> Resumo atual:")
@@ -514,33 +633,56 @@ def atualizar_dados_paciente():
         b = paciente_builder.resetar()
         novo_nome = input(f"Nome atual: {paciente.nome} | Novo nome: ").strip()
         if novo_nome:
-            b.com_nome(novo_nome)
+            try:
+                validar_nome(novo_nome)
+                b.com_nome(novo_nome)
+            except CaracteresInvalidosException as e:
+                print(f"{e}")
+                print("Nome não foi alterado.")
         novo_cpf = input(f"CPF atual: {paciente.cpf} | Novo CPF: ").strip()
         if novo_cpf:
-            b.com_cpf(novo_cpf)
+            # Validar CPF antes de atualizar
+            if (len(novo_cpf) == 5 and novo_cpf.isdigit()) or (len(novo_cpf) == 8 and novo_cpf.startswith('TMP') and novo_cpf[3:].isdigit()):
+                b.com_cpf(novo_cpf)
+            else:
+                print("❌ ERRO: CPF inválido. Não foi atualizado.")
+        elif novo_cpf == "":
+            print("⚠️  CPF não informado, será mantido como atual.")
         novo_cartao_sus = input(f"Cartão SUS atual: {paciente.cartao_sus} | Novo Cartão SUS: ").strip()
         if novo_cartao_sus:
-            b.com_cartao_sus(novo_cartao_sus)
+            # Validar Cartão SUS antes de atualizar
+            if len(novo_cartao_sus) == 5 and novo_cartao_sus.isdigit():
+                b.com_cartao_sus(novo_cartao_sus)
+            else:
+                print("❌ ERRO: Cartão SUS inválido. Não foi atualizado.")
+        elif novo_cartao_sus == "":
+            print("⚠️  Cartão SUS não informado, será mantido como atual.")
         try:
             nova_idade = input(f"Idade atual: {paciente.idade} | Nova idade: ").strip()
             if nova_idade:
                 b.com_idade(int(nova_idade))
+            elif nova_idade == "":
+                print("⚠️  Idade não informada, será mantida como atual.")
         except ValueError:
-            print(DadosInvalidosException("Idade"))
+            print(str(DadosInvalidosException("Idade")))
         
         try:
             nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
             if nova_altura:
                 b.com_altura(float(nova_altura))
+            elif nova_altura == "":
+                print("⚠️  Altura não informada, será mantida como atual.")
         except ValueError:
-            print(DadosInvalidosException("Altura"))
+            print(str(DadosInvalidosException("Altura")))
         
         try:
             novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
             if novo_peso:
                 b.com_peso(float(novo_peso))
+            elif novo_peso == "":
+                print("⚠️  Peso não informado, será mantido como atual.")
         except ValueError:
-            print(DadosInvalidosException("Peso"))
+            print(str(DadosInvalidosException("Peso")))
         
         try:
             novo_ts = input(
@@ -552,7 +694,7 @@ def atualizar_dados_paciente():
                     raise ValueError("Tipo sanguíneo inválido")
                 b.com_tipo_sanguineo(novo_ts)
         except ValueError:
-            print(DadosInvalidosException("Tipo Sanguíneo"))
+            print(str(DadosInvalidosException("Tipo Sanguíneo")))
         
         try:
             novo_genero = input(
@@ -564,7 +706,7 @@ def atualizar_dados_paciente():
                     raise ValueError("Gênero inválido")
                 b.com_genero(novo_genero)
         except ValueError:
-            print(DadosInvalidosException("Gênero"))
+            print(str(DadosInvalidosException("Gênero")))
         
         try:
             novo_plano = input(
@@ -590,7 +732,7 @@ def atualizar_dados_paciente():
                     except ValueError:
                         print(DadosInvalidosException("Tipo de Convênio"))
         except ValueError:
-            print(DadosInvalidosException("Tipo de Plano"))
+            print(str(DadosInvalidosException("Tipo de Plano")))
         
         try:
             novo_tel = input(
@@ -600,8 +742,10 @@ def atualizar_dados_paciente():
                 if not novo_tel.isdigit() or len(novo_tel) < 10:
                     raise ValueError("Telefone inválido")
                 b.com_telefone(novo_tel)
+            elif novo_tel == "":
+                print("⚠️  Telefone não informado, será mantido como atual.")
         except ValueError:
-            print(DadosInvalidosException("Telefone"))
+            print(str(DadosInvalidosException("Telefone")))
         
         try:
             print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
@@ -613,8 +757,10 @@ def atualizar_dados_paciente():
                 b.com_contato_emergencia((novo_nome_emerg, novo_tel_emerg))
             elif novo_nome_emerg or novo_tel_emerg:
                 print("Para atualizar o contato de emergência, forneça nome e telefone juntos.")
+            elif not novo_nome_emerg and not novo_tel_emerg:
+                print("⚠️  Contato de Emergência não informado, será mantido como atual.")
         except ValueError:
-            print(DadosInvalidosException("Contato de Emergência"))
+            print(str(DadosInvalidosException("Contato de Emergência")))
 
 
         editar = input("Deseja editar o histórico médico? (s/n): ").strip().lower()
@@ -700,12 +846,9 @@ def funcionario_manager(hospital):
         elif op == '1':
             try:
                 nome = input("Nome do funcionário: ")
-                if any(char.isdigit() for char in nome):
-                    raise ValueError("Nome não pode conter números;")
-                if not nome.strip():
-                    raise ValueError("Nome não pode estar vazio;")
-            except ValueError as e:
-                print(f"ERRO: {e}")
+                validar_nome(nome)
+            except (CampoObrigatorioException, CaracteresInvalidosException) as e:
+                print(f"{e}")
                 input("Pressione Enter para continuar...")
                 continue
             try:
@@ -730,9 +873,17 @@ def funcionario_manager(hospital):
                 continue
             
             print("Especialidades disponíveis: Cardiologista, Ortopedista, Pediatra, Neurologista, Clínico Geral, Dermatologista, Oftalmologista.")
-            especialidade = input("Especialidade (caso for Médico, vazio caso não for): ")
-            email = input("Email (example@email.com): ")
-            whatsapp = input("WhatsApp (55 (DDD) 9XXXX-XXXX): ")
+            especialidade = input("Especialidade (caso for Médico, vazio caso não for): ") or None
+            if especialidade is None and tipo == "medico":
+                print("⚠️  Especialidade não informada para médico, será definida como 'Não Informado'.")
+            
+            email = input("Email (example@email.com): ") or None
+            if email is None:
+                print("⚠️  Email não informado, será definido como 'Não Informado'.")
+            
+            whatsapp = input("WhatsApp (55 (DDD) 9XXXX-XXXX): ") or None
+            if whatsapp is None:
+                print("⚠️  WhatsApp não informado, será definido como 'Não Informado'.")
         
             try:
                 hospital.adicionar_funcionario(tipo, nome, registro, especialidade, email, whatsapp)
@@ -790,7 +941,7 @@ def remarcarConsulta():
         try:
             escolha = int(input("Escolha o número da consulta a remarcar: ")) - 1
         except ValueError:
-            print(DadosInvalidosException("Número da consulta"))
+            print(str(DadosInvalidosException("Número da consulta")))
             input("Pressione Enter para continuar...")
             return
         novo_dia = input("Novo dia da consulta: ")
@@ -815,7 +966,7 @@ def cancelarConsulta():
         try:
             escolha = int(input("Escolha o número da consulta a cancelar: ")) - 1
         except ValueError:
-            print(DadosInvalidosException("Número da consulta"))
+            print(str(DadosInvalidosException("Número da consulta")))
             input("Pressione Enter para continuar...")
             return
         hospital.cancelar_consulta(nome, escolha)

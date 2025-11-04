@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 import random
+from .exceptions import DadosInvalidosException
 
 # Informações adicionais sobre o paciente
 class PesoAlturaIdade:
@@ -206,7 +207,7 @@ class Paciente:
         if isinstance(valor, str) and valor.isdigit() and 10 <= len(valor) <= 11:
             self._telefone = Telefone(valor[:2], valor[2:])
             return
-        print("Aviso: telefone inválido."); self._telefone = None
+        print(str(DadosInvalidosException("Telefone"))); self._telefone = None
 
     @contato_emergencia.setter
     def contato_emergencia(self, valor):
@@ -221,7 +222,7 @@ class Paciente:
                 self._contato_emergencia = ContatoEmergencia(nome, tel); return
             if isinstance(tel, str) and tel.isdigit() and 10 <= len(tel) <= 11:
                 self._contato_emergencia = ContatoEmergencia(nome, Telefone(tel[:2], tel[2:])); return
-        print("Aviso: contato_emergencia inválido."); self._contato_emergencia = None
+        print(str(DadosInvalidosException("Contato de Emergência"))); self._contato_emergencia = None
 
     @idade.setter
     def idade(self, valor):
@@ -266,9 +267,8 @@ class Paciente:
             if (len(valor) == 5 and valor.isdigit()) or (len(valor) == 8 and valor.startswith('TMP') and valor[3:].isdigit()):
                 self._cpf = valor
                 return
-        print(f"Aviso: CPF '{valor}' é inválido. Deve conter 5 dígitos numéricos ou formato TMP+5 dígitos.")
+        print(f"❌ ERRO: CPF '{valor}' é inválido. Será gerado um ID temporário.")
         self._cpf = None
-
     @cartao_sus.setter
     def cartao_sus(self, valor):
         if valor is None: 
@@ -277,7 +277,7 @@ class Paciente:
         if isinstance(valor, str) and len(valor) == 5 and valor.isdigit():
             self._cartao_sus = valor
         else:
-            print(f"Aviso: Cartão SUS '{valor}' é inválido. Deve conter 5 dígitos numéricos.")
+            print(str(DadosInvalidosException("Cartão SUS")))
             self._cartao_sus = None
 
     @tipo_sanguineo.setter
