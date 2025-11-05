@@ -2,7 +2,7 @@ from entidades.exame import EXAMES_DISPONIVEIS
 from entidades.paciente import PacienteBuilder, DiretorPaciente, HistoricoMedico
 from entidades.exceptions import (EstoqueInvalidoException, CampoObrigatorioException, PacienteNaoEncontradoException, 
 ProfissionalNaoEncontradoException, ContatoInvalidoException, FuncionarioDuplicadoException, 
-RegistroInvalidoException, DadosInvalidosException, EstoqueMaximoException, LeitoIndisponivelException, CaracteresInvalidosException)
+RegistroInvalidoException, DadosInvalidosException, DadosInvalidosAtualizacaoException, EstoqueMaximoException, LeitoIndisponivelException, CaracteresInvalidosException)
 import os
 
 hospital = None
@@ -286,9 +286,16 @@ def cadastro_simples():
         print(f"{e}")
         input("Pressione Enter para continuar...")
         return None
-    
-    input_cpf = input("CPF: ")
-    input_cartao_sus = input("Cartão SUS(Se houver): ")
+    try:
+        input_cpf = input("CPF: ") or None
+        if input_cpf is None:
+            print("⚠️  CPF não informado, será gerado um ID temporário.")
+        
+        input_cartao_sus = input("Cartão SUS(Se houver): ") or None
+        if input_cartao_sus is None:
+            print("⚠️  Cartão SUS não informado, será definido como 'Não Informado'.")
+    except ValueError:
+        print(str(DadosInvalidosException("CPF ou Cartão SUS")))
 
     try:
         paciente = diretor_paciente.construir_paciente_simples(input_nome, input_cpf, input_cartao_sus)
@@ -313,46 +320,77 @@ def cadastro_completo():
         input("Pressione Enter para continuar...")
         return None
     
-    dados['cpf'] = input("CPF: ") or None
-    if dados['cpf'] is None:
+    cpf_input = input("CPF: ").strip()
+    if cpf_input:
+        # Validar CPF (5 dígitos ou TMP+5 dígitos)
+        if not ((len(cpf_input) == 5 and cpf_input.isdigit()) or (len(cpf_input) == 8 and cpf_input.startswith('TMP') and cpf_input[3:].isdigit())):
+            print(f"❌ ERRO: CPF '{cpf_input}' é inválido. Será gerado um ID temporário.")
+            dados['cpf'] = None
+        else:
+            dados['cpf'] = cpf_input
+    else:
+        dados['cpf'] = None
         print("⚠️  CPF não informado, será gerado um ID temporário.")
     
-    dados['cartao_sus'] = input("Cartão SUS(Se houver): ") or None
-    if dados['cartao_sus'] is None:
+    cartao_sus_input = input("Cartão SUS(Se houver): ").strip()
+    if cartao_sus_input:
+        # Validar Cartão SUS (5 dígitos)
+        if not (len(cartao_sus_input) == 5 and cartao_sus_input.isdigit()):
+            print(str(DadosInvalidosException("Cartão SUS")))
+            dados['cartao_sus'] = None
+        else:
+            dados['cartao_sus'] = cartao_sus_input
+    else:
+        dados['cartao_sus'] = None
         print("⚠️  Cartão SUS não informado, será definido como 'Não Informado'.")
     
-    try:
-        idade_input = input("Idade: ").strip()
-        if idade_input:
-            dados['idade'] = int(idade_input)
-        else:
+    idade_input = input("Idade: ").strip()
+    if idade_input:
+        try:
+            idade_valor = int(idade_input)
+            if idade_valor <= 0:
+                print(str(DadosInvalidosException("Idade")))
+                dados['idade'] = None
+            else:
+                dados['idade'] = idade_valor
+        except ValueError:
+            print(str(DadosInvalidosException("Idade")))
             dados['idade'] = None
-            print("⚠️  Idade não informada, será definida como 'Não Informado'.")
-    except ValueError:
-        print(str(DadosInvalidosException("Idade")))
+    else:
         dados['idade'] = None
+        print("⚠️  Idade não informada, será definida como 'Não Informado'.")
     
-    try:
-        altura_input = input("Altura (em cm): ").strip()
-        if altura_input:
-            dados['altura'] = float(altura_input)
-        else:
+    altura_input = input("Altura (em cm): ").strip()
+    if altura_input:
+        try:
+            altura_valor = float(altura_input)
+            if not (50 <= altura_valor <= 250):
+                print(str(DadosInvalidosException("Altura")))
+                dados['altura'] = None
+            else:
+                dados['altura'] = altura_valor
+        except ValueError:
+            print(str(DadosInvalidosException("Altura")))
             dados['altura'] = None
-            print("⚠️  Altura não informada, será definida como 'Não Informado'.")
-    except ValueError:
-        print(str(DadosInvalidosException("Altura")))
+    else:
         dados['altura'] = None
+        print("⚠️  Altura não informada, será definida como 'Não Informado'.")
     
-    try:
-        peso_input = input("Peso (em kg): ").strip()
-        if peso_input:
-            dados['peso'] = float(peso_input)
-        else:
+    peso_input = input("Peso (em kg): ").strip()
+    if peso_input:
+        try:
+            peso_valor = float(peso_input)
+            if not (2 <= peso_valor <= 300):
+                print(str(DadosInvalidosException("Peso")))
+                dados['peso'] = None
+            else:
+                dados['peso'] = peso_valor
+        except ValueError:
+            print(str(DadosInvalidosException("Peso")))
             dados['peso'] = None
-            print("⚠️  Peso não informado, será definido como 'Não Informado'.")
-    except ValueError:
-        print(str(DadosInvalidosException("Peso")))
+    else:
         dados['peso'] = None
+        print("⚠️  Peso não informado, será definido como 'Não Informado'.")
     
     try:
         tipo_sanguineo_input = input("Tipo Sanguíneo (A+, A-, B+, B-, AB+, AB-, O+, O-): ").strip()
@@ -664,7 +702,7 @@ def atualizar_dados_paciente():
             elif nova_idade == "":
                 print("⚠️  Idade não informada, será mantida como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Idade")))
+            print(str(DadosInvalidosAtualizacaoException("Idade")))
         
         try:
             nova_altura = input(f"Altura atual: {paciente.altura} | Nova altura (em cm): ").strip()
@@ -673,7 +711,7 @@ def atualizar_dados_paciente():
             elif nova_altura == "":
                 print("⚠️  Altura não informada, será mantida como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Altura")))
+            print(str(DadosInvalidosAtualizacaoException("Altura")))
         
         try:
             novo_peso = input(f"Peso atual: {paciente.peso} | Novo peso (em kg): ").strip()
@@ -682,7 +720,7 @@ def atualizar_dados_paciente():
             elif novo_peso == "":
                 print("⚠️  Peso não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Peso")))
+            print(str(DadosInvalidosAtualizacaoException("Peso")))
         
         try:
             novo_ts = input(
@@ -693,8 +731,10 @@ def atualizar_dados_paciente():
                 if novo_ts not in tipos_validos:
                     raise ValueError("Tipo sanguíneo inválido")
                 b.com_tipo_sanguineo(novo_ts)
+            elif novo_ts == "":
+                print("⚠️  Tipo Sanguíneo não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Tipo Sanguíneo")))
+            print(str(DadosInvalidosAtualizacaoException("Tipo Sanguíneo")))
         
         try:
             novo_genero = input(
@@ -705,8 +745,10 @@ def atualizar_dados_paciente():
                 if novo_genero.lower() not in generos_validos:
                     raise ValueError("Gênero inválido")
                 b.com_genero(novo_genero)
+            elif novo_genero == "":
+                print("⚠️  Gênero não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Gênero")))
+            print(str(DadosInvalidosAtualizacaoException("Gênero")))
         
         try:
             novo_plano = input(
@@ -729,10 +771,14 @@ def atualizar_dados_paciente():
                             if novo_convenio.lower() not in convenios_validos:
                                 raise ValueError("Convênio inválido")
                             b.com_tipo_convenio(novo_convenio)
+                        elif novo_convenio == "":
+                            print("⚠️  Convênio não informado, será mantido como atual.")
                     except ValueError:
-                        print(DadosInvalidosException("Tipo de Convênio"))
+                        print(str(DadosInvalidosAtualizacaoException("Convênio")))
+            elif novo_plano == "":
+                print("⚠️  Tipo de Plano não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Tipo de Plano")))
+            print(str(DadosInvalidosAtualizacaoException("Tipo de Plano")))
         
         try:
             novo_tel = input(
@@ -745,7 +791,7 @@ def atualizar_dados_paciente():
             elif novo_tel == "":
                 print("⚠️  Telefone não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Telefone")))
+            print(str(DadosInvalidosAtualizacaoException("Telefone")))
         
         try:
             print(f"Contato de Emergência atual: {paciente.contato_emergencia}")
@@ -760,7 +806,7 @@ def atualizar_dados_paciente():
             elif not novo_nome_emerg and not novo_tel_emerg:
                 print("⚠️  Contato de Emergência não informado, será mantido como atual.")
         except ValueError:
-            print(str(DadosInvalidosException("Contato de Emergência")))
+            print(str(DadosInvalidosAtualizacaoException("Contato de Emergência")))
 
 
         editar = input("Deseja editar o histórico médico? (s/n): ").strip().lower()
@@ -920,10 +966,43 @@ def agendarConsulta():
         print(e)
         input("Pressione Enter para continuar...")
         return
-    dia = input("Data da consulta (dd/mm): ")
-    tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ")
-    hospital.agendar_consulta(nome, dia, tipo_profissional)
-    print("Consulta agendada com sucesso!")
+    
+    # Validar data
+    dia = input("Data da consulta (dd/mm): ").strip()
+    if not dia:
+        print("❌ ERRO: Data é obrigatória.")
+        return
+    
+    # Validar formato da data (dd/mm)
+    try:
+        if '/' not in dia or len(dia.split('/')) != 2:
+            raise ValueError("Formato inválido")
+        dia_num, mes_num = dia.split('/')
+        dia_int = int(dia_num)
+        mes_int = int(mes_num)
+        if not (1 <= dia_int <= 31) or not (1 <= mes_int <= 12):
+            raise ValueError("Data inválida")
+    except ValueError:
+        print("❌ ERRO: Data inválida. Use o formato dd/mm (ex: 13/10).")
+        return
+    
+    # Validar tipo de profissional
+    tipo_profissional = input("Tipo de profissional (Medico, Dentista, etc.): ").strip()
+    if not tipo_profissional:
+        print("❌ ERRO: Tipo de profissional é obrigatório.")
+        return
+    
+    tipos_validos = ['medico', 'dentista', 'enfermeiro', 'psicologo', 'nutricionista', 'fisioterapeuta']
+    if tipo_profissional.lower() not in tipos_validos:
+        print(f"❌ ERRO: Tipo '{tipo_profissional}' inválido. Tipos válidos: {', '.join(tipos_validos)}.")
+        return
+    
+    # Tentar agendar consulta
+    resultado = hospital.agendar_consulta(nome, dia, tipo_profissional)
+    if resultado:
+        print("✅ Consulta agendada com sucesso!")
+    else:
+        print("❌ Falha ao agendar consulta.")
 
 
 def remarcarConsulta():
@@ -944,9 +1023,26 @@ def remarcarConsulta():
             print(str(DadosInvalidosException("Número da consulta")))
             input("Pressione Enter para continuar...")
             return
-        novo_dia = input("Novo dia da consulta: ")
+        novo_dia = input("Novo dia da consulta: ").strip()
+        if not novo_dia:
+            print("❌ ERRO: Nova data é obrigatória.")
+            return
+        
+        # Validar formato da nova data
+        try:
+            if '/' not in novo_dia or len(novo_dia.split('/')) != 2:
+                raise ValueError("Formato inválido")
+            dia_num, mes_num = novo_dia.split('/')
+            dia_int = int(dia_num)
+            mes_int = int(mes_num)
+            if not (1 <= dia_int <= 31) or not (1 <= mes_int <= 12):
+                raise ValueError("Data inválida")
+        except ValueError:
+            print("❌ ERRO: Data inválida. Use o formato dd/mm (ex: 13/10).")
+            return
+        
         hospital.remarcar_consulta(nome, escolha, novo_dia)
-        print("Consulta remarcada com sucesso!")
+        print("✅ Consulta remarcada com sucesso!")
     else:
         print("Nenhuma consulta agendada.")
   

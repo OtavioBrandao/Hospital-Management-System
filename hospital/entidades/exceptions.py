@@ -22,10 +22,16 @@ class PacienteDuplicadoException(PacienteException):
         super().__init__(f"❌ ERRO: Paciente '{nome_paciente}' já está cadastrado no sistema.")
 
 class DadosInvalidosException(PacienteException):
-    """Dados do paciente são inválidos"""
+    """Dados do paciente são inválidos - para cadastro"""
     def __init__(self, campo: str):
         self.campo = campo
         super().__init__(f"❌ ERRO: {campo} inválido(a), será definido como 'Não Informado'.")
+
+class DadosInvalidosAtualizacaoException(PacienteException):
+    """Dados do paciente são inválidos - para atualização"""
+    def __init__(self, campo: str):
+        self.campo = campo
+        super().__init__(f"❌ ERRO: {campo} inválido. Valor anterior mantido.")
 
 class CampoObrigatorioException(PacienteException):
     """Campo obrigatório não foi preenchido"""

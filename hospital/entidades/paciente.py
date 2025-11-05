@@ -232,7 +232,7 @@ class Paciente:
         if isinstance(valor, int) and valor > 0:
             self._idade = valor
         else:
-            print(f"Aviso: Idade '{valor}' é inválida. Deve ser um número inteiro positivo.")
+            print(str(DadosInvalidosException("Idade")))
             self._idade = None
 
     @altura.setter
@@ -243,7 +243,7 @@ class Paciente:
         if isinstance(valor, (int, float)) and 50 <= valor <= 250:
             self._altura = valor
         else:
-            print(f"Aviso: Altura '{valor}' é inválida. Deve estar entre 50 e 250 cm.")
+            print(str(DadosInvalidosException("Altura")))
             self._altura = None  
 
     @peso.setter
@@ -254,7 +254,7 @@ class Paciente:
         if isinstance(valor, (int, float)) and 2 <= valor <= 300:
             self._peso = valor
         else:
-            print(f"Aviso: Peso '{valor}' é inválido. Deve estar entre 2 e 300 kg.")
+            print(str(DadosInvalidosException("Peso")))
             self._peso = None
 
     @cpf.setter
