@@ -77,7 +77,7 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
     -**Validação de dados**: Ao identifiar um dado inválido ou não encontrado, uitlizei raise para subir o erro de acordo com minha exceção específica durante um try e depois terminando o aviso chamando em except.
     -**Fluxo de controle**: Em alguns casos, utilizei exceções para controlar o fluxo do programa, como interromper uma operação quando uma condição específica não é atendida.
     
-### Principais exceções utilizadas:
+# Principais exceções utilizadas:
 
 ## Exceções Base
 - `SistemaHospitalarException`: Exceção base para todo o sistema hospitalar
@@ -91,14 +91,14 @@ O projeto foi estruturado utilizando os seguintes objetos principais:
 - `DocumentoInvalidoException`: Lançada quando CPF ou Cartão SUS é inválido (planejada para uso futuro)
 - `CaracteresInvalidosException`: Lançada quando nome contém apenas números ou caracteres especiais inválidos
 
-### Exceções de Funcionário (FuncionarioException)
+## Exceções de Funcionário (FuncionarioException)
 - `ProfissionalNaoEncontradoException`: Lançada quando uma operação tenta acessar um funcionário que não existe no sistema
 - `RegistroInvalidoException`: Lançada quando o registro profissional é inválido ou não segue o padrão esperado (CRM, COREN, CRO, etc.)
 - `ContatoInvalidoException`: Lançada quando email ou WhatsApp fornecidos estão em formato inválido
 - `PermissaoNegadaException`: Lançada quando funcionário não tem permissão para realizar determinada ação (planejada para uso futuro)
 - `FuncionarioDuplicadoException`: Lançada quando há tentativa de cadastrar funcionário com registro profissional já existente
 
-### Exceções de Hospital (HospitalException)
+## Exceções de Hospital (HospitalException)
 - `LeitoIndisponivelException`: Lançada quando não há leitos disponíveis para alocação (limite de 50 leitos)
 - `EstoqueInvalidoException`: Lançada quando quantidade de estoque é negativa, zero ou o item é inválido
 - `EstoqueMaximoException`: Lançada quando há tentativa de 
